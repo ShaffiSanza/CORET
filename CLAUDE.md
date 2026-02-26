@@ -67,8 +67,17 @@ CORET/
 │       ├── OptimizeEngineTests.swift  ✅ 19 tests passing
 │       ├── SeasonalEngineTests.swift  ✅ 19 tests passing
 │       └── EvolutionEngineTests.swift ✅ 29 tests passing
+├── moodboard/             ← Visual references for UI implementation
+│   ├── dashboard/
+│   │   └── dashboard_preview.md   ← ASCII wireframe, aligned with spec
+│   └── wardrobe/
+│       └── digico_wardrobe_grid.png  ← Grid-only reference (see note below)
 └── ios_app/               (empty, future SwiftUI app — requires Mac)
 ```
+
+**Moodboard note — `digico_wardrobe_grid.png`:**
+Reference ONLY for: 2-column grid layout pattern and garment card presentation (clean image, name below, category below name).
+Explicitly NOT reference for: prices, brand names, social features (hearts/favorites), shopping UI, lifestyle photography, fashion-discovery language, or editorial styling. These elements contradict CORET's identity as a structural system (see Section 1).
 
 ---
 
@@ -570,7 +579,12 @@ Outfit is present but as evidence of structure, not as hero or attraction.
 ```
 Wardrobe Grid Screen
 ├── Filter Bar (Category, Archetype, Silhouette, BaseGroup)
-├── Item Grid (2-column masonry, image + subtle tag badges)
+├── Item Grid (2-column masonry)
+│   └── Item Card:
+│       ├── Clean item image (neutralized background, uniform crop)
+│       ├── Item name / description (below image)
+│       ├── Category label (below name, caption style)
+│       └── Subtle structural tag badges (silhouette, archetype)
 │   └── Tap Item → Item Detail Screen (push)
 │       ├── Item image (large)
 │       ├── All fields displayed
