@@ -93,33 +93,68 @@ Cards must feel embedded, not floating.
 
 ---
 
-## Dashboard Layout
+## Dashboard Layout (Locked)
+
+Primary purpose: Show system state. Not inspire visually.
+
+Design principle: CORET is a system that handles clothes,
+not a fashion app that has numbers.
 
 Structure (top to bottom):
-1. Cohesion Score Block
-2. Component Breakdown Grid
-3. Optimize Preview
-4. Evolution Phase Card
 
-### Cohesion Score Block
-- Large centered score (72pt, bold)
-- Status label below ("Coherent")
-- Thin horizontal progress bar, forest green fill, rounded edges
-- No circular progress rings. No gamification visuals.
+1. Greeting line
+   "Good Morning. Your structure is Coherent."
+   Small, calm, top of screen. Secondary text color.
 
-### Component Grid
-2x2 grid layout: Alignment, Density, Palette, Rotation
-Each card shows: Component Name, Score, Short descriptor
-Tap → Component Detail
-Cards must feel modular.
+2. Cohesion Score Block
+   Large centered score (72pt, bold)
+   Status label below ("Coherent")
+   Thin horizontal progress bar, forest green fill, rounded edges
+   No circular rings. No gamification visuals.
 
-### Optimize Preview
-Single large card:
-- Primary recommendation headline
-- Projected impact
-- Small structural explanation
-- CTA: "View Optimize"
-Minimal. Clean.
+3. Component Grid (2x2)
+
+   ┌─────────────────┬─────────────────┐
+   │   Alignment     │    Density      │
+   │      78         │      64         │
+   │   Aligned       │   Refining      │
+   ├─────────────────┼─────────────────┤
+   │   Palette       │    Rotation     │
+   │      71         │      85         │
+   │   Coherent      │    Strong       │
+   └─────────────────┴─────────────────┘
+
+   Each card: stone background, 18-22pt corner radius
+   Component name (caption), score (h2), descriptor (caption muted)
+   Tap → Component Detail screen
+   Cards feel modular and embedded, not floating
+
+4. Outfit Preview (Should Have)
+   Static. Small. Not animated. Not rotating.
+   One outfit generated from wardrobe items.
+   Outfit is proof of structure, not main attraction.
+   Stone card, soft shadow, subtle presentation.
+   Shows 2-4 items from wardrobe as clean flat lay.
+
+5. Optimize Preview Card
+   Full width stone card
+   Primary recommendation headline
+   Projected impact (e.g. "Density +9")
+   Short structural explanation
+   CTA: "View Optimize" → navigates to Optimize tab
+
+6. Evolution Phase Card
+   Current phase name (e.g. "Refining")
+   One-line narrative
+   Tap → Evolution tab
+
+---
+
+Rejected: Vertical column + rotating outfit center
+Reason: Wrong hierarchy. Fashion feel, not system feel.
+
+Outfit is present but as evidence of structure.
+Not as hero or attraction.
 
 ---
 
