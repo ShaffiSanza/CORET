@@ -2,72 +2,63 @@
 Last updated: 2026-02-26
 
 ## Completed This Session
-- [x] CLAUDE.md rewritten as complete self-contained system reference (16 sections)
-- [x] All docs/ files read and consolidated into CLAUDE.md
-- [x] SeasonalEngine fully specified (latitude detection, multiplicative modifiers, hemisphere rules, edge cases)
-- [x] StructuralEvolution fully specified (5 phases, volatility, regression, snapshots, narratives)
-- [x] Information Architecture fully specified (3-tab layout, all screens, navigation flows, data ownership)
-- [x] UI Specification fully specified (color tokens, typography scale, spacing system, animations, layout patterns)
+- [x] SeasonalEngine implemented (`Engines/SeasonalEngine.swift`)
+  - CohesionWeights and SeasonalRecommendation types
+  - Season detection from latitude + month (northern, southern, equatorial)
+  - Multiplicative weight modifiers, renormalized to sum=1.0
+  - Recalibration recommendation logic
+- [x] CohesionEngine updated with `compute(items:profile:weights:)` overload
+  - Original `compute(items:profile:)` delegates to weighted version with baseWeights
+- [x] EvolutionEngine implemented (`Engines/EvolutionEngine.swift`)
+  - EvolutionPhase, EvolutionTrend, EvolutionSnapshot types
+  - Phase determination (Foundation → Developing → Refining → Cohering → Evolving)
+  - Volatility = population stddev of last 5 totalScores
+  - Trend detection from last 3 snapshots
+  - Regression logic (vol > 15 or score drop > 15 from last 5 avg)
+  - Narrative generation per phase + regression narrative
+- [x] SeasonalEngineTests — 19 tests passing
+- [x] EvolutionEngineTests — 29 tests passing
+- [x] CLAUDE.md updated (sections 6, 7, 13, 14 marked complete)
 
 ## Build Status
 swift build: pass
-swift test: 48/48 passing (29 CohesionEngine + 19 OptimizeEngine)
+swift test: 96/96 passing (29 Cohesion + 19 Optimize + 19 Seasonal + 29 Evolution)
 
 ## In Progress (if interrupted)
-Nothing interrupted.
+Nothing interrupted. All engine work is complete.
+
+## Engine Status (All Complete)
+| Engine | File | Tests | Status |
+|--------|------|-------|--------|
+| CohesionEngine | `Engines/CohesionEngine.swift` | 29 | ✅ |
+| OptimizeEngine | `Engines/OptimizeEngine.swift` | 19 | ✅ |
+| SeasonalEngine | `Engines/SeasonalEngine.swift` | 19 | ✅ |
+| EvolutionEngine | `Engines/EvolutionEngine.swift` | 29 | ✅ |
 
 ## Next Session Prompt
 ```
-Build the SeasonalEngine and EvolutionEngine for CORET. Read CLAUDE.md — it contains the complete system specification. Everything you need is in that one file.
+All four CORET engines are complete (96/96 tests passing on Linux). Read CLAUDE.md for the full system reference.
 
-Build order:
+The engine layer is finished. Remaining work requires a Mac:
 
-1. Implement `core/Sources/COREEngine/Engines/SeasonalEngine.swift`
-   - See CLAUDE.md Section 6 for full spec
-   - New types: CohesionWeights, SeasonalRecommendation
-   - Season detection from latitude + month
-   - Weight modifiers: springSummer (A×0.95, D×0.85, P×1.15, R×1.15), autumnWinter (A×1.10, D×1.15, P×0.85, R×0.95)
-   - Renormalize after multiplication
-   - Equatorial edge case (|lat| < 15°): return nil / shouldRecalibrate = false
+1. SwiftUI iOS app in `ios_app/` consuming the COREEngine package
+   - See CLAUDE.md Section 8 (Information Architecture) for all screens
+   - See CLAUDE.md Section 9 (UI Specification) for design tokens
+   - 5-tab layout: Dashboard, Wardrobe, Optimize, Evolution, Profile
+   - SwiftData persistence wrapping engine types
 
-2. Add `compute(items:profile:weights:)` overload to CohesionEngine
-   - Same logic as existing compute, but uses provided CohesionWeights instead of hardcoded 0.35/0.30/0.20/0.15
-   - Existing compute() unchanged (backwards compatible)
-
-3. Create `core/Tests/COREEngineTests/SeasonalEngineTests.swift`
-   - Test latitude → season detection (northern, southern, equatorial)
-   - Test weight modifiers sum to 1.0 after normalization
-   - Test recalibration recommendation (same season = false, different = true)
-   - Test edge cases (equatorial, invalid month)
-   - Test compute with seasonal weights produces different scores than base weights
-
-4. Implement `core/Sources/COREEngine/Engines/EvolutionEngine.swift`
-   - See CLAUDE.md Section 7 for full spec
-   - New types: EvolutionPhase, EvolutionTrend, EvolutionSnapshot
-   - Phase determination from snapshot history (Foundation → Developing → Refining → Cohering → Evolving)
-   - Volatility = stddev of last 5 totalScores
-   - Trend = last 3 snapshots monotonic direction
-   - Regression if score drops >15 or volatility >15
-
-5. Create `core/Tests/COREEngineTests/EvolutionEngineTests.swift`
-   - Test each phase threshold
-   - Test phase progression
-   - Test regression triggers
-   - Test volatility calculation
-   - Test trend detection (improving, stable, declining)
-   - Test edge cases (0 snapshots, 1 snapshot, identical scores)
-
-6. Verify: cd core && swift build && swift test — all green
-7. Update CLAUDE.md build status and CONTINUE.md
-8. git add -A && git commit -m "feat: seasonal + evolution engines"
+If on Linux, possible next steps:
+- Write information_architecture.md doc (currently empty in docs/)
+- Expand archetype system (more archetypes, more conflict pairs)
+- Add more edge case tests
+- Plan SwiftData model layer (can design without building)
 ```
 
 ## Decisions Made
-- CLAUDE.md is now the single source of truth — a new session needs only this file
-- SeasonalEngine spec: multiplicative modifiers, renormalized to sum=1.0
-- Hemisphere threshold: |latitude| >= 15° for auto-detection, < 15° is equatorial
-- EvolutionEngine spec: 5 phases with minimum snapshot counts, score thresholds, and volatility caps
-- Volatility = stddev of last 5 snapshots (not all snapshots)
-- Regression threshold: >15 score drop or >15 volatility
-- UI spec uses warm tones throughout — no pure black, no pure white
-- Information architecture: 3-tab bar (Wardrobe, Optimize, Profile)
+- CohesionWeights and SeasonalRecommendation types live in SeasonalEngine.swift (not Models/)
+- EvolutionPhase, EvolutionTrend, EvolutionSnapshot types live in EvolutionEngine.swift (not Models/)
+- CohesionEngine's original compute() now delegates to weighted overload with SeasonalEngine.baseWeights
+- Volatility uses population standard deviation (÷N, not ÷(N-1))
+- Trend detection uses last 3 snapshots (or last 2 if only 2 available)
+- Phase evaluation checks from highest phase down (evolving → cohering → refining → developing → foundation)
+- Regression regresses exactly 1 phase, never below foundation

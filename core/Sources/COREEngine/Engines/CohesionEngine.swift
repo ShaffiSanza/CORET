@@ -5,12 +5,16 @@ public enum CohesionEngine: Sendable {
     // MARK: - Public API
 
     public static func compute(items: [WardrobeItem], profile: UserProfile) -> CohesionSnapshot {
+        compute(items: items, profile: profile, weights: SeasonalEngine.baseWeights)
+    }
+
+    public static func compute(items: [WardrobeItem], profile: UserProfile, weights: CohesionWeights) -> CohesionSnapshot {
         let alignment = alignmentScore(items: items, profile: profile)
         let density = densityScore(items: items, profile: profile)
         let palette = paletteScore(items: items)
         let rotation = rotationScore(items: items)
 
-        let total = alignment * 0.35 + density * 0.30 + palette * 0.20 + rotation * 0.15
+        let total = alignment * weights.alignment + density * weights.density + palette * weights.palette + rotation * weights.rotation
         let status = statusLevel(from: total)
 
         return CohesionSnapshot(

@@ -50,13 +50,17 @@ CORET/
 │   │   ├── COREEngine.swift           (placeholder)
 │   │   ├── Engines/
 │   │   │   ├── CohesionEngine.swift   ✅ Complete (29 tests)
-│   │   │   └── OptimizeEngine.swift   ✅ Complete (19 tests)
+│   │   │   ├── OptimizeEngine.swift   ✅ Complete (19 tests)
+│   │   │   ├── SeasonalEngine.swift   ✅ Complete (19 tests)
+│   │   │   └── EvolutionEngine.swift  ✅ Complete (29 tests)
 │   │   └── Models/
 │   │       └── WardrobeItem.swift     ✅ Complete (all types)
 │   └── Tests/COREEngineTests/
 │       ├── COREEngineTests.swift      (scaffold — can be removed)
 │       ├── CohesionEngineTests.swift  ✅ 29 tests passing
-│       └── OptimizeEngineTests.swift  ✅ 19 tests passing
+│       ├── OptimizeEngineTests.swift  ✅ 19 tests passing
+│       ├── SeasonalEngineTests.swift  ✅ 19 tests passing
+│       └── EvolutionEngineTests.swift ✅ 29 tests passing
 └── ios_app/               (empty, future SwiftUI app — requires Mac)
 ```
 
@@ -296,19 +300,21 @@ Friction is labeled "Structural Friction" in UI. Only surfaced when significant.
 
 ---
 
-## 6. Seasonal Engine — NOT YET IMPLEMENTED
+## 6. Seasonal Engine — IMPLEMENTED
 
-File to create: `core/Sources/COREEngine/Engines/SeasonalEngine.swift`
+File: `core/Sources/COREEngine/Engines/SeasonalEngine.swift`
 Pattern: `public enum SeasonalEngine: Sendable`
+Tests: 19 passing in `SeasonalEngineTests.swift`
 
 ### Purpose
 
 Adjusts cohesion formula weights based on seasonal context. Detects season from location. Suggests recalibration (never forced).
 
-### New Types Needed
+### Types (defined in SeasonalEngine.swift)
 
 ```swift
-public struct CohesionWeights: Codable, Sendable {
+public struct CohesionWeights: Identifiable, Codable, Sendable {
+    public let id: UUID
     public let alignment: Double   // Base: 0.35
     public let density: Double     // Base: 0.30
     public let palette: Double     // Base: 0.20
@@ -317,7 +323,7 @@ public struct CohesionWeights: Codable, Sendable {
 
 public struct SeasonalRecommendation: Identifiable, Codable, Sendable {
     public let id: UUID
-    public let detectedSeason: SeasonMode
+    public let detectedSeason: SeasonMode?
     public let currentSeason: SeasonMode
     public let shouldRecalibrate: Bool
     public let adjustedWeights: CohesionWeights
@@ -379,39 +385,33 @@ public static let baseWeights: CohesionWeights
 - Invalid month (< 1 or > 12): treat as equatorial (no detection)
 
 ### Integration with CohesionEngine
-The SeasonalEngine does NOT modify CohesionEngine. Instead, it provides adjusted weights that a future `computeWithWeights` function can use:
+CohesionEngine has a weighted overload that SeasonalEngine uses:
 ```swift
-// Future addition to CohesionEngine:
 public static func compute(items: [WardrobeItem], profile: UserProfile, weights: CohesionWeights) -> CohesionSnapshot
 ```
-The existing `compute` function continues to use base weights (0.35/0.30/0.20/0.15).
+The existing `compute(items:profile:)` delegates to this with `SeasonalEngine.baseWeights`.
 
 ---
 
-## 7. Structural Evolution — NOT YET IMPLEMENTED
+## 7. Structural Evolution — IMPLEMENTED
 
-File to create: `core/Sources/COREEngine/Engines/EvolutionEngine.swift`
+File: `core/Sources/COREEngine/Engines/EvolutionEngine.swift`
 Pattern: `public enum EvolutionEngine: Sendable`
+Tests: 29 passing in `EvolutionEngineTests.swift`
 
 ### Purpose
 
 Tracks wardrobe structural journey over time using narrative phases. Not a score graph — a progression story.
 
-### New Types Needed
+### Types (defined in EvolutionEngine.swift)
 
 ```swift
 public enum EvolutionPhase: String, Codable, CaseIterable, Sendable {
-    case foundation
-    case developing
-    case refining
-    case cohering
-    case evolving
+    case foundation, developing, refining, cohering, evolving
 }
 
 public enum EvolutionTrend: String, Codable, CaseIterable, Sendable {
-    case improving
-    case stable
-    case declining
+    case improving, stable, declining
 }
 
 public struct EvolutionSnapshot: Identifiable, Codable, Sendable {
@@ -757,8 +757,8 @@ No paywall in first release. Pro activates in V1.5.
 ### Phase 1 — Deterministic Core (Current)
 - Rule-based Cohesion engine ✅
 - Dynamic Optimize engine ✅
-- Seasonal recalibration (next)
-- Structural evolution (next)
+- Seasonal recalibration ✅
+- Structural evolution ✅
 - Local-first architecture
 
 ### Phase 2 — Structural Intelligence Layer
@@ -801,7 +801,7 @@ Commerce must never compromise structural integrity.
 Build: `cd core && swift build`
 Test: `cd core && swift test`
 
-**48/48 tests passing.**
+**96/96 tests passing.**
 
 ### What Is Done
 
@@ -810,14 +810,14 @@ Test: `cd core && swift test`
 | Data models (all types) | `Models/WardrobeItem.swift` | — | ✅ Complete |
 | CohesionEngine | `Engines/CohesionEngine.swift` | 29 | ✅ Complete |
 | OptimizeEngine + result types | `Engines/OptimizeEngine.swift` | 19 | ✅ Complete |
+| SeasonalEngine + types | `Engines/SeasonalEngine.swift` | 19 | ✅ Complete |
+| EvolutionEngine + types | `Engines/EvolutionEngine.swift` | 29 | ✅ Complete |
 | Package.swift | `core/Package.swift` | — | ✅ Complete |
 
 ### What Is Not Done
 
 | Component | File | Status |
 |-----------|------|--------|
-| SeasonalEngine | `Engines/SeasonalEngine.swift` | Not started |
-| EvolutionEngine | `Engines/EvolutionEngine.swift` | Not started |
 | SwiftData persistence | TBD | Blocked (needs SwiftData — may need Mac) |
 | SwiftUI iOS app | `ios_app/` | Blocked (requires Mac) |
 
@@ -828,26 +828,13 @@ Test: `cd core && swift test`
 ### Current Blocker
 SwiftUI requires Mac to build and test. Development machine is Arch Linux — cannot run SwiftUI or Xcode.
 
-### What to Build Before SwiftUI (on Linux)
+### All Engine Work Complete (on Linux)
 
-1. **SeasonalEngine** — `Engines/SeasonalEngine.swift`
-   - Season detection from latitude + month
-   - Weight modifiers (multiplicative, renormalized)
-   - Recalibration recommendation
-   - Add `compute(items:profile:weights:)` overload to CohesionEngine
-   - Full test suite
-
-2. **EvolutionEngine** — `Engines/EvolutionEngine.swift`
-   - Phase determination from snapshot history
-   - Volatility calculation (stddev of last 5)
-   - Trend detection (last 3)
-   - Regression logic
-   - Narrative generation
-   - Full test suite
-
-3. **New model types** — add to `Models/` or engine files:
-   - CohesionWeights, SeasonalRecommendation
-   - EvolutionPhase, EvolutionTrend, EvolutionSnapshot
+All four engines are implemented and tested:
+1. ✅ **CohesionEngine** — 29 tests
+2. ✅ **OptimizeEngine** — 19 tests
+3. ✅ **SeasonalEngine** — 19 tests
+4. ✅ **EvolutionEngine** — 29 tests
 
 ### When Mac Is Available
 - Import COREEngine as local Swift Package
