@@ -505,13 +505,22 @@ public static func trend(snapshots: [CohesionSnapshot]) -> EvolutionTrend
 **Dashboard Tab (Home)**
 ```
 Dashboard Screen
-├── Cohesion Score Display (status label primary, numeric secondary)
-├── Component Breakdown (tap to expand)
-│   ├── Alignment bar + score
-│   ├── Density bar + score
-│   ├── Palette bar + score
-│   └── Rotation bar + score
-└── Quick Status (season mode, evolution phase)
+├── Cohesion Score Block
+│   ├── Large centered score (72pt, bold) — numeric is primary
+│   ├── Status label below ("Coherent")
+│   └── Thin horizontal progress bar (forest green fill, rounded)
+│       No circular progress rings. No gamification visuals.
+├── Component Breakdown (2×2 grid)
+│   ├── Alignment card (name + score + descriptor, tap → detail)
+│   ├── Density card
+│   ├── Palette card
+│   └── Rotation card
+├── Optimize Preview (single large card)
+│   ├── Primary recommendation headline
+│   ├── Projected impact
+│   ├── Short structural explanation
+│   └── CTA: "View Optimize"
+└── Evolution Phase Card
 ```
 
 **Wardrobe Tab**
@@ -607,73 +616,90 @@ Profile Screen
 |-------|-----|-------|
 | background | #2F2A26 | App background, warm dark taupe |
 | cardBackground | #E7E2DA | Card surfaces, light stone |
-| accent | #2F4A3C | Buttons, highlights, deep muted forest green |
+| accent | #2F4A3C | Buttons, active tab, highlights, positive signals |
 | accentPressed | #253D30 | Button press state |
-| textPrimary | #F5F0EB | Primary text on dark backgrounds |
-| textSecondary | #A09890 | Secondary text, captions |
-| textOnCard | #2C2826 | Text on card surfaces |
-| textOnAccent | #F5F0EB | Text on accent-colored elements |
-| destructive | #8B4F4F | Delete actions, muted red |
+| textPrimary | #1F1C1A | Primary text on light surfaces |
+| textSecondary | #6B625C | Secondary text |
+| textMuted | #9A918A | Muted metadata, captions |
+| textOnDark | #EAE5DE | Text on dark backgrounds |
+| destructive | #7A3E3E | Structural friction alerts, destructive actions |
 | divider | #4A4440 | Subtle dividers on dark backgrounds |
 | cardDivider | #D0C8C0 | Dividers on card surfaces |
 
 ### Typography
 
-All fonts: SF Pro (system font on iOS).
+All fonts: SF Pro (system font on iOS). Clean geometric. No decorative fonts.
+Line spacing: 1.25–1.35. No ALL CAPS except logo. Typography must feel restrained.
 
 | Style | Font | Size | Weight | Spacing | Usage |
 |-------|------|------|--------|---------|-------|
 | logo | SF Pro Display | 20pt | Semibold (600) | 2.5pt | CORET header |
-| scoreDisplay | SF Pro Display | 48pt | Bold (700) | 0 | Numeric score |
+| scoreDisplay | SF Pro Display | 72pt | Bold (700) | 0 | Numeric score (dashboard) |
 | statusLabel | SF Pro Display | 22pt | Semibold (600) | 0.5pt | "Coherent", "Aligned" |
-| h1 | SF Pro Display | 28pt | Semibold (600) | 0 | Screen titles |
-| h2 | SF Pro Display | 22pt | Semibold (600) | 0 | Section headers |
+| h1 | SF Pro Display | 28–32pt | Semibold (600) | 0 | Screen titles |
+| h2 | SF Pro Display | 22–24pt | Medium (500) | 0 | Section headers |
 | h3 | SF Pro Text | 17pt | Semibold (600) | 0 | Card titles |
-| body | SF Pro Text | 15pt | Regular (400) | 0 | Body text |
-| caption | SF Pro Text | 13pt | Regular (400) | 0 | Secondary info |
+| body | SF Pro Text | 16pt | Regular (400) | 0 | Body text |
+| caption | SF Pro Text | 13–14pt | Regular (400) | 0 | Secondary info |
 | tag | SF Pro Text | 12pt | Medium (500) | 0.3pt | Category tags, labels |
 
-### Spacing Scale (4pt base)
+### Spacing Scale (8pt base)
 
-| Token | Value |
-|-------|-------|
-| xs | 4pt |
-| sm | 8pt |
-| md | 16pt |
-| lg | 24pt |
-| xl | 32pt |
-| xxl | 48pt |
+| Token | Value | Usage |
+|-------|-------|-------|
+| xs | 4pt | Tight inner spacing |
+| sm | 8pt | Between small elements |
+| md | 16pt | Card internal padding |
+| lg | 24pt | Vertical section spacing |
+| xl | 32pt | Large separation |
+| xxl | 48pt | Screen-level spacing |
+
+Screen margin: 20pt. Card internal padding: 16–20pt.
 
 ### Corner Radius
 
 | Element | Radius |
 |---------|--------|
-| Card | 16pt |
+| Card | 18–22pt |
 | Button | 12pt |
 | Tag/chip | 8pt |
 | Item image | 12pt |
-| Score ring | full circle |
+
+Shadow: very subtle (opacity < 8%). Cards feel embedded, not floating. No circular progress rings.
 
 ### Animations
+
+Duration: 200–300ms. Curve: ease-in-out. Never bouncy. Never springy. Never exaggerated.
 
 | Element | Duration | Curve | Properties |
 |---------|----------|-------|------------|
 | Card appear | 200ms | ease-in-out | opacity 0→1, scale 0.95→1.0 |
-| Score update | 300ms | ease-in-out | numeric counter animation |
-| Score ring | 500ms | ease-out | stroke animation on first appear |
+| Score update | 300ms | ease-in-out | numeric count-up animation |
 | Sheet present | system | system | iOS default sheet |
 | Tab switch | none | — | Instant |
-| Button press | 100ms | ease-out | scale 1.0→0.97 |
+| Button press | 100ms | ease-out | scale 1.0→0.97, subtle opacity reduction |
 | Status change | 300ms | ease-in-out | crossfade text |
+| Transitions | 200ms | ease-in-out | fade + slight vertical movement (4–8pt) |
+
+Haptics: soft, medium impact. No confetti. No achievement badges. No gamified rewards.
 
 ### Layout Patterns
 
-**Wardrobe Grid**: 2 columns, md (16pt) gap, md padding.
-**Card**: xl (32pt) padding top/bottom, lg (24pt) padding sides.
-**Status bar**: fixed top, xxl (48pt) height, centered content.
+**Wardrobe Grid**: 2-column masonry, md (16pt) gap, screen margin (20pt).
+**Card**: 16–20pt internal padding. Embedded feel, not floating.
+**Score display**: large centered score (72pt), status label below, horizontal progress bar.
+**Component grid**: 2×2 grid on dashboard. Each card: name + score + descriptor.
 **FAB (add button)**: 56pt diameter, accent color, bottom-right, lg (24pt) inset.
-**Score display**: status label above, numeric below, centered.
-**Recommendation card**: full-width, card background, impact numbers right-aligned.
+**Recommendation card**: full-width, card background, impact numbers right-aligned. Primary uses accent border.
+**Touch targets**: minimum 44×44pt. Accessibility contrast ratio > 4.5:1.
+
+### Design Rules
+
+- Satisfaction comes from clarity, not stimulation.
+- If any screen feels loud, busy, playful, or overstimulating — it is wrong.
+- Numbers animate upward smoothly (count-up effect).
+- No gradients. No heavy shadows. Flat with subtle depth via color.
+- Image treatment: background neutralization, soft shadow, uniform padding, consistent crop ratio.
 
 ---
 
