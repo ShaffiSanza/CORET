@@ -40,7 +40,8 @@ CORET/
 │   ├── cohesion_engine_v1.md
 │   ├── data_model_v1.md
 │   ├── information_architecture.md
-│   ├── monetization_strategy.md
+│   ├── launch_scope_v1.md             ← V1 scope freeze
+│   ├── monetization_strategy.md       ← Tools-first monetization
 │   ├── optimize_engine_v1.md
 │   └── product_spec.md
 ├── core/                  ← Swift package: COREEngine
@@ -489,20 +490,33 @@ public static func trend(snapshots: [CohesionSnapshot]) -> EvolutionTrend
 
 ## 8. Information Architecture
 
-### Tab Bar (3 tabs)
+### Tab Bar (5 tabs)
 
 | Tab | Icon | Label | Primary Content |
 |-----|------|-------|-----------------|
-| 1 | grid.2x2 | Wardrobe | Item grid + cohesion status |
-| 2 | arrow.up.right | Optimize | Recommendations + simulation |
-| 3 | person.crop.circle | Profile | Archetype, evolution, settings |
+| 1 | chart.bar | Dashboard | Cohesion score + component breakdown |
+| 2 | grid.2x2 | Wardrobe | Item grid + add/edit/delete |
+| 3 | arrow.up.right | Optimize | Recommendations + simulation |
+| 4 | leaf | Evolution | Phase narrative + trend |
+| 5 | person.crop.circle | Profile | Archetype, season, settings |
 
 ### Screen Map
 
-**Wardrobe Tab (Home)**
+**Dashboard Tab (Home)**
+```
+Dashboard Screen
+├── Cohesion Score Display (status label primary, numeric secondary)
+├── Component Breakdown (tap to expand)
+│   ├── Alignment bar + score
+│   ├── Density bar + score
+│   ├── Palette bar + score
+│   └── Rotation bar + score
+└── Quick Status (season mode, evolution phase)
+```
+
+**Wardrobe Tab**
 ```
 Wardrobe Grid Screen
-├── Cohesion Status Bar (tap → Cohesion Breakdown Sheet)
 ├── Category Filter Bar (All / Tops / Bottoms / Shoes / Outerwear)
 ├── Item Grid (2-column, image + category tag)
 │   └── Tap Item → Item Detail Screen (push)
@@ -522,7 +536,6 @@ Wardrobe Grid Screen
 **Optimize Tab**
 ```
 Optimize Screen
-├── Current Score Summary (status label + numeric)
 ├── Weakest Area Indicator
 ├── Primary Recommendation Card
 │   ├── Candidate item description (category, silhouette, baseGroup, archetype)
@@ -536,6 +549,17 @@ Optimize Screen
 │   ├── Impact display
 │   └── "Reconsider" label
 └── Tap any recommendation → Candidate Detail Screen (push)
+```
+
+**Evolution Tab**
+```
+Evolution Screen
+├── Current Phase Display (large label + narrative)
+├── Trend Indicator (improving / stable / declining)
+├── Volatility Indicator
+└── Phase History (push → Evolution Detail Screen)
+    ├── Full phase progression timeline
+    └── Snapshot history
 ```
 
 **Profile Tab**
@@ -552,14 +576,6 @@ Profile Screen
 │   ├── Current season mode
 │   ├── Recalibration suggestion (if detected)
 │   └── Tap → Season Recalibration Sheet
-├── Structural Evolution Section
-│   ├── Current phase label
-│   ├── Trend indicator
-│   ├── Brief narrative
-│   └── Tap → Evolution Detail Screen (push)
-│       ├── Full phase history
-│       ├── Volatility indicator
-│       └── Phase progression visualization
 └── Settings Section
     ├── About CORET
     └── Pro upgrade (if free tier)
@@ -569,14 +585,16 @@ Profile Screen
 
 | Screen | Owns | Reads |
 |--------|------|-------|
-| Wardrobe | [WardrobeItem] | CohesionSnapshot |
+| Dashboard | — | CohesionSnapshot |
+| Wardrobe | [WardrobeItem] | — |
 | Optimize | — | [WardrobeItem], UserProfile, OptimizeResult |
-| Profile | UserProfile | [CohesionSnapshot], EvolutionSnapshot |
+| Evolution | — | [CohesionSnapshot], EvolutionSnapshot |
+| Profile | UserProfile | SeasonalRecommendation |
 
 ### Navigation Patterns
 - **Tab switch**: instant, no animation
 - **Push**: item detail, candidate detail, evolution detail
-- **Sheet (modal)**: add item, edit item, cohesion breakdown, archetype edit, season recalibration
+- **Sheet (modal)**: add item, edit item, archetype edit, season recalibration
 - **Alert**: delete confirmation
 
 ---
@@ -587,10 +605,10 @@ Profile Screen
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| background | #3D3632 | App background, warm dark taupe |
-| cardBackground | #E8E0D8 | Card surfaces, light stone |
-| accent | #4A6741 | Buttons, highlights, deep muted forest green |
-| accentPressed | #3D5636 | Button press state |
+| background | #2F2A26 | App background, warm dark taupe |
+| cardBackground | #E7E2DA | Card surfaces, light stone |
+| accent | #2F4A3C | Buttons, highlights, deep muted forest green |
+| accentPressed | #253D30 | Button press state |
 | textPrimary | #F5F0EB | Primary text on dark backgrounds |
 | textSecondary | #A09890 | Secondary text, captions |
 | textOnCard | #2C2826 | Text on card surfaces |
@@ -694,31 +712,43 @@ Instead: "Structural opportunity", "Room to strengthen", "Recalibrate"
 
 ---
 
-## 11. Monetization (Freemium)
+## 11. Monetization
 
-### Free Tier
+Primary direction: **Tools (Roadmap + Planning)**. Not depth. Not ML.
+
+Free gives structural understanding. Pro gives structural control.
+Do NOT lock core measurement behind a paywall. Do NOT create artificial friction.
+
+### Free (V1)
+- Full CohesionEngine (all components, full breakdown)
+- Basic Optimize (1 primary candidate)
+- SeasonalEngine (full)
+- StructuralEvolution (phase + narrative)
 - Full wardrobe management
-- Basic cohesion score (status label + numeric)
-- 1 active optimize target (primary recommendation only)
-- Limited score breakdown (total only, no component detail)
 
-### Pro Tier (target $9–12/month)
-- Full component breakdown on tap
-- Full simulation (all recommendations: primary + secondary)
-- Multiple roadmap targets
-- Structural friction detection
-- Advanced analytics (component trends)
-- Drift tracking
-- Structural evolution detail (full narrative, phase history)
-- Seasonal recalibration
+Free version is complete and worthy.
+
+### Pro (V1.5+ — not in V1 launch)
+- **Roadmap Mode**: multi-step optimize, 2–3 steps ahead, prioritized action sequence
+- **Drift Detection**: early instability alerts, structural friction tracking
+- **Snapshot Compare**: month-to-month analysis, component trend visibility
+- **Advanced Density Tiering**: high-quality outfit scoring, structural depth insight
+
+Target pricing: $9–12/month.
+
+### V1 Monetization Boundary
+No paywall in first release. Pro activates in V1.5.
 
 ### Explicitly NOT in V1
 - Machine learning
 - Auto color detection
-- Retail integrations
+- Retail integrations / shopping / affiliate
 - Social features
 - Budget tools
 - Cross-platform support
+- Gamification, badges, streaks
+- Push notifications
+- Multi-profile support
 
 ---
 
