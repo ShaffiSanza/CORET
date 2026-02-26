@@ -29,11 +29,13 @@ CORET/
 │   ├── Sources/COREEngine/
 │   │   ├── COREEngine.swift           (placeholder)
 │   │   ├── Engines/
-│   │   │   └── CohesionEngine.swift   (scoring engine — complete)
+│   │   │   ├── CohesionEngine.swift   (scoring engine — complete)
+│   │   │   └── OptimizeEngine.swift   (optimize engine + result types — complete)
 │   │   └── Models/
 │   │       └── WardrobeItem.swift     (all data models + enums)
 │   └── Tests/COREEngineTests/
-│       └── CohesionEngineTests.swift  (29 tests — all passing)
+│       ├── CohesionEngineTests.swift  (29 tests — all passing)
+│       └── OptimizeEngineTests.swift  (19 tests — all passing)
 └── ios_app/               (empty, future SwiftUI app)
 ```
 
@@ -62,17 +64,19 @@ Test command: `cd core && swift test`
   - Conflict map: structuredMinimal ↔ relaxedStreet
   - All edge cases handled (empty wardrobe, missing categories, monochrome bypass)
 - **CohesionEngine tests**: 29 tests in `core/Tests/COREEngineTests/CohesionEngineTests.swift` — all passing
+- **OptimizeEngine** fully implemented in `core/Sources/COREEngine/Engines/OptimizeEngine.swift`
+  - Result types: WeaknessArea, OptimizeRecommendation, StructuralFriction, OptimizeResult
+  - Weakest component identification
+  - Dynamic candidate generation per weakness type (alignment, density, palette, rotation)
+  - Hypothetical item simulation via CohesionEngine recomputation
+  - Candidate ranking by component improvement (1 primary + up to 2 secondary)
+  - Structural friction detection (removal simulation, >8 total improvement threshold)
+- **OptimizeEngine tests**: 19 tests in `core/Tests/COREEngineTests/OptimizeEngineTests.swift` — all passing
 
 ### What Is Next (Build Order)
 1. ~~**CohesionEngine**~~ ✅ Complete
-2. **OptimizeEngine** — `Sources/COREEngine/Engines/OptimizeEngine.swift`
-   - Weakest component identification
-   - Structural candidate generation
-   - Hypothetical item simulation
-   - Candidate ranking and recommendation
-   - Removal simulation (structural friction detection)
-3. **Unit tests** for OptimizeEngine
-4. **SwiftUI iOS app** in `ios_app/` consuming the COREEngine package
+2. ~~**OptimizeEngine**~~ ✅ Complete
+3. **SwiftUI iOS app** in `ios_app/` consuming the COREEngine package
 
 ---
 
