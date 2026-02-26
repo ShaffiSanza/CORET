@@ -71,6 +71,7 @@ CORET/
 │   ├── dashboard/
 │   │   └── dashboard_preview.md   ← ASCII wireframe, aligned with spec
 │   └── wardrobe/
+│       ├── wardrobe_wireframe.md     ← CORET wardrobe grid wireframe
 │       └── digico_wardrobe_grid.png  ← Grid-only reference (see note below)
 └── ios_app/               (empty, future SwiftUI app — requires Mac)
 ```
