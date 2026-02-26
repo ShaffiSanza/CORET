@@ -39,11 +39,14 @@ CORET/
 │   ├── brand_foundation.md
 │   ├── cohesion_engine_v1.md
 │   ├── data_model_v1.md
-│   ├── information_architecture.md
-│   ├── launch_scope_v1.md             ← V1 scope freeze
-│   ├── monetization_strategy.md       ← Tools-first monetization
+│   ├── information_architecture_v1.md  ← 5-tab IA, all screens
+│   ├── launch_scope_v1.md              ← V1 scope freeze
+│   ├── monetization_strategy.md        ← Tools-first monetization
 │   ├── optimize_engine_v1.md
-│   └── product_spec.md
+│   ├── product_spec.md                 ← SUPERSEDED (see sections 8, 9, 11)
+│   ├── seasonal_engine_v1.md           ← SUPERSEDED (see section 6)
+│   ├── structural_evolution_v1.md      ← SUPERSEDED (see section 7)
+│   └── ui_specification_v1.md          ← UI tokens, layout, design rules
 ├── core/                  ← Swift package: COREEngine
 │   ├── Package.swift      (swift-tools-version: 6.2)
 │   ├── Sources/COREEngine/
@@ -511,35 +514,49 @@ Dashboard Screen
 │   └── Thin horizontal progress bar (forest green fill, rounded)
 │       No circular progress rings. No gamification visuals.
 ├── Component Breakdown (2×2 grid)
-│   ├── Alignment card (name + score + descriptor, tap → detail)
+│   ├── Alignment card (name + score + descriptor)
 │   ├── Density card
 │   ├── Palette card
 │   └── Rotation card
+│   └── Tap any card → Component Detail Screen (push)
+│       ├── Component score
+│       ├── Explanation of what affects it
+│       ├── Top structural contributors
+│       ├── Top structural weaknesses
+│       └── Navigate to relevant Optimize suggestions
+│       (Informational only — no editing)
 ├── Optimize Preview (single large card)
 │   ├── Primary recommendation headline
 │   ├── Projected impact
 │   ├── Short structural explanation
 │   └── CTA: "View Optimize"
-└── Evolution Phase Card
+├── Evolution Phase Card
+│   └── Tap → Evolution tab
+└── Pull to refresh (recompute engine snapshot)
 ```
 
 **Wardrobe Tab**
 ```
 Wardrobe Grid Screen
-├── Category Filter Bar (All / Tops / Bottoms / Shoes / Outerwear)
-├── Item Grid (2-column, image + category tag)
+├── Filter Bar (Category, Archetype, Silhouette, BaseGroup)
+├── Item Grid (2-column masonry, image + subtle tag badges)
 │   └── Tap Item → Item Detail Screen (push)
 │       ├── Item image (large)
 │       ├── All fields displayed
+│       ├── Structural contribution impact
+│       ├── Alignment match type
+│       ├── Usage count
 │       ├── Edit button → Edit Item Sheet
 │       └── Delete button (confirmation alert)
+│           └── Warning: "Removing this item will reduce Density by X."
 └── Add Item FAB → Add Item Sheet (modal)
     ├── Image picker
-    ├── Category selector
-    ├── Silhouette selector
-    ├── Color picker → auto-maps baseGroup + temperature
+    ├── Category selector (required)
+    ├── Silhouette selector (required)
+    ├── BaseGroup selector (required)
+    ├── Temperature selector
     ├── Archetype tag selector
-    └── Save button
+    └── Save (triggers engine recompute)
 ```
 
 **Optimize Tab**
@@ -550,7 +567,8 @@ Optimize Screen
 │   ├── Candidate item description (category, silhouette, baseGroup, archetype)
 │   ├── Component impact (e.g., "Density: 52 → 64, +12")
 │   ├── Total impact (e.g., "Total: 74 → 78, +4")
-│   └── "Add to strengthen" label
+│   ├── "Add to strengthen" label
+│   └── Actions: Mark as Acquired, Dismiss suggestion
 ├── Secondary Recommendations (up to 2, collapsed)
 │   └── Tap to expand → same detail as primary
 ├── Structural Friction Section (only if items flagged)
@@ -558,6 +576,8 @@ Optimize Screen
 │   ├── Impact display
 │   └── "Reconsider" label
 └── Tap any recommendation → Candidate Detail Screen (push)
+
+Optimize is simulation-based only. Does not auto-add items.
 ```
 
 **Evolution Tab**
@@ -602,9 +622,30 @@ Profile Screen
 
 ### Navigation Patterns
 - **Tab switch**: instant, no animation
-- **Push**: item detail, candidate detail, evolution detail
+- **Push**: item detail, component detail, candidate detail, evolution detail
 - **Sheet (modal)**: add item, edit item, archetype edit, season recalibration
 - **Alert**: delete confirmation
+- Screen hierarchy: Level 0 (tabs) and Level 1 (detail screens) only. No Level 2 in V1.
+
+### State Update Rules
+
+UI never modifies engine directly. UI triggers events. Engine recalculates deterministically.
+
+Full engine recompute triggered by:
+- Item added, deleted, or edited (structural fields)
+- Archetype changed
+- Seasonal recalibration applied
+- NOT during UI rendering
+
+Dashboard always reflects latest snapshot.
+
+### Edge Cases
+
+| State | Behavior |
+|-------|----------|
+| Empty wardrobe | Dashboard: "System not yet structured." Optimize disabled. |
+| Single category dominance | Wardrobe screen: structural imbalance warning |
+| Low data history (< 3 snapshots) | Evolution: "Structural history forming." |
 
 ---
 

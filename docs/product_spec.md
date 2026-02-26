@@ -1,3 +1,6 @@
+> SUPERSEDED – This document describes the original specification.
+> The actual implementation differs. See CLAUDE.md sections 8, 9, and 11 for current truth.
+
 # CORET – Product Specification (V1)
 
 ## Product Type

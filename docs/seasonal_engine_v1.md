@@ -1,3 +1,6 @@
+> SUPERSEDED – This document describes the original specification.
+> The actual implementation differs. See CLAUDE.md section 6 for current truth.
+
 # CORET – SeasonalEngine V1
 
 ## Purpose

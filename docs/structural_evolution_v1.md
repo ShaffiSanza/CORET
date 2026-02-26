@@ -1,3 +1,6 @@
+> SUPERSEDED – This document describes the original specification.
+> The actual implementation differs. See CLAUDE.md section 7 for current truth.
+
 # CORET – StructuralEvolution V1
 
 ## Purpose
