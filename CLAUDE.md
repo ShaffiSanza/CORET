@@ -70,6 +70,8 @@ CORET/
 ├── moodboard/             ← Visual references for UI implementation
 │   ├── dashboard/
 │   │   └── dashboard_preview.md   ← ASCII wireframe, aligned with spec
+│   ├── optimize/
+│   │   └── optimize_wireframe.md  ← Optimize tab wireframe + card anatomy
 │   └── wardrobe/
 │       ├── wardrobe_wireframe.md     ← CORET wardrobe grid wireframe
 │       └── digico_wardrobe_grid.png  ← Grid-only reference (see note below)
@@ -617,10 +619,10 @@ Optimize Screen
 │   └── Actions: Mark as Acquired, Dismiss suggestion
 ├── Secondary Recommendations (up to 2, collapsed)
 │   └── Tap to expand → same detail as primary
-├── Structural Friction Section (only if items flagged)
-│   ├── Friction item card
-│   ├── Impact display
-│   └── "Reconsider" label
+├── Structural Friction Section (only if items flagged, improvement > 8)
+│   ├── Friction item card (with image)
+│   ├── Impact display (destructive color)
+│   └── "Review Impact" → push to Item Detail with friction context
 └── Tap any recommendation → Candidate Detail Screen (push)
 
 Optimize is simulation-based only. Does not auto-add items.
