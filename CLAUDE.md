@@ -9,19 +9,38 @@ Architectural Principle: CORET is engine-first, UI-second. UI is replaceable. En
 
 ---
 
-## Project Structure
+## 1. What CORET Is and Is Not
+
+**Is:**
+- A personal wardrobe operating system
+- A structural measurement and optimization engine
+- A deterministic, rule-based scoring system
+- A long-term identity tool that evolves with the user
+
+**Is not:**
+- A fashion inspiration app
+- A shopping platform or retail integration
+- A budgeting tool
+- A social network
+- An ML/AI-powered recommendation engine (V1)
+
+Philosophy: Control over validation. Structure over trend. Identity over status. Optimization over impulse. Measurement without judgment. Creative deviation allowed. CORET measures — the user decides.
+
+---
+
+## 2. Project Structure
 
 ```
 CORET/
-├── CLAUDE.md              ← You are here
+├── CLAUDE.md              ← You are here (complete system reference)
 ├── CONTINUE.md            ← Session state for resuming
 ├── README.md
 ├── docs/
 │   ├── brand_foundation.md
 │   ├── cohesion_engine_v1.md
 │   ├── data_model_v1.md
-│   ├── information_architecture.md   (empty, not yet written)
-│   ├── monetization_strategy.md      (empty, not yet written)
+│   ├── information_architecture.md
+│   ├── monetization_strategy.md
 │   ├── optimize_engine_v1.md
 │   └── product_spec.md
 ├── core/                  ← Swift package: COREEngine
@@ -29,90 +48,45 @@ CORET/
 │   ├── Sources/COREEngine/
 │   │   ├── COREEngine.swift           (placeholder)
 │   │   ├── Engines/
-│   │   │   ├── CohesionEngine.swift   (scoring engine — complete)
-│   │   │   └── OptimizeEngine.swift   (optimize engine + result types — complete)
+│   │   │   ├── CohesionEngine.swift   ✅ Complete (29 tests)
+│   │   │   └── OptimizeEngine.swift   ✅ Complete (19 tests)
 │   │   └── Models/
-│   │       └── WardrobeItem.swift     (all data models + enums)
+│   │       └── WardrobeItem.swift     ✅ Complete (all types)
 │   └── Tests/COREEngineTests/
-│       ├── CohesionEngineTests.swift  (29 tests — all passing)
-│       └── OptimizeEngineTests.swift  (19 tests — all passing)
-└── ios_app/               (empty, future SwiftUI app)
+│       ├── COREEngineTests.swift      (scaffold — can be removed)
+│       ├── CohesionEngineTests.swift  ✅ 29 tests passing
+│       └── OptimizeEngineTests.swift  ✅ 19 tests passing
+└── ios_app/               (empty, future SwiftUI app — requires Mac)
 ```
 
 ---
 
-## Build Status
+## 3. Data Model (V1)
 
-**Swift package compiles clean on Swift 6.2.**
-
-Build command: `cd core && swift build`
-Test command: `cd core && swift test`
-
-### What Is Done
-- All data model types implemented in `core/Sources/COREEngine/Models/WardrobeItem.swift`
-- All enums: ItemCategory, Silhouette, BaseGroup, Temperature, Archetype, SeasonMode, CohesionStatus
-- All structs: WardrobeItem, UserProfile, CohesionSnapshot
-- All types are public, Codable, Identifiable (structs), CaseIterable (enums), Sendable (Swift 6 safe)
-- Package.swift configured with library target and test target
-- **CohesionEngine** fully implemented in `core/Sources/COREEngine/Engines/CohesionEngine.swift`
-  - Archetype alignment scoring (weight 0.35)
-  - Combination density calculation (weight 0.30)
-  - Palette control scoring (weight 0.20)
-  - Rotation balance scoring (weight 0.15)
-  - Total cohesion computation with weighted formula
-  - Status level derivation from total score
-  - Conflict map: structuredMinimal ↔ relaxedStreet
-  - All edge cases handled (empty wardrobe, missing categories, monochrome bypass)
-- **CohesionEngine tests**: 29 tests in `core/Tests/COREEngineTests/CohesionEngineTests.swift` — all passing
-- **OptimizeEngine** fully implemented in `core/Sources/COREEngine/Engines/OptimizeEngine.swift`
-  - Result types: WeaknessArea, OptimizeRecommendation, StructuralFriction, OptimizeResult
-  - Weakest component identification
-  - Dynamic candidate generation per weakness type (alignment, density, palette, rotation)
-  - Hypothetical item simulation via CohesionEngine recomputation
-  - Candidate ranking by component improvement (1 primary + up to 2 secondary)
-  - Structural friction detection (removal simulation, >8 total improvement threshold)
-- **OptimizeEngine tests**: 19 tests in `core/Tests/COREEngineTests/OptimizeEngineTests.swift` — all passing
-
-### What Is Next (Build Order)
-1. ~~**CohesionEngine**~~ ✅ Complete
-2. ~~**OptimizeEngine**~~ ✅ Complete
-3. **SwiftUI iOS app** in `ios_app/` consuming the COREEngine package
-
----
-
-## Brand Foundation
-
-- Positioning: Personal wardrobe operating system measuring, optimizing, and evolving wardrobe structure
-- Philosophy: Control over validation. Structure over trend. Identity over status. Optimization over impulse. Measurement without judgment. Creative deviation allowed. CORET measures — the user decides.
-- Emotional core: Internal = Control. External = Cohesive presence.
-- Target audience: Professionals 25–40 who value structure, clarity, intentional identity. Secondary: style-conscious younger users.
-- Tone: Calm, architectural, precise, gender-neutral, non-dramatic, non-preachy.
-- Visual: Warm dark taupe background. Light stone cards. Deep muted forest green accent. Soft animations 200–300ms ease-in-out. Logo: CORET uppercase spaced typography.
-- Identity: Long-term system, not short-term style phase. Seasonal recalibration. Structural evolution tracked.
-
----
-
-## Data Model (V1)
-
-All types live in `core/Sources/COREEngine/Models/WardrobeItem.swift`.
+All types live in `core/Sources/COREEngine/Models/WardrobeItem.swift`. All public types are Codable, Sendable. Structs are Identifiable. Enums are CaseIterable.
 
 ### Enums
 
-| Enum | Cases | Notes |
-|------|-------|-------|
-| `ItemCategory` | top, bottom, shoes, outerwear | Clothing type |
-| `Silhouette` | structured, balanced, relaxed | Fit profile |
-| `BaseGroup` | neutral, deep, light, accent | Color grouping |
-| `Temperature` | warm, cool, neutral | Color temperature |
-| `Archetype` | structuredMinimal, relaxedStreet, smartCasual | Expandable |
-| `SeasonMode` | springSummer, autumnWinter | Seasonal context |
-| `CohesionStatus` | structuring, refining, coherent, aligned, architected | Score tier label |
+**ItemCategory**: `top`, `bottom`, `shoes`, `outerwear`
+
+**Silhouette**: `structured`, `balanced`, `relaxed`
+
+**BaseGroup**: `neutral`, `deep`, `light`, `accent`
+
+**Temperature**: `warm`, `cool`, `neutral`
+
+**Archetype**: `structuredMinimal`, `relaxedStreet`, `smartCasual` (expandable)
+
+**SeasonMode**: `springSummer`, `autumnWinter`
+
+**CohesionStatus**: `structuring`, `refining`, `coherent`, `aligned`, `architected`
 
 ### WardrobeItem
+
 | Field | Type | Notes |
 |-------|------|-------|
-| id | UUID | Immutable |
-| imagePath | String | User-uploaded image |
+| id | UUID | `let`, immutable |
+| imagePath | String | User-uploaded image path |
 | category | ItemCategory | Required |
 | silhouette | Silhouette | Required |
 | rawColor | String | User-selected color name |
@@ -122,34 +96,50 @@ All types live in `core/Sources/COREEngine/Models/WardrobeItem.swift`.
 | customColorOverride | Bool | Default false |
 | usageCount | Int | Default 0 |
 | lastWornDate | Date? | Nullable |
-| createdAt | Date | Immutable |
+| createdAt | Date | `let`, immutable |
 
 ### UserProfile
+
 | Field | Type |
 |-------|------|
-| id | UUID |
+| id | UUID (`let`) |
 | primaryArchetype | Archetype |
 | secondaryArchetype | Archetype |
 | seasonMode | SeasonMode |
-| createdAt | Date |
+| createdAt | Date (`let`) |
 
 ### CohesionSnapshot
+
 | Field | Type |
 |-------|------|
-| id | UUID |
+| id | UUID (`let`) |
 | alignmentScore | Double |
 | densityScore | Double |
 | paletteScore | Double |
 | rotationScore | Double |
 | totalScore | Double |
 | statusLevel | CohesionStatus |
-| createdAt | Date |
+| createdAt | Date (`let`) |
+
+### OptimizeEngine Result Types
+
+Defined in `OptimizeEngine.swift`:
+
+**WeaknessArea** (enum): `alignment`, `density`, `palette`, `rotation`
+
+**OptimizeRecommendation** (struct): `id`, `candidate: WardrobeItem`, `weaknessArea`, `componentBefore`, `componentAfter`, `componentImprovement`, `totalBefore`, `totalAfter`, `totalImprovement`
+
+**StructuralFriction** (struct): `id`, `item: WardrobeItem`, `totalBefore`, `totalAfter`, `totalImprovement`
+
+**OptimizeResult** (struct): `id`, `currentSnapshot`, `weakestArea`, `primary: OptimizeRecommendation?`, `secondary: [OptimizeRecommendation]`, `friction: [StructuralFriction]`
 
 ---
 
-## Cohesion Engine (V1)
+## 4. Cohesion Engine (V1) — IMPLEMENTED
 
-Score range: 0–100. Displayed as hybrid: Status label + numeric score.
+File: `core/Sources/COREEngine/Engines/CohesionEngine.swift`
+Pattern: `public enum CohesionEngine: Sendable` — caseless enum namespace, all static functions.
+Tests: 29 passing in `CohesionEngineTests.swift`
 
 ### Formula
 
@@ -157,109 +147,570 @@ Score range: 0–100. Displayed as hybrid: Status label + numeric score.
 Total = (Alignment × 0.35) + (Density × 0.30) + (Palette × 0.20) + (Rotation × 0.15)
 ```
 
-Each component returns 0–100.
+Each component returns 0–100. Total is 0–100.
 
-### 1. Archetype Alignment (35%)
+### Public API
 
-Each item has one archetype tag. User profile has primary + secondary.
+```swift
+public static func compute(items: [WardrobeItem], profile: UserProfile) -> CohesionSnapshot
+public static func alignmentScore(items: [WardrobeItem], profile: UserProfile) -> Double
+public static func densityScore(items: [WardrobeItem], profile: UserProfile) -> Double
+public static func paletteScore(items: [WardrobeItem]) -> Double
+public static func rotationScore(items: [WardrobeItem]) -> Double
+public static func statusLevel(from totalScore: Double) -> CohesionStatus
+```
+
+### 4a. Archetype Alignment (weight 0.35)
+
+Each item scored against user profile:
 
 | Match | Score |
 |-------|-------|
-| Primary match | 1.0 |
-| Secondary match | 0.7 |
-| Neutral | 0.5 |
+| Primary archetype | 1.0 |
+| Secondary archetype | 0.7 |
+| Neutral (no conflict, no match) | 0.5 |
 | Conflict | 0.2 |
 
-Alignment = Average(item_alignment_values) × 100
+**Conflict map** (expandable via `archetypesConflict` helper):
+- `structuredMinimal` ↔ `relaxedStreet` = conflict
+- All other pairs = neutral
 
-### 2. Combination Density (30%)
+Result: `average(itemScores) × 100`
+Edge case: empty items → 0.
 
-Valid outfit = 1 Top + 1 Bottom + 1 Shoes + optional Outerwear.
+### 4b. Combination Density (weight 0.30)
 
-Validation rules:
-- **Archetype**: All items must not conflict with primary direction
-- **Silhouette balance**: Structured=+1, Balanced=0, Relaxed=-1. Outfit sum must be in [-2, +2]. Outside [-3, +3] is invalid.
-- **Color rules**: Max 1 Accent. At least 1 Neutral. No strong Warm+Cool clash. Monochrome always valid.
+Generates all outfits: `tops × bottoms × shoes × (1 + outerwearCount)`.
+The `(1 + count)` accounts for no-outerwear outfit plus each outerwear piece.
 
-Density = (valid_outfits / total_possible_outfits) × 100
+Each outfit validated against three rules:
 
-### 3. Palette Control (20%)
+1. **Archetype**: No item conflicts with user's primary archetype.
+2. **Silhouette balance**: structured=+1, balanced=0, relaxed=-1. Sum must be in [-2, +2].
+3. **Color rules** (skipped if monochrome — all items share same baseGroup):
+   - Max 1 accent item
+   - At least 1 neutral item
+   - No warm+cool clash (both .warm and .cool present)
 
-Optimal structure: 60–80% Neutral/Deep, 0–20% Accent, limited temperature variance. Penalty for over-diversification.
+Result: `(validOutfits / totalPossible) × 100`
+Edge case: missing any required category (top/bottom/shoes) → 0.
 
-### 4. Rotation Balance (15%)
+### 4c. Palette Control (weight 0.20)
 
-Per-category usage deviation from mean. Lower deviation = higher score.
+Three sub-scores, equally weighted (÷3):
 
-Rotation = 100 - normalized_deviation
+1. **Neutral/Deep ratio** (target 60–80%):
+   - In [0.6, 0.8] → 100
+   - Below 0.6 → `(ratio / 0.6) × 100`
+   - Above 0.8 → `((1.0 - ratio) / 0.2) × 100`
 
-### Status Levels
+2. **Accent ratio** (target 0–20%):
+   - ≤ 0.2 → 100
+   - Above 0.2 → `max(0, (1.0 - ((ratio - 0.2) / 0.3)) × 100)`
 
-| Range | Status |
-|-------|--------|
-| 0–49 | Structuring |
-| 50–64 | Refining |
-| 65–79 | Coherent |
-| 80–89 | Aligned |
-| 90–100 | Architected |
+3. **Temperature coherence**:
+   - Only warm or only cool → 100
+   - Both present: `(1.0 - min(warmRatio, coolRatio) × 2) × 100` (among warm+cool items only, ignoring neutral temp)
+
+Edge case: 0 items → 0.
+
+### 4d. Rotation Balance (weight 0.15)
+
+Per category (top, bottom, shoes, outerwear):
+- Categories with 0–1 items → skip (perfect by definition)
+- Compute mean usageCount
+- Mean absolute deviation: `avg(|count - mean|)`
+- Normalize: `deviation / max(mean, 1)`
+
+Average normalized deviation across qualifying categories.
+Result: `(1.0 - clamp(avgDeviation, 0, 1)) × 100`
+Edge case: all usageCounts 0 → deviation 0 → score 100.
+
+### 4e. Status Levels
+
+| Score Range | Status |
+|-------------|--------|
+| 0–49 | .structuring |
+| 50–64 | .refining |
+| 65–79 | .coherent |
+| 80–89 | .aligned |
+| 90–100 | .architected |
 
 ### Design Principles
 - Deterministic. No ML.
-- Transparent breakdown.
+- Transparent breakdown. All component scores are public.
 - Not easily gamed.
 - Stable over time.
 
 ---
 
-## Optimize Engine (V1)
+## 5. Optimize Engine (V1) — IMPLEMENTED
 
-Identifies structural weaknesses and simulates improvements. Prioritizes forward strengthening over removal.
+File: `core/Sources/COREEngine/Engines/OptimizeEngine.swift`
+Pattern: `public enum OptimizeEngine: Sendable` — caseless enum, all static.
+Tests: 19 passing in `OptimizeEngineTests.swift`
+
+### Public API
+
+```swift
+public static func optimize(items: [WardrobeItem], profile: UserProfile) -> OptimizeResult
+public static func weakestArea(from snapshot: CohesionSnapshot) -> WeaknessArea
+public static func detectFriction(items: [WardrobeItem], profile: UserProfile) -> [StructuralFriction]
+```
 
 ### Core Logic
-1. Compute current CohesionSnapshot
-2. Identify weakest component (Density, Alignment, Palette, or Rotation)
-3. Generate structural candidates dynamically:
-   - Missing category roles
-   - Silhouette imbalance correction
-   - Palette correction (increase neutral/deep)
-   - Archetype reinforcement
-4. For each candidate: simulate adding hypothetical item, recompute cohesion, calculate component + total improvement
-5. Rank candidates by component improvement
-6. Return: 1 primary candidate + up to 2 secondary candidates
 
-### Impact Display
-- Primary: Improvement in weakest component (e.g., Density: 52 → 64, +12)
-- Secondary: Total structural impact (e.g., Total: 74 → 78, +4)
+1. Compute current CohesionSnapshot via CohesionEngine
+2. Identify weakest component (lowest score; ties broken by order: alignment, density, palette, rotation)
+3. Generate structural candidates dynamically based on weakness type
+4. For each candidate: simulate adding to wardrobe, recompute cohesion, measure improvement
+5. Rank by component improvement (descending)
+6. Return: 1 primary (best) + up to 2 secondary candidates (only those with positive improvement)
 
-### Removal Logic
-- Runs internally via simulation
-- Only surfaced if impact > +8 total
-- Labeled "Structural Friction"
+### Candidate Generation Strategy
+
+| Weakness | Candidates Generated | Key Dimension Varied |
+|----------|---------------------|---------------------|
+| Alignment | 4 categories × primary archetype + 4 × secondary archetype = 8 | Archetype |
+| Density | 4 categories × 3 silhouettes = 12 | Silhouette |
+| Palette | 4 categories × 2 baseGroups (neutral, deep) = 8 | BaseGroup |
+| Rotation | 4 categories × 1 = 4 | Category |
+
+All candidates use: balanced silhouette (unless density), neutral baseGroup (unless palette), dominant wardrobe temperature, primary archetype (unless alignment).
+
+### Structural Friction (Removal Simulation)
+
+For each existing item:
+- Simulate removal, recompute cohesion
+- If total improvement > 8 → flagged as StructuralFriction
+- Sorted by improvement descending
+
+Friction is labeled "Structural Friction" in UI. Only surfaced when significant.
 
 ### Recalculation Triggers
 - Item added or removed
 - Archetype changed
-- Structural adjustment made
 - Season recalibration applied
 - NOT during UI rendering
 
 ---
 
-## Product Spec (V1)
+## 6. Seasonal Engine — NOT YET IMPLEMENTED
 
-iOS-first native app. SwiftUI + SwiftData. Local-first.
+File to create: `core/Sources/COREEngine/Engines/SeasonalEngine.swift`
+Pattern: `public enum SeasonalEngine: Sendable`
 
-### V1 Core Areas
-1. **Wardrobe** — Image upload (manual), required fields (category, silhouette, color, archetype tag). Satisfying grid layout, calm UI, structural status at top.
-2. **Cohesion Score** — Hybrid: Status label primary, 0–100 secondary. Breakdown on tap.
-3. **Optimize View** — Future potential focus. Visual simulation, potential increase display, Priority 1 target (free), Priority 2 target (Pro). Add to strengthen (primary), Reconsider (secondary). No shopping in V1.
-4. **Archetype System** — Primary + secondary archetype. Single tag per item. Archetype change via profile. New profile creation supported. Wardrobe persists across profile changes.
-5. **Seasonal Recalibration** — Location-based season detection. Suggest recalibration (not forced). New seasonal roadmap. Temporary structural weight adjustment.
-6. **Structural Evolution** — Narrative-based evolution tracking (not traditional score graph). Phases displayed over time.
+### Purpose
 
-### Monetization (Freemium)
-- **Free**: Basic score, 1 active target, limited optimize preview
-- **Pro** (target $9–12/month): Full simulation, multiple roadmap targets, advanced analytics, drift tracking, structural evolution detail
+Adjusts cohesion formula weights based on seasonal context. Detects season from location. Suggests recalibration (never forced).
+
+### New Types Needed
+
+```swift
+public struct CohesionWeights: Codable, Sendable {
+    public let alignment: Double   // Base: 0.35
+    public let density: Double     // Base: 0.30
+    public let palette: Double     // Base: 0.20
+    public let rotation: Double    // Base: 0.15
+}
+
+public struct SeasonalRecommendation: Identifiable, Codable, Sendable {
+    public let id: UUID
+    public let detectedSeason: SeasonMode
+    public let currentSeason: SeasonMode
+    public let shouldRecalibrate: Bool
+    public let adjustedWeights: CohesionWeights
+}
+```
+
+### Season Detection from Latitude
+
+| Latitude | Hemisphere | Mar–Aug | Sep–Feb |
+|----------|-----------|---------|---------|
+| ≥ 15° | Northern | springSummer | autumnWinter |
+| ≤ -15° | Southern | autumnWinter | springSummer |
+| -15° < lat < 15° | Equatorial | No auto-detection. User chooses. |
+
+Month ranges use the current date. March = month 3, August = month 8.
+
+### Seasonal Weight Modifiers (Multiplicative)
+
+**springSummer** — lighter wardrobe, more color variety, more rotation:
+
+| Component | Modifier | Rationale |
+|-----------|----------|-----------|
+| Alignment | ×0.95 | Slightly less strict |
+| Density | ×0.85 | Fewer layers, fewer outerwear combos |
+| Palette | ×1.15 | Color variety increases |
+| Rotation | ×1.15 | More items in rotation |
+
+**autumnWinter** — layering focus, outerwear cohesion, tighter palette:
+
+| Component | Modifier | Rationale |
+|-----------|----------|-----------|
+| Alignment | ×1.10 | Layering archetype coherence matters |
+| Density | ×1.15 | More outerwear combos, layering key |
+| Palette | ×0.85 | Darker palette, less variety expected |
+| Rotation | ×0.95 | Fewer items rotated |
+
+After multiplication, **renormalize** so weights sum to 1.0:
+```
+normalizedWeight = modifiedWeight / sum(allModifiedWeights)
+```
+
+### Public API
+
+```swift
+public static func detectSeason(latitude: Double, month: Int) -> SeasonMode?
+// Returns nil for equatorial (|latitude| < 15)
+
+public static func recommend(latitude: Double, month: Int, currentSeason: SeasonMode) -> SeasonalRecommendation
+
+public static func adjustedWeights(for season: SeasonMode) -> CohesionWeights
+
+public static let baseWeights: CohesionWeights
+// alignment: 0.35, density: 0.30, palette: 0.20, rotation: 0.15
+```
+
+### Edge Cases
+- Equatorial latitude: `detectSeason` returns nil, `recommend` sets `shouldRecalibrate = false`
+- Same season detected as current: `shouldRecalibrate = false`
+- Invalid month (< 1 or > 12): treat as equatorial (no detection)
+
+### Integration with CohesionEngine
+The SeasonalEngine does NOT modify CohesionEngine. Instead, it provides adjusted weights that a future `computeWithWeights` function can use:
+```swift
+// Future addition to CohesionEngine:
+public static func compute(items: [WardrobeItem], profile: UserProfile, weights: CohesionWeights) -> CohesionSnapshot
+```
+The existing `compute` function continues to use base weights (0.35/0.30/0.20/0.15).
+
+---
+
+## 7. Structural Evolution — NOT YET IMPLEMENTED
+
+File to create: `core/Sources/COREEngine/Engines/EvolutionEngine.swift`
+Pattern: `public enum EvolutionEngine: Sendable`
+
+### Purpose
+
+Tracks wardrobe structural journey over time using narrative phases. Not a score graph — a progression story.
+
+### New Types Needed
+
+```swift
+public enum EvolutionPhase: String, Codable, CaseIterable, Sendable {
+    case foundation
+    case developing
+    case refining
+    case cohering
+    case evolving
+}
+
+public enum EvolutionTrend: String, Codable, CaseIterable, Sendable {
+    case improving
+    case stable
+    case declining
+}
+
+public struct EvolutionSnapshot: Identifiable, Codable, Sendable {
+    public let id: UUID
+    public let phase: EvolutionPhase
+    public let volatility: Double
+    public let trend: EvolutionTrend
+    public let narrative: String
+    public let snapshotCount: Int
+    public let createdAt: Date
+}
+```
+
+### Five Phases
+
+| Phase | Min Snapshots | Score Threshold | Max Volatility | Description |
+|-------|--------------|-----------------|----------------|-------------|
+| Foundation | 0 | — | — | Default starting phase |
+| Developing | 3 | latest ≥ 30 | — | Building structural awareness |
+| Refining | 7 | last 3 avg ≥ 50 | < 10 | Targeted improvement |
+| Cohering | 12 | last 5 avg ≥ 70 | < 8 | Strong consistency |
+| Evolving | 20 | last 5 avg ≥ 80 | < 6 | Mature, intentional adaptation |
+
+### Volatility
+
+Standard deviation of last 5 snapshots' `totalScore`.
+```
+volatility = stddev(last5.map(\.totalScore))
+```
+- Low: < 6
+- Medium: 6–10
+- High: > 10
+
+### Trend Detection
+
+Based on last 3 snapshots:
+- **Improving**: each ≥ previous (monotonically non-decreasing)
+- **Declining**: each ≤ previous (monotonically non-increasing)
+- **Stable**: neither
+
+### Regression Rules
+
+Phase can regress (never below Foundation):
+- Latest score drops > 15 from average of last 5 → regress 1 phase
+- Volatility > 15 → regress 1 phase
+- Regression narrative: "Your wardrobe is recalibrating. This is part of the process."
+
+### Narratives per Phase
+
+| Phase | Narrative |
+|-------|-----------|
+| Foundation | "Building your wardrobe's structural foundation." |
+| Developing | "Your wardrobe is developing clear structural direction." |
+| Refining | "Refining structural cohesion across all components." |
+| Cohering | "Strong structural coherence emerging across your wardrobe." |
+| Evolving | "Your wardrobe has reached structural maturity. Evolving intentionally." |
+
+### Public API
+
+```swift
+public static func evaluate(snapshots: [CohesionSnapshot]) -> EvolutionSnapshot
+
+public static func phase(snapshots: [CohesionSnapshot]) -> EvolutionPhase
+
+public static func volatility(snapshots: [CohesionSnapshot]) -> Double
+
+public static func trend(snapshots: [CohesionSnapshot]) -> EvolutionTrend
+```
+
+### Edge Cases
+- 0 snapshots → Foundation phase, volatility 0, trend .stable
+- 1–2 snapshots → Foundation or Developing only, trend based on available data
+- All snapshots identical score → volatility 0, trend .stable
+
+---
+
+## 8. Information Architecture
+
+### Tab Bar (3 tabs)
+
+| Tab | Icon | Label | Primary Content |
+|-----|------|-------|-----------------|
+| 1 | grid.2x2 | Wardrobe | Item grid + cohesion status |
+| 2 | arrow.up.right | Optimize | Recommendations + simulation |
+| 3 | person.crop.circle | Profile | Archetype, evolution, settings |
+
+### Screen Map
+
+**Wardrobe Tab (Home)**
+```
+Wardrobe Grid Screen
+├── Cohesion Status Bar (tap → Cohesion Breakdown Sheet)
+├── Category Filter Bar (All / Tops / Bottoms / Shoes / Outerwear)
+├── Item Grid (2-column, image + category tag)
+│   └── Tap Item → Item Detail Screen (push)
+│       ├── Item image (large)
+│       ├── All fields displayed
+│       ├── Edit button → Edit Item Sheet
+│       └── Delete button (confirmation alert)
+└── Add Item FAB → Add Item Sheet (modal)
+    ├── Image picker
+    ├── Category selector
+    ├── Silhouette selector
+    ├── Color picker → auto-maps baseGroup + temperature
+    ├── Archetype tag selector
+    └── Save button
+```
+
+**Optimize Tab**
+```
+Optimize Screen
+├── Current Score Summary (status label + numeric)
+├── Weakest Area Indicator
+├── Primary Recommendation Card
+│   ├── Candidate item description (category, silhouette, baseGroup, archetype)
+│   ├── Component impact (e.g., "Density: 52 → 64, +12")
+│   ├── Total impact (e.g., "Total: 74 → 78, +4")
+│   └── "Add to strengthen" label
+├── Secondary Recommendations (up to 2, collapsed)
+│   └── Tap to expand → same detail as primary
+├── Structural Friction Section (only if items flagged)
+│   ├── Friction item card
+│   ├── Impact display
+│   └── "Reconsider" label
+└── Tap any recommendation → Candidate Detail Screen (push)
+```
+
+**Profile Tab**
+```
+Profile Screen
+├── Archetype Section
+│   ├── Primary archetype display
+│   ├── Secondary archetype display
+│   └── Edit button → Archetype Edit Sheet
+│       ├── Primary picker
+│       ├── Secondary picker
+│       └── Save (triggers recalculation)
+├── Season Section
+│   ├── Current season mode
+│   ├── Recalibration suggestion (if detected)
+│   └── Tap → Season Recalibration Sheet
+├── Structural Evolution Section
+│   ├── Current phase label
+│   ├── Trend indicator
+│   ├── Brief narrative
+│   └── Tap → Evolution Detail Screen (push)
+│       ├── Full phase history
+│       ├── Volatility indicator
+│       └── Phase progression visualization
+└── Settings Section
+    ├── About CORET
+    └── Pro upgrade (if free tier)
+```
+
+### Data Ownership
+
+| Screen | Owns | Reads |
+|--------|------|-------|
+| Wardrobe | [WardrobeItem] | CohesionSnapshot |
+| Optimize | — | [WardrobeItem], UserProfile, OptimizeResult |
+| Profile | UserProfile | [CohesionSnapshot], EvolutionSnapshot |
+
+### Navigation Patterns
+- **Tab switch**: instant, no animation
+- **Push**: item detail, candidate detail, evolution detail
+- **Sheet (modal)**: add item, edit item, cohesion breakdown, archetype edit, season recalibration
+- **Alert**: delete confirmation
+
+---
+
+## 9. UI Specification
+
+### Color Tokens
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| background | #3D3632 | App background, warm dark taupe |
+| cardBackground | #E8E0D8 | Card surfaces, light stone |
+| accent | #4A6741 | Buttons, highlights, deep muted forest green |
+| accentPressed | #3D5636 | Button press state |
+| textPrimary | #F5F0EB | Primary text on dark backgrounds |
+| textSecondary | #A09890 | Secondary text, captions |
+| textOnCard | #2C2826 | Text on card surfaces |
+| textOnAccent | #F5F0EB | Text on accent-colored elements |
+| destructive | #8B4F4F | Delete actions, muted red |
+| divider | #4A4440 | Subtle dividers on dark backgrounds |
+| cardDivider | #D0C8C0 | Dividers on card surfaces |
+
+### Typography
+
+All fonts: SF Pro (system font on iOS).
+
+| Style | Font | Size | Weight | Spacing | Usage |
+|-------|------|------|--------|---------|-------|
+| logo | SF Pro Display | 20pt | Semibold (600) | 2.5pt | CORET header |
+| scoreDisplay | SF Pro Display | 48pt | Bold (700) | 0 | Numeric score |
+| statusLabel | SF Pro Display | 22pt | Semibold (600) | 0.5pt | "Coherent", "Aligned" |
+| h1 | SF Pro Display | 28pt | Semibold (600) | 0 | Screen titles |
+| h2 | SF Pro Display | 22pt | Semibold (600) | 0 | Section headers |
+| h3 | SF Pro Text | 17pt | Semibold (600) | 0 | Card titles |
+| body | SF Pro Text | 15pt | Regular (400) | 0 | Body text |
+| caption | SF Pro Text | 13pt | Regular (400) | 0 | Secondary info |
+| tag | SF Pro Text | 12pt | Medium (500) | 0.3pt | Category tags, labels |
+
+### Spacing Scale (4pt base)
+
+| Token | Value |
+|-------|-------|
+| xs | 4pt |
+| sm | 8pt |
+| md | 16pt |
+| lg | 24pt |
+| xl | 32pt |
+| xxl | 48pt |
+
+### Corner Radius
+
+| Element | Radius |
+|---------|--------|
+| Card | 16pt |
+| Button | 12pt |
+| Tag/chip | 8pt |
+| Item image | 12pt |
+| Score ring | full circle |
+
+### Animations
+
+| Element | Duration | Curve | Properties |
+|---------|----------|-------|------------|
+| Card appear | 200ms | ease-in-out | opacity 0→1, scale 0.95→1.0 |
+| Score update | 300ms | ease-in-out | numeric counter animation |
+| Score ring | 500ms | ease-out | stroke animation on first appear |
+| Sheet present | system | system | iOS default sheet |
+| Tab switch | none | — | Instant |
+| Button press | 100ms | ease-out | scale 1.0→0.97 |
+| Status change | 300ms | ease-in-out | crossfade text |
+
+### Layout Patterns
+
+**Wardrobe Grid**: 2 columns, md (16pt) gap, md padding.
+**Card**: xl (32pt) padding top/bottom, lg (24pt) padding sides.
+**Status bar**: fixed top, xxl (48pt) height, centered content.
+**FAB (add button)**: 56pt diameter, accent color, bottom-right, lg (24pt) inset.
+**Score display**: status label above, numeric below, centered.
+**Recommendation card**: full-width, card background, impact numbers right-aligned.
+
+---
+
+## 10. Brand Foundation
+
+### Positioning
+Personal wardrobe operating system measuring, optimizing, and evolving wardrobe structure.
+
+### Emotional Core
+- Internal feeling: Control
+- External effect: Cohesive presence
+
+### Target Audience
+- Primary: Professionals 25–40 who value structure, clarity, intentional identity
+- Secondary: Style-conscious younger users
+
+### Tone
+Calm. Architectural. Precise. Gender-neutral. Non-dramatic. Non-preachy.
+
+Never say: "You should", "This is wrong", "Bad score"
+Instead: "Structural opportunity", "Room to strengthen", "Recalibrate"
+
+### Visual Identity
+- Warm dark taupe background (not black, not gray — warm)
+- Light stone cards (not white — warm off-white)
+- Deep muted forest green accent (not bright — quiet confidence)
+- Logo: CORET in uppercase, spaced typography
+- No gradients. No shadows. Flat with subtle depth via color.
+- Soft animations: never abrupt, never slow. 200–300ms ease-in-out.
+
+### Product Identity
+- Long-term system, not short-term style phase
+- Seasonal recalibration supported
+- Structural evolution tracked
+- Rule-based engine in V1
+
+---
+
+## 11. Monetization (Freemium)
+
+### Free Tier
+- Full wardrobe management
+- Basic cohesion score (status label + numeric)
+- 1 active optimize target (primary recommendation only)
+- Limited score breakdown (total only, no component detail)
+
+### Pro Tier (target $9–12/month)
+- Full component breakdown on tap
+- Full simulation (all recommendations: primary + secondary)
+- Multiple roadmap targets
+- Structural friction detection
+- Advanced analytics (component trends)
+- Drift tracking
+- Structural evolution detail (full narrative, phase history)
+- Seasonal recalibration
 
 ### Explicitly NOT in V1
 - Machine learning
@@ -271,13 +722,13 @@ iOS-first native app. SwiftUI + SwiftData. Local-first.
 
 ---
 
-## Scaling Strategy
+## 12. Scaling Strategy
 
 ### Phase 1 — Deterministic Core (Current)
-- Rule-based Cohesion engine
-- Dynamic Optimize engine
-- Seasonal recalibration
-- Structural evolution
+- Rule-based Cohesion engine ✅
+- Dynamic Optimize engine ✅
+- Seasonal recalibration (next)
+- Structural evolution (next)
 - Local-first architecture
 
 ### Phase 2 — Structural Intelligence Layer
@@ -313,19 +764,84 @@ Commerce must never compromise structural integrity.
 
 ---
 
-## Technical Conventions
+## 13. Build Status
 
-- **Language**: Swift 6 (strict concurrency). swift-tools-version: 6.2.
-- **All public types**: Codable, Sendable. Structs also Identifiable. Enums also CaseIterable.
-- **Architecture**: Engine is a standalone Swift package (`core/COREEngine`). No UIKit/SwiftUI dependencies in the engine. iOS app will import the package.
-- **Storage**: SwiftData (local-first). No cloud sync in V1.
-- **Testing**: XCTest via `swift test`. Engines must be deterministic and fully testable.
-- **No external dependencies** in the engine package.
-- **File organization**: Models in `Models/`, Engines in `Engines/`, Tests mirror source structure.
+**Swift package compiles clean on Swift 6.2.**
+
+Build: `cd core && swift build`
+Test: `cd core && swift test`
+
+**48/48 tests passing.**
+
+### What Is Done
+
+| Component | File | Tests | Status |
+|-----------|------|-------|--------|
+| Data models (all types) | `Models/WardrobeItem.swift` | — | ✅ Complete |
+| CohesionEngine | `Engines/CohesionEngine.swift` | 29 | ✅ Complete |
+| OptimizeEngine + result types | `Engines/OptimizeEngine.swift` | 19 | ✅ Complete |
+| Package.swift | `core/Package.swift` | — | ✅ Complete |
+
+### What Is Not Done
+
+| Component | File | Status |
+|-----------|------|--------|
+| SeasonalEngine | `Engines/SeasonalEngine.swift` | Not started |
+| EvolutionEngine | `Engines/EvolutionEngine.swift` | Not started |
+| SwiftData persistence | TBD | Blocked (needs SwiftData — may need Mac) |
+| SwiftUI iOS app | `ios_app/` | Blocked (requires Mac) |
 
 ---
 
-## Autonomous Session Protocol
+## 14. Current Blocker and Build Order
+
+### Current Blocker
+SwiftUI requires Mac to build and test. Development machine is Arch Linux — cannot run SwiftUI or Xcode.
+
+### What to Build Before SwiftUI (on Linux)
+
+1. **SeasonalEngine** — `Engines/SeasonalEngine.swift`
+   - Season detection from latitude + month
+   - Weight modifiers (multiplicative, renormalized)
+   - Recalibration recommendation
+   - Add `compute(items:profile:weights:)` overload to CohesionEngine
+   - Full test suite
+
+2. **EvolutionEngine** — `Engines/EvolutionEngine.swift`
+   - Phase determination from snapshot history
+   - Volatility calculation (stddev of last 5)
+   - Trend detection (last 3)
+   - Regression logic
+   - Narrative generation
+   - Full test suite
+
+3. **New model types** — add to `Models/` or engine files:
+   - CohesionWeights, SeasonalRecommendation
+   - EvolutionPhase, EvolutionTrend, EvolutionSnapshot
+
+### When Mac Is Available
+- Import COREEngine as local Swift Package
+- Build SwiftUI app on top of finished engines + specs
+- Implement SwiftData persistence wrapping engine types
+
+---
+
+## 15. Technical Conventions
+
+- **Language**: Swift 6 (strict concurrency). swift-tools-version: 6.2.
+- **All public types**: Codable, Sendable. Structs also Identifiable. Enums also CaseIterable.
+- **Engine pattern**: Caseless `enum` with `static` functions. No state. Pure functions. Deterministic.
+- **Architecture**: Engine is a standalone Swift package (`core/COREEngine`). No UIKit/SwiftUI dependencies in the engine. iOS app will import the package.
+- **Storage**: SwiftData (local-first). No cloud sync in V1.
+- **Testing**: Swift Testing framework (`import Testing`, `@Test`, `#expect`). NOT XCTest. Engines must be deterministic and fully testable.
+- **No external dependencies** in the engine package.
+- **File organization**: Models in `Models/`, Engines in `Engines/`, Tests mirror source structure.
+- **Edge cases**: All engines must handle empty input gracefully (return 0 or default state, never crash).
+- **Floating point**: Use tolerance (< 0.001) for equality checks in tests, not `==`.
+
+---
+
+## 16. Autonomous Session Protocol
 
 ### Token Monitoring
 - Claude Code must monitor context usage continuously

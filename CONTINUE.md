@@ -2,60 +2,72 @@
 Last updated: 2026-02-26
 
 ## Completed This Session
-- [x] OptimizeEngine implemented (`core/Sources/COREEngine/Engines/OptimizeEngine.swift`)
-  - Result types: WeaknessArea, OptimizeRecommendation, StructuralFriction, OptimizeResult
-  - Weakest component identification from CohesionSnapshot
-  - Dynamic candidate generation per weakness type (alignment, density, palette, rotation)
-  - Hypothetical item simulation via CohesionEngine recomputation
-  - Candidate ranking by component improvement (1 primary + up to 2 secondary)
-  - Structural friction detection (removal simulation, >8 total improvement threshold)
-- [x] OptimizeEngine tests (`core/Tests/COREEngineTests/OptimizeEngineTests.swift`)
-  - 19 tests: weakness identification, candidate generation, friction detection, ranking, edge cases
-- [x] CLAUDE.md updated with OptimizeEngine status
+- [x] CLAUDE.md rewritten as complete self-contained system reference (16 sections)
+- [x] All docs/ files read and consolidated into CLAUDE.md
+- [x] SeasonalEngine fully specified (latitude detection, multiplicative modifiers, hemisphere rules, edge cases)
+- [x] StructuralEvolution fully specified (5 phases, volatility, regression, snapshots, narratives)
+- [x] Information Architecture fully specified (3-tab layout, all screens, navigation flows, data ownership)
+- [x] UI Specification fully specified (color tokens, typography scale, spacing system, animations, layout patterns)
 
 ## Build Status
 swift build: pass
 swift test: 48/48 passing (29 CohesionEngine + 19 OptimizeEngine)
 
 ## In Progress (if interrupted)
-Nothing interrupted. Both engines are fully complete and tested.
+Nothing interrupted.
 
 ## Next Session Prompt
 ```
-Implement the SwiftUI iOS app for CORET. Read CLAUDE.md for full context — specifically the "Product Spec (V1)" section and Brand Foundation. The COREEngine package (core/) contains both CohesionEngine and OptimizeEngine, fully tested.
+Build the SeasonalEngine and EvolutionEngine for CORET. Read CLAUDE.md — it contains the complete system specification. Everything you need is in that one file.
 
-Set up the iOS app in `ios_app/`:
+Build order:
 
-1. Create Xcode project structure in `ios_app/` as a SwiftUI app
-   - Add COREEngine as a local package dependency (path: ../core)
-   - Target iOS 17+
-   - App name: CORET
+1. Implement `core/Sources/COREEngine/Engines/SeasonalEngine.swift`
+   - See CLAUDE.md Section 6 for full spec
+   - New types: CohesionWeights, SeasonalRecommendation
+   - Season detection from latitude + month
+   - Weight modifiers: springSummer (A×0.95, D×0.85, P×1.15, R×1.15), autumnWinter (A×1.10, D×1.15, P×0.85, R×0.95)
+   - Renormalize after multiplication
+   - Equatorial edge case (|lat| < 15°): return nil / shouldRecalibrate = false
 
-2. Implement core screens:
-   - **Wardrobe View**: Grid layout of items, structural status at top, add item flow
-   - **Cohesion Score View**: Hybrid display (status label primary, 0-100 secondary), breakdown on tap
-   - **Optimize View**: Show primary recommendation with impact display, secondary recommendations
+2. Add `compute(items:profile:weights:)` overload to CohesionEngine
+   - Same logic as existing compute, but uses provided CohesionWeights instead of hardcoded 0.35/0.30/0.20/0.15
+   - Existing compute() unchanged (backwards compatible)
 
-3. Implement data layer:
-   - SwiftData models wrapping COREEngine types
-   - Local persistence
+3. Create `core/Tests/COREEngineTests/SeasonalEngineTests.swift`
+   - Test latitude → season detection (northern, southern, equatorial)
+   - Test weight modifiers sum to 1.0 after normalization
+   - Test recalibration recommendation (same season = false, different = true)
+   - Test edge cases (equatorial, invalid month)
+   - Test compute with seasonal weights produces different scores than base weights
 
-4. Apply brand visual identity:
-   - Warm dark taupe background
-   - Light stone cards
-   - Deep muted forest green accent
-   - CORET uppercase spaced typography
-   - Soft animations 200-300ms ease-in-out
+4. Implement `core/Sources/COREEngine/Engines/EvolutionEngine.swift`
+   - See CLAUDE.md Section 7 for full spec
+   - New types: EvolutionPhase, EvolutionTrend, EvolutionSnapshot
+   - Phase determination from snapshot history (Foundation → Developing → Refining → Cohering → Evolving)
+   - Volatility = stddev of last 5 totalScores
+   - Trend = last 3 snapshots monotonic direction
+   - Regression if score drops >15 or volatility >15
 
-5. Verify: app builds and runs in simulator
+5. Create `core/Tests/COREEngineTests/EvolutionEngineTests.swift`
+   - Test each phase threshold
+   - Test phase progression
+   - Test regression triggers
+   - Test volatility calculation
+   - Test trend detection (improving, stable, declining)
+   - Test edge cases (0 snapshots, 1 snapshot, identical scores)
+
+6. Verify: cd core && swift build && swift test — all green
+7. Update CLAUDE.md build status and CONTINUE.md
+8. git add -A && git commit -m "feat: seasonal + evolution engines"
 ```
 
 ## Decisions Made
-- OptimizeEngine uses same caseless enum pattern as CohesionEngine (no state, all static)
-- Result types (WeaknessArea, OptimizeRecommendation, StructuralFriction, OptimizeResult) defined in the engine file since they're tightly coupled
-- All result structs are Identifiable, Codable, Sendable per project conventions
-- WeaknessArea is also CaseIterable per enum convention
-- Candidate generation is weakness-focused: alignment generates primary/secondary archetype items, density varies silhouettes, palette targets neutral/deep, rotation adds to each category
-- Candidates use dominant temperature of existing wardrobe for best palette compatibility
-- Friction threshold is strictly >8 total improvement (not >=8)
-- Single-item wardrobes correctly return no density recommendations (adding 1 item can't form outfits when 2+ required categories are missing)
+- CLAUDE.md is now the single source of truth — a new session needs only this file
+- SeasonalEngine spec: multiplicative modifiers, renormalized to sum=1.0
+- Hemisphere threshold: |latitude| >= 15° for auto-detection, < 15° is equatorial
+- EvolutionEngine spec: 5 phases with minimum snapshot counts, score thresholds, and volatility caps
+- Volatility = stddev of last 5 snapshots (not all snapshots)
+- Regression threshold: >15 score drop or >15 volatility
+- UI spec uses warm tones throughout — no pure black, no pure white
+- Information architecture: 3-tab bar (Wardrobe, Optimize, Profile)
