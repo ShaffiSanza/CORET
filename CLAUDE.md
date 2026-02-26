@@ -46,7 +46,10 @@ CORET/
 │   ├── product_spec.md                 ← SUPERSEDED (see sections 8, 9, 11)
 │   ├── seasonal_engine_v1.md           ← SUPERSEDED (see section 6)
 │   ├── structural_evolution_v1.md      ← SUPERSEDED (see section 7)
-│   └── ui_specification_v1.md          ← UI tokens, layout, design rules
+│   ├── ui_specification_v1.md          ← UI tokens, layout, design rules
+│   ├── business_vision.md              ← Long-term vision, revenue targets
+│   ├── swiftdata_model_spec_v1.md      ← Persistence architecture
+│   └── viewmodel_architecture_v1.md    ← ViewModel + EngineCoordinator spec
 ├── core/                  ← Swift package: COREEngine
 │   ├── Package.swift      (swift-tools-version: 6.2)
 │   ├── Sources/COREEngine/
@@ -749,6 +752,8 @@ Haptics: soft, medium impact. No confetti. No achievement badges. No gamified re
 ### Positioning
 Personal wardrobe operating system measuring, optimizing, and evolving wardrobe structure.
 
+Strategic comparison: closer to Notion (structure), YNAB (control), Obsidian (system-thinking). Does NOT compete with Pinterest, Zara, or Instagram fashion culture. CORET is about structure, not consumption.
+
 ### Emotional Core
 - Internal feeling: Control
 - External effect: Cohesive presence
@@ -771,20 +776,31 @@ Instead: "Structural opportunity", "Room to strengthen", "Recalibrate"
 - No gradients. No shadows. Flat with subtle depth via color.
 - Soft animations: never abrupt, never slow. 200–300ms ease-in-out.
 
+### Product Principles
+1. Deterministic first
+2. Explainable always
+3. Control over hype
+4. Structure over trend
+5. Calm over stimulation
+6. Premium over mass
+
 ### Product Identity
 - Long-term system, not short-term style phase
 - Seasonal recalibration supported
 - Structural evolution tracked
 - Rule-based engine in V1
+- We build slowly, carefully, intentionally. We do not chase trends.
 
 ---
 
 ## 11. Monetization
 
+Primary model: **B2C subscription SaaS.**
 Primary direction: **Tools (Roadmap + Planning)**. Not depth. Not ML.
 
 Free gives structural understanding. Pro gives structural control.
 Do NOT lock core measurement behind a paywall. Do NOT create artificial friction.
+Users pay for clarity of next step, multi-step roadmaps, and long-term oversight — not for basic scoring.
 
 ### Free (V1)
 - Full CohesionEngine (all components, full breakdown)
@@ -803,6 +819,15 @@ Free version is complete and worthy.
 
 Target pricing: $9–12/month.
 
+### Future Pro+ (V2+)
+- Behavioral overlay
+- Environmental intelligence
+- Cost-aware planning
+
+### Revenue Target
+€1–3M ARR for sustainability. 5,000–10,000 paying users.
+Exit is optional. Sustainability is mandatory.
+
 ### V1 Monetization Boundary
 No paywall in first release. Pro activates in V1.5.
 
@@ -820,6 +845,17 @@ No paywall in first release. Pro activates in V1.5.
 ---
 
 ## 12. Scaling Strategy
+
+### Execution Philosophy
+V1 — Stable deterministic core.
+V1.5 — Deeper structural tools (monetized).
+V2 — Intelligent overlay.
+V3 — Platform expansion.
+
+Core engine remains deterministic and explainable. No black-box AI replaces the structural model.
+
+### Long-Term Optional Paths
+If traction is strong: white-label engine licensing, commerce integration (structural role matching), enterprise partnerships, API exposure. These are not required for success.
 
 ### Phase 1 — Deterministic Core (Current)
 - Rule-based Cohesion engine ✅
@@ -883,10 +919,11 @@ Test: `cd core && swift test`
 
 ### What Is Not Done
 
-| Component | File | Status |
-|-----------|------|--------|
-| SwiftData persistence | TBD | Blocked (needs SwiftData — may need Mac) |
-| SwiftUI iOS app | `ios_app/` | Blocked (requires Mac) |
+| Component | File | Spec | Status |
+|-----------|------|------|--------|
+| SwiftData persistence | TBD | Section 15 | Blocked (requires Mac) |
+| ViewModel + EngineCoordinator | TBD | Section 16 | Blocked (requires Mac) |
+| SwiftUI iOS app | `ios_app/` | Sections 8, 9 | Blocked (requires Mac) |
 
 ---
 
@@ -910,7 +947,104 @@ All four engines are implemented and tested:
 
 ---
 
-## 15. Technical Conventions
+## 15. SwiftData Persistence Architecture — NOT YET IMPLEMENTED
+
+File to reference: `docs/swiftdata_model_spec_v1.md`
+Status: Blocked (requires Mac + SwiftData)
+
+### Architectural Principles
+1. SwiftData stores raw state. Engines compute derived state.
+2. Derived state is NOT permanently stored unless explicitly cached.
+3. No engine mutates SwiftData directly.
+4. UI interacts with ViewModels. ViewModels trigger engine recomputation.
+5. Snapshots are immutable once stored.
+
+### Entities
+
+**WardrobeItemEntity**: id, createdAt, updatedAt, category (String rawValue), silhouette, baseGroup, temperature, archetypeTag, usageCount, isArchived (default false).
+
+**UserProfileEntity**: id, createdAt, primaryArchetype, secondaryArchetype, latitude?, longitude?, seasonMode, lastRecalibrationDate?, recalibrationCooldownUntil?, lastEngineRecompute?. Single instance in V1.
+
+**EvolutionSnapshotEntity**: id, snapshotDate, totalScore, alignment, density, palette, rotation, phaseRawValue, volatility, isSeasonAdjusted. Immutable. Created on first day of month OR major structural shift (>10 score delta).
+
+**EngineCacheEntity** (optional performance layer): id, lastComputedAt, totalScore, alignment, density, palette, rotation, weakestComponent, optimizePrimaryRaw?, optimizeSecondaryRaw. Invalidated on any structural mutation. Never authoritative — if missing, engine recomputes.
+
+### Delete Rules
+- WardrobeItem: hard delete, triggers recompute.
+- EvolutionSnapshot: never auto-deleted. Only via full profile reset.
+- Profile reset cascades: deletes all items, all snapshots, cache.
+
+### Data Integrity
+- category, silhouette, baseGroup: required (save rejected if empty).
+- primaryArchetype != secondaryArchetype.
+
+### Migration Strategy
+- Additive migrations only. No field renames without mapping.
+- EvolutionSnapshotEntity must remain backward-compatible.
+- ModelVersion 1 for V1. Versioned container for future.
+
+### Non-Goals V1
+No remote database. No multi-device sync. No shared wardrobes. No analytics tracking. CORET is local-first.
+
+---
+
+## 16. ViewModel Architecture — NOT YET IMPLEMENTED
+
+File to reference: `docs/viewmodel_architecture_v1.md`
+Status: Blocked (requires Mac + SwiftUI)
+
+### Layer Model
+```
+Layer 1 — SwiftData Entities (persistence)
+Layer 2 — ViewModels (coordination)
+Layer 3 — Engines (computation)
+Layer 4 — SwiftUI Views (presentation)
+```
+
+Flow: User Action → ViewModel → EngineCoordinator → Engine → Snapshot → SwiftData → UI Refresh
+
+### EngineCoordinator (Critical)
+
+Single coordination layer — the bridge between persistence and engine logic.
+
+Responsibilities:
+- Fetch persisted data, convert entities → domain models
+- Run CohesionEngine, OptimizeEngine, SeasonalEngine, EvolutionEngine
+- Update cache, create snapshots when required
+- Return immutable snapshot objects
+
+**ViewModels never call engines directly. They call EngineCoordinator.**
+
+### 5 ViewModels
+
+| ViewModel | Purpose | Key Actions |
+|-----------|---------|-------------|
+| DashboardViewModel | Expose current structural state | Pull to refresh, app foreground |
+| WardrobeViewModel | Manage wardrobe persistence | addItem, editItem, deleteItem → recompute |
+| OptimizeViewModel | Expose simulation results | markAsAcquired, dismiss, resimulate |
+| EvolutionViewModel | Expose maturity history | Read-only. Snapshots immutable. |
+| ProfileViewModel | System configuration | updateArchetypes, updateLocation, recalibrate, reset |
+
+### Recompute Flow
+1. Persistence mutation (SwiftData save)
+2. EngineCoordinator.recompute()
+3. Cache update
+4. Snapshot creation if needed
+5. Notify relevant ViewModels
+6. UI re-renders
+
+### Concurrency
+- Engine runs on background thread
+- UI updates on main thread
+- No parallel engine runs allowed
+- Recompute requests queued if already running
+
+### Anti-Patterns (Forbidden)
+ViewModels must NOT: contain structural logic, modify engine math, cache business rules, duplicate calculations, or call engines independently. All engine interaction flows through EngineCoordinator.
+
+---
+
+## 17. Technical Conventions
 
 - **Language**: Swift 6 (strict concurrency). swift-tools-version: 6.2.
 - **All public types**: Codable, Sendable. Structs also Identifiable. Enums also CaseIterable.
@@ -925,7 +1059,7 @@ All four engines are implemented and tested:
 
 ---
 
-## 16. Autonomous Session Protocol
+## 18. Autonomous Session Protocol
 
 ### Token Monitoring
 - Claude Code must monitor context usage continuously
