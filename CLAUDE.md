@@ -70,6 +70,9 @@ CORET/
 ├── moodboard/             ← Visual references for UI implementation
 │   ├── dashboard/
 │   │   └── dashboard_preview.md   ← ASCII wireframe, aligned with spec
+│   ├── evolution/
+│   │   ├── evolution_timeline.html    ← Interactive HTML mockup (visual reference)
+│   │   └── evolution_wireframe.md     ← Full spec: flat-lay timeline system
 │   ├── optimize/
 │   │   └── optimize_wireframe.md  ← Optimize tab wireframe + card anatomy
 │   └── wardrobe/
