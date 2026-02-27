@@ -69,7 +69,8 @@ CORET/
 │       └── EvolutionEngineTests.swift ✅ 29 tests passing
 ├── moodboard/             ← Visual references for UI implementation
 │   ├── dashboard/
-│   │   └── dashboard_preview.md   ← ASCII wireframe, aligned with spec
+│   │   ├── dashboard_wireframe.md   ← Full dashboard tab spec + component detail
+│   │   └── dashboard_preview.md     ← Quick ASCII reference (superseded by wireframe)
 │   ├── evolution/
 │   │   ├── evolution_timeline.html    ← Interactive HTML mockup (visual reference)
 │   │   └── evolution_wireframe.md     ← Full spec: flat-lay timeline system
@@ -78,6 +79,8 @@ CORET/
 │   ├── onboarding/
 │   │   ├── coret_onboarding_v3.html    ← Interactive HTML mockup (visual reference)
 │   │   └── onboarding_wireframe.md     ← Full spec: 5-screen onboarding flow
+│   ├── profile/
+│   │   └── profile_wireframe.md        ← Profile tab spec: identity, season, settings
 │   └── wardrobe/
 │       ├── wardrobe_wireframe.md     ← CORET wardrobe grid wireframe
 │       └── digico_wardrobe_grid.png  ← Grid-only reference (see note below)
