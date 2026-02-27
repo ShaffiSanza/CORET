@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import COREEngine
 
@@ -17,6 +18,19 @@ private func makeSnapshot(score: Double) -> CohesionSnapshot {
 
 private func makeSnapshots(scores: [Double]) -> [CohesionSnapshot] {
     scores.map { makeSnapshot(score: $0) }
+}
+
+private func makeSnapshotWithItems(score: Double, itemIDs: some Collection<UUID>) -> CohesionSnapshot {
+    let status = CohesionEngine.statusLevel(from: score)
+    return CohesionSnapshot(
+        alignmentScore: score,
+        densityScore: score,
+        paletteScore: score,
+        rotationScore: score,
+        totalScore: score,
+        statusLevel: status,
+        itemIDs: Set(itemIDs)
+    )
 }
 
 // MARK: - Empty / Minimal
@@ -232,6 +246,213 @@ private func makeSnapshots(scores: [Double]) -> [CohesionSnapshot] {
     let evo = EvolutionEngine.evaluate(snapshots: snapshots)
     #expect(evo.snapshotCount == 5)
 }
+
+// MARK: - Momentum
+
+@Test func momentumFewSnapshotsReturnsEmergence() {
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [50, 60]))
+    #expect(result.trend == .stable)
+    #expect(result.volatilityLevel == .low)
+    #expect(result.descriptor == "Structural Emergence")
+}
+
+@Test func momentumEmptySnapshotsReturnsEmergence() {
+    let result = EvolutionEngine.momentum(snapshots: [])
+    #expect(result.descriptor == "Structural Emergence")
+}
+
+@Test func momentumImprovingLow() {
+    // Monotonically increasing, low volatility
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [50, 51, 52, 53, 54]))
+    #expect(result.trend == .improving)
+    #expect(result.volatilityLevel == .low)
+    #expect(result.descriptor == "Upward Stability")
+}
+
+@Test func momentumImprovingMedium() {
+    // Improving trend but medium volatility (6-10)
+    // Last 3: 40, 50, 60 → improving. Last 5 volatility needs to be 6-10.
+    // Scores: [30, 60, 30, 50, 60] → last 3 = [30, 50, 60] → improving
+    // Last 5 stddev: mean=46, deviations=[16,14,16,4,14], var=avg(256+196+256+16+196)=184, stddev≈13.6 → high
+    // Try: [45, 55, 42, 50, 58] → last 3 = [42, 50, 58] → improving
+    // Last 5 mean=50, deviations=[5,5,8,0,8], var=avg(25+25+64+0+64)=35.6, stddev≈5.97 → low border
+    // Try: [40, 58, 44, 52, 60] → last 3 = [44, 52, 60] → improving
+    // Last 5 mean=50.8, var=avg((40-50.8)^2 + (58-50.8)^2 + (44-50.8)^2 + (52-50.8)^2 + (60-50.8)^2)
+    // = avg(116.64 + 51.84 + 46.24 + 1.44 + 84.64) = 60.16, stddev≈7.76 → medium!
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [40, 58, 44, 52, 60]))
+    #expect(result.trend == .improving)
+    #expect(result.volatilityLevel == .medium)
+    #expect(result.descriptor == "Active Strengthening")
+}
+
+@Test func momentumImprovingHigh() {
+    // Last 3 improving, very high volatility
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [20, 80, 20, 60, 80]))
+    #expect(result.trend == .improving)
+    #expect(result.volatilityLevel == .high)
+    #expect(result.descriptor == "Rapid Restructuring")
+}
+
+@Test func momentumStableLow() {
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [50, 50, 50, 50, 50]))
+    #expect(result.trend == .stable)
+    #expect(result.volatilityLevel == .low)
+    #expect(result.descriptor == "Structural Consolidation")
+}
+
+@Test func momentumStableMedium() {
+    // Mixed last 3 → stable, medium volatility
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [40, 58, 55, 48, 55]))
+    #expect(result.trend == .stable)
+    #expect(result.volatilityLevel == .medium)
+    #expect(result.descriptor == "Holding Pattern")
+}
+
+@Test func momentumStableHigh() {
+    // Mixed last 3 → stable, high volatility
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [20, 80, 60, 30, 60]))
+    #expect(result.trend == .stable)
+    #expect(result.volatilityLevel == .high)
+    #expect(result.descriptor == "Unstable Plateau")
+}
+
+@Test func momentumDecliningLow() {
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [54, 53, 52, 51, 50]))
+    #expect(result.trend == .declining)
+    #expect(result.volatilityLevel == .low)
+    #expect(result.descriptor == "Gentle Recalibration")
+}
+
+@Test func momentumDecliningMedium() {
+    // Declining last 3, medium volatility
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [60, 40, 58, 52, 44]))
+    #expect(result.trend == .declining)
+    #expect(result.volatilityLevel == .medium)
+    #expect(result.descriptor == "Gradual Loosening")
+}
+
+@Test func momentumDecliningHigh() {
+    let result = EvolutionEngine.momentum(snapshots: makeSnapshots(scores: [80, 20, 80, 60, 20]))
+    #expect(result.trend == .declining)
+    #expect(result.volatilityLevel == .high)
+    #expect(result.descriptor == "Temporary Instability")
+}
+
+@Test func volatilityLevelThresholds() {
+    #expect(EvolutionEngine.volatilityLevel(from: 0) == .low)
+    #expect(EvolutionEngine.volatilityLevel(from: 5.99) == .low)
+    #expect(EvolutionEngine.volatilityLevel(from: 6) == .medium)
+    #expect(EvolutionEngine.volatilityLevel(from: 10) == .medium)
+    #expect(EvolutionEngine.volatilityLevel(from: 10.01) == .high)
+    #expect(EvolutionEngine.volatilityLevel(from: 50) == .high)
+}
+
+// MARK: - Anchor Items
+
+@Test func anchorItemsEmptyWhenFewSnapshots() {
+    let snapshots = makeSnapshots(scores: [50, 60, 70, 80])
+    #expect(EvolutionEngine.anchorItems(snapshots: snapshots).isEmpty)
+}
+
+@Test func anchorItemsEmptyWhenNoSnapshots() {
+    #expect(EvolutionEngine.anchorItems(snapshots: []).isEmpty)
+}
+
+@Test func anchorItemsDetectsConsistentItems() {
+    let itemA = UUID()
+    let itemB = UUID()
+    let itemC = UUID()
+
+    // itemA appears in all 5, itemB in 4, itemC in 2 (below 60%)
+    let snapshots = [
+        makeSnapshotWithItems(score: 50, itemIDs: [itemA, itemB, itemC]),
+        makeSnapshotWithItems(score: 55, itemIDs: [itemA, itemB, itemC]),
+        makeSnapshotWithItems(score: 60, itemIDs: [itemA, itemB]),
+        makeSnapshotWithItems(score: 65, itemIDs: [itemA, itemB]),
+        makeSnapshotWithItems(score: 70, itemIDs: [itemA, itemB]),
+    ]
+
+    let anchors = EvolutionEngine.anchorItems(snapshots: snapshots)
+    #expect(anchors.contains(itemA))
+    #expect(anchors.contains(itemB))
+    #expect(!anchors.contains(itemC))  // only 2/5 = 40% < 60%
+}
+
+@Test func anchorItemsRequiresPresenceInLatest() {
+    let itemA = UUID()
+    let itemB = UUID()
+
+    // itemA in first 4, NOT in last → excluded
+    // itemB in all 5 → anchor
+    let snapshots = [
+        makeSnapshotWithItems(score: 50, itemIDs: [itemA, itemB]),
+        makeSnapshotWithItems(score: 55, itemIDs: [itemA, itemB]),
+        makeSnapshotWithItems(score: 60, itemIDs: [itemA, itemB]),
+        makeSnapshotWithItems(score: 65, itemIDs: [itemA, itemB]),
+        makeSnapshotWithItems(score: 70, itemIDs: [itemB]),
+    ]
+
+    let anchors = EvolutionEngine.anchorItems(snapshots: snapshots)
+    #expect(!anchors.contains(itemA))
+    #expect(anchors.contains(itemB))
+}
+
+@Test func anchorItemsMaxThree() {
+    let ids = (0..<6).map { _ in UUID() }
+
+    // All 6 items in all 5 snapshots → all qualify → max 3 returned
+    let allIDs = Set(ids)
+    let snapshots = (0..<5).map { i in
+        makeSnapshotWithItems(score: Double(50 + i), itemIDs: allIDs)
+    }
+
+    let anchors = EvolutionEngine.anchorItems(snapshots: snapshots)
+    #expect(anchors.count == 3)
+}
+
+@Test func anchorItemsUsesLast5Only() {
+    let itemA = UUID()
+    let itemB = UUID()
+
+    // 7 snapshots. itemA only in first 2, itemB in all 7.
+    // Last 5: itemA not present → not anchor
+    let snapshots = [
+        makeSnapshotWithItems(score: 40, itemIDs: [itemA, itemB]),
+        makeSnapshotWithItems(score: 45, itemIDs: [itemA, itemB]),
+        makeSnapshotWithItems(score: 50, itemIDs: [itemB]),
+        makeSnapshotWithItems(score: 55, itemIDs: [itemB]),
+        makeSnapshotWithItems(score: 60, itemIDs: [itemB]),
+        makeSnapshotWithItems(score: 65, itemIDs: [itemB]),
+        makeSnapshotWithItems(score: 70, itemIDs: [itemB]),
+    ]
+
+    let anchors = EvolutionEngine.anchorItems(snapshots: snapshots)
+    #expect(!anchors.contains(itemA))
+    #expect(anchors.contains(itemB))
+}
+
+@Test func anchorItemsSortedByFrequency() {
+    let itemA = UUID()
+    let itemB = UUID()
+    let itemC = UUID()
+
+    // itemA: 5/5, itemB: 4/5, itemC: 3/5 — all present in last snapshot
+    let snapshots = [
+        makeSnapshotWithItems(score: 50, itemIDs: [itemA]),
+        makeSnapshotWithItems(score: 55, itemIDs: [itemA, itemB]),
+        makeSnapshotWithItems(score: 60, itemIDs: [itemA, itemB, itemC]),
+        makeSnapshotWithItems(score: 65, itemIDs: [itemA, itemB, itemC]),
+        makeSnapshotWithItems(score: 70, itemIDs: [itemA, itemB, itemC]),
+    ]
+
+    let anchors = EvolutionEngine.anchorItems(snapshots: snapshots)
+    #expect(anchors.count == 3)
+    #expect(anchors[0] == itemA)  // 5/5
+    #expect(anchors[1] == itemB)  // 4/5
+    #expect(anchors[2] == itemC)  // 3/5
+}
+
+// MARK: - Integration
 
 @Test func fullProgressionJourney() {
     // Simulate a user's journey from nothing to evolving

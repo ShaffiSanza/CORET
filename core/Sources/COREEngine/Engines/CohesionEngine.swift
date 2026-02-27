@@ -23,8 +23,58 @@ public enum CohesionEngine: Sendable {
             paletteScore: palette,
             rotationScore: rotation,
             totalScore: total,
-            statusLevel: status
+            statusLevel: status,
+            itemIDs: Set(items.map(\.id))
         )
+    }
+
+    // MARK: - Structural Identity
+
+    public static func structuralIdentity(items: [WardrobeItem]) -> StructuralIdentity {
+        guard !items.isEmpty else {
+            return StructuralIdentity(
+                dominantSilhouette: nil,
+                dominantBaseGroup: nil,
+                dominantTemperature: .neutral
+            )
+        }
+
+        let dominantSilhouette = plurality(items.map(\.silhouette))
+        let dominantBaseGroup = plurality(items.map(\.baseGroup))
+        let dominantTemperature = temperaturePlurality(items.map(\.temperature))
+
+        return StructuralIdentity(
+            dominantSilhouette: dominantSilhouette,
+            dominantBaseGroup: dominantBaseGroup,
+            dominantTemperature: dominantTemperature
+        )
+    }
+
+    /// Returns the single most frequent value, or nil if tied.
+    private static func plurality<T: Hashable>(_ values: [T]) -> T? {
+        var counts: [T: Int] = [:]
+        for value in values {
+            counts[value, default: 0] += 1
+        }
+        let maxCount = counts.values.max() ?? 0
+        let winners = counts.filter { $0.value == maxCount }
+        guard winners.count == 1 else { return nil }
+        return winners.first!.key
+    }
+
+    /// Temperature plurality: ties resolve to .neutral (never nil).
+    private static func temperaturePlurality(_ values: [Temperature]) -> Temperature {
+        var counts: [Temperature: Int] = [:]
+        for value in values {
+            counts[value, default: 0] += 1
+        }
+        let maxCount = counts.values.max() ?? 0
+        let winners = counts.filter { $0.value == maxCount }
+        if winners.count == 1 {
+            return winners.first!.key
+        }
+        // Tie: prefer .neutral if among winners, else default .neutral
+        return .neutral
     }
 
     // MARK: - Archetype Alignment (35%)

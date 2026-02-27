@@ -44,6 +44,31 @@ public struct EvolutionSnapshot: Identifiable, Codable, Sendable {
     }
 }
 
+public enum VolatilityLevel: String, Codable, CaseIterable, Sendable {
+    case low
+    case medium
+    case high
+}
+
+public struct MomentumResult: Identifiable, Codable, Sendable, Equatable {
+    public let id: UUID
+    public let trend: EvolutionTrend
+    public let volatilityLevel: VolatilityLevel
+    public let descriptor: String
+
+    public init(
+        id: UUID = UUID(),
+        trend: EvolutionTrend,
+        volatilityLevel: VolatilityLevel,
+        descriptor: String
+    ) {
+        self.id = id
+        self.trend = trend
+        self.volatilityLevel = volatilityLevel
+        self.descriptor = descriptor
+    }
+}
+
 // MARK: - EvolutionEngine
 
 public enum EvolutionEngine: Sendable {
@@ -102,7 +127,85 @@ public enum EvolutionEngine: Sendable {
         return .stable
     }
 
+    // MARK: - Momentum
+
+    public static func momentum(snapshots: [CohesionSnapshot]) -> MomentumResult {
+        guard snapshots.count >= 3 else {
+            return MomentumResult(
+                trend: .stable,
+                volatilityLevel: .low,
+                descriptor: "Structural Emergence"
+            )
+        }
+
+        let currentTrend = trend(snapshots: snapshots)
+        let vol = volatility(snapshots: snapshots)
+        let level = volatilityLevel(from: vol)
+        let desc = descriptor(trend: currentTrend, volatilityLevel: level)
+
+        return MomentumResult(
+            trend: currentTrend,
+            volatilityLevel: level,
+            descriptor: desc
+        )
+    }
+
+    public static func volatilityLevel(from volatility: Double) -> VolatilityLevel {
+        if volatility < 6 { return .low }
+        if volatility <= 10 { return .medium }
+        return .high
+    }
+
+    // MARK: - Anchor Items
+
+    public static func anchorItems(snapshots: [CohesionSnapshot]) -> [UUID] {
+        guard snapshots.count >= 5 else { return [] }
+
+        let last5 = Array(snapshots.suffix(5))
+        guard let latestItemIDs = last5.last?.itemIDs else { return [] }
+
+        // Count frequency of each item across last 5 snapshots
+        var frequency: [UUID: Int] = [:]
+        for snapshot in last5 {
+            for itemID in snapshot.itemIDs {
+                frequency[itemID, default: 0] += 1
+            }
+        }
+
+        // Filter: >= 60% (3 of 5) and present in latest snapshot
+        let threshold = 3
+        let candidates = frequency
+            .filter { $0.value >= threshold && latestItemIDs.contains($0.key) }
+            .sorted { $0.value > $1.value }
+            .prefix(3)
+            .map(\.key)
+
+        return Array(candidates)
+    }
+
     // MARK: - Private Helpers
+
+    private static let descriptorMatrix: [EvolutionTrend: [VolatilityLevel: String]] = [
+        .improving: [
+            .low: "Upward Stability",
+            .medium: "Active Strengthening",
+            .high: "Rapid Restructuring",
+        ],
+        .stable: [
+            .low: "Structural Consolidation",
+            .medium: "Holding Pattern",
+            .high: "Unstable Plateau",
+        ],
+        .declining: [
+            .low: "Gentle Recalibration",
+            .medium: "Gradual Loosening",
+            .high: "Temporary Instability",
+        ],
+    ]
+
+    private static func descriptor(trend: EvolutionTrend, volatilityLevel: VolatilityLevel) -> String {
+        descriptorMatrix[trend]?[volatilityLevel] ?? "Structural Emergence"
+    }
 
     private static func basePhase(snapshots: [CohesionSnapshot]) -> EvolutionPhase {
         let count = snapshots.count

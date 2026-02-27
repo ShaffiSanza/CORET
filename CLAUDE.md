@@ -55,18 +55,18 @@ CORET/
 │   ├── Sources/COREEngine/
 │   │   ├── COREEngine.swift           (placeholder)
 │   │   ├── Engines/
-│   │   │   ├── CohesionEngine.swift   ✅ Complete (29 tests)
+│   │   │   ├── CohesionEngine.swift   ✅ Complete (40 tests)
 │   │   │   ├── OptimizeEngine.swift   ✅ Complete (19 tests)
 │   │   │   ├── SeasonalEngine.swift   ✅ Complete (19 tests)
-│   │   │   └── EvolutionEngine.swift  ✅ Complete (29 tests)
+│   │   │   └── EvolutionEngine.swift  ✅ Complete (48 tests)
 │   │   └── Models/
-│   │       └── WardrobeItem.swift     ✅ Complete (all types)
+│   │       └── WardrobeItem.swift     ✅ Complete (all types + StructuralIdentity)
 │   └── Tests/COREEngineTests/
 │       ├── COREEngineTests.swift      (scaffold — can be removed)
-│       ├── CohesionEngineTests.swift  ✅ 29 tests passing
+│       ├── CohesionEngineTests.swift  ✅ 40 tests passing
 │       ├── OptimizeEngineTests.swift  ✅ 19 tests passing
 │       ├── SeasonalEngineTests.swift  ✅ 19 tests passing
-│       └── EvolutionEngineTests.swift ✅ 29 tests passing
+│       └── EvolutionEngineTests.swift ✅ 48 tests passing
 ├── moodboard/             ← Visual references for UI implementation
 │   ├── dashboard/
 │   │   ├── dashboard_wireframe.md   ← Full dashboard tab spec + component detail
@@ -140,6 +140,17 @@ All types live in `core/Sources/COREEngine/Models/WardrobeItem.swift`. All publi
 | seasonMode | SeasonMode |
 | createdAt | Date (`let`) |
 
+### StructuralIdentity
+
+Defined in `WardrobeItem.swift`. Returned by `CohesionEngine.structuralIdentity(items:)`.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| id | UUID (`let`) | |
+| dominantSilhouette | Silhouette? | nil = no dominant (tied) |
+| dominantBaseGroup | BaseGroup? | nil = no dominant (tied) |
+| dominantTemperature | Temperature | Never nil. Neutral fallback on tie. |
+
 ### CohesionSnapshot
 
 | Field | Type |
@@ -151,6 +162,7 @@ All types live in `core/Sources/COREEngine/Models/WardrobeItem.swift`. All publi
 | rotationScore | Double |
 | totalScore | Double |
 | statusLevel | CohesionStatus |
+| itemIDs | Set\<UUID\> (`let`) |
 | createdAt | Date (`let`) |
 
 ### OptimizeEngine Result Types
@@ -190,6 +202,7 @@ public static func densityScore(items: [WardrobeItem], profile: UserProfile) -> 
 public static func paletteScore(items: [WardrobeItem]) -> Double
 public static func rotationScore(items: [WardrobeItem]) -> Double
 public static func statusLevel(from totalScore: Double) -> CohesionStatus
+public static func structuralIdentity(items: [WardrobeItem]) -> StructuralIdentity
 ```
 
 ### 4a. Archetype Alignment (weight 0.35)
@@ -267,6 +280,19 @@ Edge case: all usageCounts 0 → deviation 0 → score 100.
 | 65–79 | .coherent |
 | 80–89 | .aligned |
 | 90–100 | .architected |
+
+### 4f. Structural Identity
+
+Derives a deterministic identity from current wardrobe state via `structuralIdentity(items:)`.
+
+**Algorithm (per dimension):**
+- Count frequency of each enum value across all items
+- Value with highest count wins (plurality)
+- If tied → `nil` (silhouette, baseGroup) or `.neutral` (temperature)
+- Temperature never returns nil. On any tie, resolves to `.neutral`.
+- Empty items → all nil / .neutral
+
+No identityString in engine. String composition is ViewModel responsibility.
 
 ### Design Principles
 - Deterministic. No ML.
@@ -506,12 +532,50 @@ public static func phase(snapshots: [CohesionSnapshot]) -> EvolutionPhase
 public static func volatility(snapshots: [CohesionSnapshot]) -> Double
 
 public static func trend(snapshots: [CohesionSnapshot]) -> EvolutionTrend
+
+public static func momentum(snapshots: [CohesionSnapshot]) -> MomentumResult
+
+public static func volatilityLevel(from volatility: Double) -> VolatilityLevel
+
+public static func anchorItems(snapshots: [CohesionSnapshot]) -> [UUID]
 ```
+
+### Momentum
+
+Describes direction and stability over time. Reuses `trend()` and `volatility()` internally.
+
+**Types** (defined in `EvolutionEngine.swift`):
+- `VolatilityLevel` (enum): `low` (< 6), `medium` (6–10), `high` (> 10)
+- `MomentumResult` (struct): `id`, `trend: EvolutionTrend`, `volatilityLevel: VolatilityLevel`, `descriptor: String`
+
+**Descriptor Matrix** (3×3):
+
+| Trend \ Volatility | Low | Medium | High |
+|--------------------|------|--------|------|
+| Improving | Upward Stability | Active Strengthening | Rapid Restructuring |
+| Stable | Structural Consolidation | Holding Pattern | Unstable Plateau |
+| Declining | Gentle Recalibration | Gradual Loosening | Temporary Instability |
+
+< 3 snapshots → `MomentumResult(trend: .stable, volatilityLevel: .low, descriptor: "Structural Emergence")`
+
+### Anchor Items
+
+Identifies structurally consistent items over time via snapshot frequency analysis.
+
+**Algorithm:**
+1. Requires ≥ 5 snapshots (else returns empty)
+2. Uses last 5 snapshots only
+3. Counts frequency of each itemID across snapshots (via `CohesionSnapshot.itemIDs`)
+4. Item must appear in ≥ 60% (3 of 5) of snapshots
+5. Item must exist in latest snapshot
+6. Returns max 3 UUIDs, sorted by frequency descending
 
 ### Edge Cases
 - 0 snapshots → Foundation phase, volatility 0, trend .stable
 - 1–2 snapshots → Foundation or Developing only, trend based on available data
 - All snapshots identical score → volatility 0, trend .stable
+- < 3 snapshots → momentum returns "Structural Emergence"
+- < 5 snapshots → anchorItems returns empty
 
 ---
 
@@ -958,17 +1022,17 @@ Commerce must never compromise structural integrity.
 Build: `cd core && swift build`
 Test: `cd core && swift test`
 
-**96/96 tests passing.**
+**126/126 tests passing.**
 
 ### What Is Done
 
 | Component | File | Tests | Status |
 |-----------|------|-------|--------|
 | Data models (all types) | `Models/WardrobeItem.swift` | — | ✅ Complete |
-| CohesionEngine | `Engines/CohesionEngine.swift` | 29 | ✅ Complete |
+| CohesionEngine + structuralIdentity | `Engines/CohesionEngine.swift` | 40 | ✅ Complete |
 | OptimizeEngine + result types | `Engines/OptimizeEngine.swift` | 19 | ✅ Complete |
 | SeasonalEngine + types | `Engines/SeasonalEngine.swift` | 19 | ✅ Complete |
-| EvolutionEngine + types | `Engines/EvolutionEngine.swift` | 29 | ✅ Complete |
+| EvolutionEngine + momentum + anchorItems | `Engines/EvolutionEngine.swift` | 48 | ✅ Complete |
 | Package.swift | `core/Package.swift` | — | ✅ Complete |
 
 ### What Is Not Done
@@ -989,10 +1053,10 @@ SwiftUI requires Mac to build and test. Development machine is Arch Linux — ca
 ### All Engine Work Complete (on Linux)
 
 All four engines are implemented and tested:
-1. ✅ **CohesionEngine** — 29 tests
+1. ✅ **CohesionEngine** — 40 tests
 2. ✅ **OptimizeEngine** — 19 tests
 3. ✅ **SeasonalEngine** — 19 tests
-4. ✅ **EvolutionEngine** — 29 tests
+4. ✅ **EvolutionEngine** — 48 tests
 
 ### When Mac Is Available
 - Import COREEngine as local Swift Package

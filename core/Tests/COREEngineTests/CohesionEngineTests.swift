@@ -392,3 +392,124 @@ private func minimalWardrobe() -> [WardrobeItem] {
 
     #expect(abs(snapshot.totalScore - expected) < 0.001)
 }
+
+@Test func computePopulatesItemIDs() {
+    let items = minimalWardrobe()
+    let profile = makeProfile()
+    let snapshot = CohesionEngine.compute(items: items, profile: profile)
+    #expect(snapshot.itemIDs.count == 3)
+    for item in items {
+        #expect(snapshot.itemIDs.contains(item.id))
+    }
+}
+
+@Test func computeEmptyWardrobeHasEmptyItemIDs() {
+    let snapshot = CohesionEngine.compute(items: [], profile: makeProfile())
+    #expect(snapshot.itemIDs.isEmpty)
+}
+
+// MARK: - Structural Identity
+
+@Test func identityEmptyWardrobe() {
+    let identity = CohesionEngine.structuralIdentity(items: [])
+    #expect(identity.dominantSilhouette == nil)
+    #expect(identity.dominantBaseGroup == nil)
+    #expect(identity.dominantTemperature == .neutral)
+}
+
+@Test func identityClearDominance() {
+    // 2 structured, 1 balanced → structured wins
+    // 2 deep, 1 neutral → deep wins
+    // 2 cool, 1 warm → cool wins
+    let items = [
+        makeItem(category: .top, silhouette: .structured, baseGroup: .deep, temperature: .cool),
+        makeItem(category: .bottom, silhouette: .structured, baseGroup: .deep, temperature: .cool),
+        makeItem(category: .shoes, silhouette: .balanced, baseGroup: .neutral, temperature: .warm),
+    ]
+    let identity = CohesionEngine.structuralIdentity(items: items)
+    #expect(identity.dominantSilhouette == .structured)
+    #expect(identity.dominantBaseGroup == .deep)
+    #expect(identity.dominantTemperature == .cool)
+}
+
+@Test func identityThreeWayTieReturnsMixed() {
+    // 1 of each silhouette → tie → nil
+    // 1 of each baseGroup (3 of 4) → tie → nil
+    let items = [
+        makeItem(category: .top, silhouette: .structured, baseGroup: .neutral, temperature: .warm),
+        makeItem(category: .bottom, silhouette: .balanced, baseGroup: .deep, temperature: .warm),
+        makeItem(category: .shoes, silhouette: .relaxed, baseGroup: .light, temperature: .warm),
+    ]
+    let identity = CohesionEngine.structuralIdentity(items: items)
+    #expect(identity.dominantSilhouette == nil)
+    #expect(identity.dominantBaseGroup == nil)
+    #expect(identity.dominantTemperature == .warm)
+}
+
+@Test func identityTwoWayTieReturnsMixed() {
+    // 2 structured, 2 relaxed → tie → nil
+    let items = [
+        makeItem(category: .top, silhouette: .structured, baseGroup: .neutral),
+        makeItem(category: .bottom, silhouette: .structured, baseGroup: .neutral),
+        makeItem(category: .shoes, silhouette: .relaxed, baseGroup: .deep),
+        makeItem(category: .outerwear, silhouette: .relaxed, baseGroup: .deep),
+    ]
+    let identity = CohesionEngine.structuralIdentity(items: items)
+    #expect(identity.dominantSilhouette == nil)
+    #expect(identity.dominantBaseGroup == nil)
+}
+
+@Test func identityTemperatureTieResolvesToNeutral() {
+    // 1 warm, 1 cool → tie → neutral
+    let items = [
+        makeItem(category: .top, temperature: .warm),
+        makeItem(category: .bottom, temperature: .cool),
+    ]
+    let identity = CohesionEngine.structuralIdentity(items: items)
+    #expect(identity.dominantTemperature == .neutral)
+}
+
+@Test func identityTemperatureTieWithNeutralResolvesToNeutral() {
+    // 1 warm, 1 neutral → tie → neutral wins (neutral among tied)
+    let items = [
+        makeItem(category: .top, temperature: .warm),
+        makeItem(category: .bottom, temperature: .neutral),
+    ]
+    let identity = CohesionEngine.structuralIdentity(items: items)
+    #expect(identity.dominantTemperature == .neutral)
+}
+
+@Test func identityTemperatureNeverNil() {
+    // Even with 3-way tie (warm, cool, neutral), returns .neutral
+    let items = [
+        makeItem(category: .top, temperature: .warm),
+        makeItem(category: .bottom, temperature: .cool),
+        makeItem(category: .shoes, temperature: .neutral),
+    ]
+    let identity = CohesionEngine.structuralIdentity(items: items)
+    #expect(identity.dominantTemperature == .neutral)
+}
+
+@Test func identitySingleItem() {
+    let items = [
+        makeItem(category: .top, silhouette: .relaxed, baseGroup: .accent, temperature: .warm),
+    ]
+    let identity = CohesionEngine.structuralIdentity(items: items)
+    #expect(identity.dominantSilhouette == .relaxed)
+    #expect(identity.dominantBaseGroup == .accent)
+    #expect(identity.dominantTemperature == .warm)
+}
+
+@Test func identityUniformWardrobe() {
+    // All items identical structure → clear dominance
+    let items = [
+        makeItem(category: .top, silhouette: .balanced, baseGroup: .neutral, temperature: .cool),
+        makeItem(category: .bottom, silhouette: .balanced, baseGroup: .neutral, temperature: .cool),
+        makeItem(category: .shoes, silhouette: .balanced, baseGroup: .neutral, temperature: .cool),
+        makeItem(category: .outerwear, silhouette: .balanced, baseGroup: .neutral, temperature: .cool),
+    ]
+    let identity = CohesionEngine.structuralIdentity(items: items)
+    #expect(identity.dominantSilhouette == .balanced)
+    #expect(identity.dominantBaseGroup == .neutral)
+    #expect(identity.dominantTemperature == .cool)
+}

@@ -47,6 +47,27 @@ public enum CohesionStatus: String, Codable, CaseIterable, Sendable {
     case architected
 }
 
+// MARK: - StructuralIdentity
+
+public struct StructuralIdentity: Identifiable, Codable, Sendable, Equatable {
+    public let id: UUID
+    public let dominantSilhouette: Silhouette?
+    public let dominantBaseGroup: BaseGroup?
+    public let dominantTemperature: Temperature
+
+    public init(
+        id: UUID = UUID(),
+        dominantSilhouette: Silhouette?,
+        dominantBaseGroup: BaseGroup?,
+        dominantTemperature: Temperature
+    ) {
+        self.id = id
+        self.dominantSilhouette = dominantSilhouette
+        self.dominantBaseGroup = dominantBaseGroup
+        self.dominantTemperature = dominantTemperature
+    }
+}
+
 // MARK: - WardrobeItem
 
 public struct WardrobeItem: Identifiable, Codable, Sendable {
@@ -138,6 +159,8 @@ public struct CohesionSnapshot: Identifiable, Codable, Sendable {
     public var totalScore: Double
     public var statusLevel: CohesionStatus
 
+    public let itemIDs: Set<UUID>
+
     public let createdAt: Date
 
     public init(
@@ -148,6 +171,7 @@ public struct CohesionSnapshot: Identifiable, Codable, Sendable {
         rotationScore: Double,
         totalScore: Double,
         statusLevel: CohesionStatus,
+        itemIDs: Set<UUID> = [],
         createdAt: Date = Date()
     ) {
         self.id = id
@@ -157,6 +181,7 @@ public struct CohesionSnapshot: Identifiable, Codable, Sendable {
         self.rotationScore = rotationScore
         self.totalScore = totalScore
         self.statusLevel = statusLevel
+        self.itemIDs = itemIDs
         self.createdAt = createdAt
     }
 }
