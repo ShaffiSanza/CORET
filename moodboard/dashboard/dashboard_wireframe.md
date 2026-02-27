@@ -19,9 +19,6 @@ Design principle: CORET is a system that handles clothes, not a fashion app that
     ┌─────────────────────────────────────┐
     │  9:41              CORET        ●●● │
     │                                     │
-    │  Good Morning.                      │
-    │  Your structure is Coherent.        │
-    │                                     │
     │           COHESION                  │
     │                                     │
     │             72                      │  ← 72pt score
@@ -63,34 +60,7 @@ Design principle: CORET is a system that handles clothes, not a fashion app that
 
 ---
 
-## Element 1 — Greeting Line
-
-```
-┌─────────────────────────────────────┐
-│  Good Morning.                      │
-│  Your structure is Coherent.        │
-└─────────────────────────────────────┘
-```
-
-- Small, calm, top of screen
-- Time-based greeting: "Good Morning" / "Good Afternoon" / "Good Evening"
-- Status pulled from latest CohesionSnapshot: "Your structure is [status]."
-- Typography: body (16pt), textSecondary
-- NOT a headline. NOT prominent. Context-setting only.
-
-### Greeting Time Ranges
-
-| Time | Greeting |
-|------|----------|
-| 05:00–11:59 | God morgen. |
-| 12:00–17:59 | God ettermiddag. |
-| 18:00–04:59 | God kveld. |
-
-Second line: "Din struktur er [status]."
-
----
-
-## Element 2 — Cohesion Score Block
+## Element 1 — Cohesion Score Block
 
 The hero element. Center of the screen.
 
@@ -137,7 +107,7 @@ The hero element. Center of the screen.
 
 ---
 
-## Element 3 — Component Grid (2x2)
+## Element 2 — Component Grid (2x2)
 
 The structural breakdown.
 
@@ -263,9 +233,47 @@ Accessed by tapping any component card on Dashboard.
 - Maximum 5 contributors shown per section
 - Items link to Item Detail (push) if tapped
 
+### Engine Dependency — itemContributions()
+
+This screen requires a new engine function not yet implemented.
+Without it, contributor/weakness lists cannot be populated deterministically.
+
+**Required API contract:**
+
+```swift
+public enum CohesionComponent: String, CaseIterable, Sendable {
+    case alignment, density, palette, rotation
+}
+
+public struct ItemContribution: Identifiable, Sendable {
+    public let id: UUID
+    public let item: WardrobeItem
+    public let component: CohesionComponent
+    public let contributionScore: Double
+    public let matchType: String  // "Primary", "Secondary", "Neutral", "Conflict"
+}
+
+// On CohesionEngine:
+public static func itemContributions(
+    items: [WardrobeItem],
+    profile: UserProfile,
+    component: CohesionComponent
+) -> [ItemContribution]
+```
+
+- Returns all items sorted by `contributionScore` descending
+- Component Detail uses top 5 (strongest) and bottom 5 (weakest)
+- `matchType` is component-specific:
+  - Alignment: Primary / Secondary / Neutral / Conflict
+  - Density: how many valid outfits the item participates in
+  - Palette: baseGroup + temperature contribution
+  - Rotation: usage count relative to category mean
+- Must be deterministic — same input always produces same ranking
+- Implementation is a separate engine task, not part of this wireframe update
+
 ---
 
-## Element 4 — Outfit Preview (Should Have)
+## Element 3 — Outfit Preview (Should Have)
 
 ```
 ┌─────────────────────────────────────┐
@@ -293,7 +301,10 @@ Accessed by tapping any component card on Dashboard.
 - Static. Not animated. Not rotating. Not a carousel.
 - Outfit is proof of structure, not main attraction
 - Small. Subtle. Subordinate to score.
-- If no valid outfit exists (missing category): card hidden
+- "Valid" means structurally complete (top + bottom + shoes minimum)
+- No hidden quality threshold — any valid outfit qualifies
+- If no structurally complete combination exists: card hidden entirely
+- No placeholder. No error message. No low-score warning.
 - Tap → no action (informational only in V1)
 
 ### Outfit Selection Logic
@@ -303,10 +314,11 @@ Pick the highest-scoring valid outfit:
 2. Score each by archetype alignment average
 3. Show top-scoring outfit
 4. Deterministic: same items always produce same outfit
+5. If zero valid outfits: hide card completely
 
 ---
 
-## Element 5 — Optimize Preview Card
+## Element 4 — Optimize Preview Card
 
 ```
 ┌─────────────────────────────────────┐
@@ -341,7 +353,7 @@ Pick the highest-scoring valid outfit:
 
 ---
 
-## Element 6 — Evolution Phase Card
+## Element 5 — Evolution Phase Card
 
 ```
 ┌─────────────────────────────────────┐
@@ -424,12 +436,11 @@ When wardrobe has 0 items (after profile reset or before onboarding):
 ### Scroll Behavior
 
 Dashboard scrolls vertically. Content order top-to-bottom:
-1. Greeting line
-2. Cohesion score block
-3. Component grid (2×2)
-4. Outfit preview (should have)
-5. Optimize preview card
-6. Evolution phase card
+1. Cohesion score block
+2. Component grid (2×2)
+3. Outfit preview (should have)
+4. Optimize preview card
+5. Evolution phase card
 
 All content visible without horizontal scrolling.
 
