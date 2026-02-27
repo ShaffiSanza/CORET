@@ -75,6 +75,9 @@ CORET/
 │   │   └── evolution_wireframe.md     ← Full spec: flat-lay timeline system
 │   ├── optimize/
 │   │   └── optimize_wireframe.md  ← Optimize tab wireframe + card anatomy
+│   ├── onboarding/
+│   │   ├── coret_onboarding_v3.html    ← Interactive HTML mockup (visual reference)
+│   │   └── onboarding_wireframe.md     ← Full spec: 5-screen onboarding flow
 │   └── wardrobe/
 │       ├── wardrobe_wireframe.md     ← CORET wardrobe grid wireframe
 │       └── digico_wardrobe_grid.png  ← Grid-only reference (see note below)

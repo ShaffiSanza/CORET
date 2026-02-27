@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORET — Onboarding Flow v3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=DM+Serif+Display&display=swap');
+
+  :root {
+    --bg: #2F2A26;
+    --card: #E7E2DA;
+    --accent: #2F4A3C;
+    --friction: #7A3E3E;
+    --text-primary: #1F1C1A;
+    --text-secondary: #6B625C;
+    --text-muted: #9A918A;
+    --text-on-dark: #EAE5DE;
+    --radius: 20px;
+    --radius-sm: 12px;
+    --radius-xs: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #1a1714;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px 60px;
+    color: var(--text-primary);
+  }
+
+  h1.page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--text-on-dark);
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .page-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .page-version {
+    font-size: 11px;
+    color: rgba(154,145,138,0.4);
+    margin-bottom: 48px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  /* Phone frame */
+  .phone-frame {
+    width: 393px;
+    height: 852px;
+    background: var(--bg);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 3px #3a3530, 0 20px 60px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen.active { display: flex; }
+
+  /* Status bar */
+  .status-bar {
+    padding: 16px 28px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-on-dark);
+    flex-shrink: 0;
+  }
+  .status-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+  }
+
+  /* Progress */
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    padding: 8px 28px 20px;
+    flex-shrink: 0;
+  }
+  .progress-dot {
+    height: 3px;
+    flex: 1;
+    background: rgba(234,229,222,0.1);
+    border-radius: 2px;
+    transition: background 0.4s ease;
+  }
+  .progress-dot.done { background: var(--accent); }
+  .progress-dot.current { background: var(--text-on-dark); }
+
+  /* Content */
+  .screen-content {
+    flex: 1;
+    padding: 0 28px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .screen-label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .screen-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--text-on-dark);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .screen-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 28px;
+  }
+
+  /* ── Archetype cards ── */
+  .archetype-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+  }
+
+  .archetype-card {
+    background: rgba(231,226,218,0.05);
+    border: 1.5px solid rgba(231,226,218,0.08);
+    border-radius: var(--radius);
+    padding: 24px 22px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+  .archetype-card:hover {
+    background: rgba(231,226,218,0.09);
+    border-color: rgba(231,226,218,0.15);
+  }
+  .archetype-card.selected {
+    background: rgba(47,74,60,0.18);
+    border-color: var(--accent);
+  }
+  .archetype-card.selected .arch-check {
+    opacity: 1;
+  }
+  .archetype-card.disabled {
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  .arch-silhouette {
+    width: 52px;
+    height: 64px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .arch-silhouette svg {
+    width: 100%;
+    height: 100%;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .archetype-card.selected .arch-silhouette svg {
+    stroke: var(--text-on-dark);
+  }
+
+  .arch-text { flex: 1; }
+  .archetype-name {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--text-on-dark);
+    margin-bottom: 4px;
+  }
+  .archetype-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .arch-check {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 22px;
+    height: 22px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23EAE5DE' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: 12px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* Selection context */
+  .selection-context {
+    background: rgba(47,74,60,0.12);
+    border: 1px solid rgba(47,74,60,0.2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .selection-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .selection-text {
+    font-size: 13px;
+    color: var(--text-on-dark);
+  }
+  .selection-text strong { font-weight: 600; }
+
+  /* ── Quick-add guided ── */
+  .guided-step { margin-bottom: 18px; }
+
+  .guided-step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .step-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(231,226,218,0.06);
+    border: 1.5px solid rgba(231,226,218,0.1);
+  }
+  .step-icon.done {
+    background: rgba(47,74,60,0.2);
+    border-color: rgba(47,74,60,0.4);
+  }
+  .step-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .step-icon.done svg { stroke: var(--accent); }
+
+  .step-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-on-dark);
+  }
+  .step-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .pickers-box {
+    background: rgba(231,226,218,0.04);
+    border: 1.5px solid rgba(231,226,218,0.07);
+    border-radius: var(--radius);
+    padding: 16px 14px;
+  }
+  .pickers-box.done {
+    background: rgba(47,74,60,0.08);
+    border-color: rgba(47,74,60,0.18);
+  }
+
+  .picker-section { margin-bottom: 12px; }
+  .picker-section:last-child { margin-bottom: 0; }
+
+  .picker-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* Silhouette pickers */
+  .sil-row {
+    display: flex;
+    gap: 8px;
+  }
+  .sil-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 4px 8px;
+    background: rgba(231,226,218,0.04);
+    border: 1.5px solid rgba(231,226,218,0.1);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .sil-option:hover {
+    background: rgba(231,226,218,0.1);
+  }
+  .sil-option.picked {
+    background: rgba(47,74,60,0.22);
+    border-color: var(--accent);
+  }
+  .sil-option svg {
+    width: 26px;
+    height: 34px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 1.2;
+  }
+  .sil-option.picked svg { stroke: var(--text-on-dark); }
+  .sil-option span {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .sil-option.picked span { color: var(--text-on-dark); }
+
+  /* Color swatches — 8 mapped to baseGroups */
+  .color-row {
+    display: flex;
+    gap: 8px;
+  }
+  .swatch {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .swatch:hover { transform: scale(1.1); }
+  .swatch.picked {
+    border-color: var(--text-on-dark);
+    transform: scale(1.15);
+    box-shadow: 0 0 0 2px rgba(47,74,60,0.4);
+  }
+  .swatch-label {
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: rgba(154,145,138,0.5);
+    white-space: nowrap;
+    display: none;
+  }
+  .swatch:hover .swatch-label,
+  .swatch.picked .swatch-label {
+    display: block;
+  }
+
+  /* ── AHA screen ── */
+  .aha-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 8px;
+  }
+
+  .aha-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(47,74,60,0.12);
+    border: 1.5px solid rgba(47,74,60,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 36px;
+  }
+  .aha-icon svg {
+    width: 32px;
+    height: 32px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .id-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .id-string {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--text-on-dark);
+    margin-bottom: 36px;
+    line-height: 1.4;
+  }
+  .id-dot {
+    display: inline-block;
+    margin: 0 8px;
+    color: var(--accent);
+    font-size: 18px;
+  }
+
+  .insight-card {
+    background: rgba(231,226,218,0.06);
+    border: 1px solid rgba(231,226,218,0.08);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    width: 100%;
+    margin-bottom: 14px;
+  }
+  .insight-text {
+    font-size: 15px;
+    color: var(--text-on-dark);
+    line-height: 1.55;
+  }
+  .insight-text strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .precision-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* ── First State (curated) ── */
+  .first-state-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 8px;
+  }
+
+  .fs-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .fs-score {
+    font-family: 'DM Serif Display', serif;
+    font-size: 72px;
+    color: var(--text-on-dark);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .fs-status {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(47,74,60,0.15);
+    padding: 6px 20px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+    display: inline-block;
+  }
+
+  .fs-identity {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-on-dark);
+    margin-bottom: 28px;
+    letter-spacing: 0.3px;
+  }
+  .fs-identity-dot {
+    display: inline-block;
+    margin: 0 6px;
+    color: var(--accent);
+  }
+
+  .fs-optimize {
+    background: rgba(231,226,218,0.06);
+    border: 1px solid rgba(231,226,218,0.08);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+  }
+  .fs-opt-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(47,74,60,0.1);
+    border: 1.5px dashed rgba(47,74,60,0.3);
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .fs-opt-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 1.5;
+    opacity: 0.6;
+  }
+  .fs-opt-text {
+    font-size: 14px;
+    color: var(--text-on-dark);
+    line-height: 1.4;
+  }
+  .fs-opt-impact {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 3px;
+  }
+
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 16px 28px;
+    background: rgba(47,42,38,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(231,226,218,0.06);
+    flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    opacity: 0.3;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .nav-item.active { opacity: 1; }
+  .nav-item svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--text-on-dark);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .nav-label {
+    font-size: 10px;
+    color: var(--text-on-dark);
+    letter-spacing: 0.3px;
+  }
+
+  /* ── CTA ── */
+  .cta-area {
+    padding: 14px 28px 36px;
+    flex-shrink: 0;
+  }
+  .cta-btn {
+    width: 100%;
+    padding: 17px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-on-dark);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.3px;
+  }
+  .cta-btn:hover { background: #3a5a4a; }
+  .cta-btn:disabled {
+    background: rgba(47,74,60,0.3);
+    color: rgba(234,229,222,0.3);
+    cursor: not-allowed;
+  }
+
+  /* ── Layout ── */
+  .flow-container {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .phone-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .flow-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 852px;
+    color: rgba(234,229,222,0.12);
+    font-size: 24px;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim { animation: fadeInUp 0.5s ease forwards; }
+  .d1 { animation-delay: 0.15s; opacity: 0; }
+  .d2 { animation-delay: 0.3s; opacity: 0; }
+  .d3 { animation-delay: 0.45s; opacity: 0; }
+  .d4 { animation-delay: 0.6s; opacity: 0; }
+  .d5 { animation-delay: 0.75s; opacity: 0; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">CORET — Onboarding Flow</h1>
+<p class="page-sub">5 skjermer · ~3 minutter · 6 valg totalt</p>
+<p class="page-version">v3 — locked labels, curated first state, 8-swatch palette</p>
+
+<div class="flow-container">
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 1: PRIMARY ARCHETYPE            -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phone-wrapper">
+    <div class="flow-label">1 · Primær retning</div>
+    <div class="phone-frame">
+      <div class="screen active">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="status-logo">CORET</span>
+          <span style="font-size:11px;">●●●</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <div class="screen-content">
+          <div class="screen-label">Strukturell retning</div>
+          <div class="screen-title">Hva beskriver garderoben din?</div>
+          <div class="screen-subtitle">Velg retningen som ligger nærmest. Dette er din primære base.</div>
+
+          <div class="archetype-grid">
+            <!-- Tailored = structuredMinimal -->
+            <div class="archetype-card selected">
+              <div class="arch-silhouette">
+                <svg viewBox="0 0 52 64">
+                  <rect x="8" y="4" width="36" height="56" rx="2"/>
+                  <line x1="14" y1="16" x2="38" y2="16"/>
+                  <line x1="26" y1="4" x2="26" y2="16"/>
+                  <line x1="14" y1="28" x2="38" y2="28"/>
+                  <line x1="8" y1="40" x2="44" y2="40"/>
+                </svg>
+              </div>
+              <div class="arch-text">
+                <div class="archetype-name">Tailored</div>
+                <div class="archetype-desc">Clean lines, definerte former, presis passform. Intensjonell.</div>
+              </div>
+              <div class="arch-check"></div>
+            </div>
+
+            <!-- Smart Casual = smartCasual -->
+            <div class="archetype-card">
+              <div class="arch-silhouette">
+                <svg viewBox="0 0 52 64">
+                  <rect x="9" y="5" width="34" height="54" rx="6"/>
+                  <line x1="15" y1="17" x2="37" y2="17"/>
+                  <line x1="26" y1="5" x2="26" y2="17"/>
+                  <line x1="13" y1="30" x2="39" y2="30"/>
+                </svg>
+              </div>
+              <div class="arch-text">
+                <div class="archetype-name">Smart Casual</div>
+                <div class="archetype-desc">Mellom formelt og avslappet. Kontrollert, men uanstrengt.</div>
+              </div>
+              <div class="arch-check"></div>
+            </div>
+
+            <!-- Street = relaxedStreet -->
+            <div class="archetype-card">
+              <div class="arch-silhouette">
+                <svg viewBox="0 0 52 64">
+                  <rect x="6" y="6" width="40" height="52" rx="12"/>
+                  <line x1="16" y1="20" x2="36" y2="20"/>
+                  <path d="M10 36 Q26 32 42 36"/>
+                </svg>
+              </div>
+              <div class="arch-text">
+                <div class="archetype-name">Street</div>
+                <div class="archetype-desc">Komfort først. Myke former, avslappet passform. Ledig.</div>
+              </div>
+              <div class="arch-check"></div>
+            </div>
+          </div>
+        </div>
+        <div class="cta-area">
+          <button class="cta-btn">Velg sekundær retning →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow">›</div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 2: SECONDARY ARCHETYPE          -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phone-wrapper">
+    <div class="flow-label">2 · Sekundær retning</div>
+    <div class="phone-frame">
+      <div class="screen active">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="status-logo">CORET</span>
+          <span style="font-size:11px;">●●●</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-dot done"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <div class="screen-content">
+          <div class="screen-label">Sekundær retning</div>
+          <div class="screen-title">Hva er din andre side?</div>
+          <div class="screen-subtitle">De fleste garderoben har en blanding. Velg din sekundære retning.</div>
+
+          <div class="selection-context">
+            <div class="selection-dot"></div>
+            <div class="selection-text">Primær: <strong>Tailored</strong></div>
+          </div>
+
+          <div class="archetype-grid">
+            <div class="archetype-card disabled">
+              <div class="arch-silhouette">
+                <svg viewBox="0 0 52 64">
+                  <rect x="8" y="4" width="36" height="56" rx="2"/>
+                  <line x1="14" y1="16" x2="38" y2="16"/>
+                  <line x1="26" y1="4" x2="26" y2="16"/>
+                </svg>
+              </div>
+              <div class="arch-text">
+                <div class="archetype-name">Tailored</div>
+                <div class="archetype-desc">Allerede valgt som primær.</div>
+              </div>
+            </div>
+
+            <div class="archetype-card selected">
+              <div class="arch-silhouette">
+                <svg viewBox="0 0 52 64">
+                  <rect x="9" y="5" width="34" height="54" rx="6"/>
+                  <line x1="15" y1="17" x2="37" y2="17"/>
+                  <line x1="26" y1="5" x2="26" y2="17"/>
+                  <line x1="13" y1="30" x2="39" y2="30"/>
+                </svg>
+              </div>
+              <div class="arch-text">
+                <div class="archetype-name">Smart Casual</div>
+                <div class="archetype-desc">Mellom formelt og avslappet. Kontrollert, men uanstrengt.</div>
+              </div>
+              <div class="arch-check"></div>
+            </div>
+
+            <div class="archetype-card">
+              <div class="arch-silhouette">
+                <svg viewBox="0 0 52 64">
+                  <rect x="6" y="6" width="40" height="52" rx="12"/>
+                  <line x1="16" y1="20" x2="36" y2="20"/>
+                  <path d="M10 36 Q26 32 42 36"/>
+                </svg>
+              </div>
+              <div class="arch-text">
+                <div class="archetype-name">Street</div>
+                <div class="archetype-desc">Komfort først. Myke former, avslappet passform. Ledig.</div>
+              </div>
+              <div class="arch-check"></div>
+            </div>
+          </div>
+        </div>
+        <div class="cta-area">
+          <button class="cta-btn">Legg til plagg →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow">›</div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 3: QUICK-ADD (Top→Bottom→Shoes) -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phone-wrapper">
+    <div class="flow-label">3 · Quick-Add</div>
+    <div class="phone-frame">
+      <div class="screen active">
+        <div class="status-bar">
+          <span>9:42</span>
+          <span class="status-logo">CORET</span>
+          <span style="font-size:11px;">●●●</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <div class="screen-content">
+          <div class="screen-label">Legg til plagg</div>
+          <div class="screen-title">3 plagg. 2 valg hver.</div>
+          <div class="screen-subtitle">Silhuett og farge. Vi styrer rekkefølgen.</div>
+
+          <!-- TOP — done -->
+          <div class="guided-step">
+            <div class="guided-step-header">
+              <div class="step-icon done">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <div>
+                <div class="step-title">Din topp</div>
+                <div class="step-sub">Structured · Navy</div>
+              </div>
+            </div>
+            <div class="pickers-box done">
+              <div class="picker-section">
+                <div class="picker-label">Silhuett</div>
+                <div class="sil-row">
+                  <div class="sil-option picked">
+                    <svg viewBox="0 0 26 34"><rect x="3" y="1" width="20" height="32" rx="1.5"/><line x1="7" y1="9" x2="19" y2="9"/><line x1="13" y1="1" x2="13" y2="9"/></svg>
+                    <span>Structured</span>
+                  </div>
+                  <div class="sil-option">
+                    <svg viewBox="0 0 26 34"><rect x="4" y="2" width="18" height="30" rx="4"/><line x1="8" y1="10" x2="18" y2="10"/></svg>
+                    <span>Balanced</span>
+                  </div>
+                  <div class="sil-option">
+                    <svg viewBox="0 0 26 34"><rect x="2" y="3" width="22" height="28" rx="8"/><line x1="9" y1="11" x2="17" y2="11"/></svg>
+                    <span>Relaxed</span>
+                  </div>
+                </div>
+              </div>
+              <div class="picker-section">
+                <div class="picker-label">Farge</div>
+                <div class="color-row">
+                  <!-- 8 swatches: Black, Charcoal, Navy, Brown, Olive, White, Cream, Burgundy -->
+                  <div class="swatch" style="background:#1A1A1A"><span class="swatch-label">Black</span></div>
+                  <div class="swatch" style="background:#4A4A4A"><span class="swatch-label">Charcoal</span></div>
+                  <div class="swatch picked" style="background:#1B2A3B"><span class="swatch-label">Navy</span></div>
+                  <div class="swatch" style="background:#5C3D2E"><span class="swatch-label">Brown</span></div>
+                  <div class="swatch" style="background:#4A5A3A"><span class="swatch-label">Olive</span></div>
+                  <div class="swatch" style="background:#F0EBE3"><span class="swatch-label">White</span></div>
+                  <div class="swatch" style="background:#E8DDD0"><span class="swatch-label">Cream</span></div>
+                  <div class="swatch" style="background:#6B2D35"><span class="swatch-label">Burgundy</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTTOM — in progress -->
+          <div class="guided-step">
+            <div class="guided-step-header">
+              <div class="step-icon">
+                <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="4" y1="8" x2="20" y2="8"/></svg>
+              </div>
+              <div>
+                <div class="step-title">Din bunn</div>
+                <div class="step-sub">Velg silhuett og farge</div>
+              </div>
+            </div>
+            <div class="pickers-box">
+              <div class="picker-section">
+                <div class="picker-label">Silhuett</div>
+                <div class="sil-row">
+                  <div class="sil-option">
+                    <svg viewBox="0 0 26 34"><rect x="5" y="1" width="16" height="32" rx="1"/><line x1="5" y1="3" x2="21" y2="3"/></svg>
+                    <span>Structured</span>
+                  </div>
+                  <div class="sil-option picked">
+                    <svg viewBox="0 0 26 34"><rect x="4" y="1" width="18" height="32" rx="3"/><line x1="4" y1="3" x2="22" y2="3"/></svg>
+                    <span>Balanced</span>
+                  </div>
+                  <div class="sil-option">
+                    <svg viewBox="0 0 26 34"><path d="M3 3 Q3 1 7 1 L19 1 Q23 1 23 3 L25 33 L1 33 Z"/></svg>
+                    <span>Relaxed</span>
+                  </div>
+                </div>
+              </div>
+              <div class="picker-section">
+                <div class="picker-label">Farge</div>
+                <div class="color-row">
+                  <div class="swatch picked" style="background:#1A1A1A"><span class="swatch-label">Black</span></div>
+                  <div class="swatch" style="background:#4A4A4A"><span class="swatch-label">Charcoal</span></div>
+                  <div class="swatch" style="background:#1B2A3B"><span class="swatch-label">Navy</span></div>
+                  <div class="swatch" style="background:#5C3D2E"><span class="swatch-label">Brown</span></div>
+                  <div class="swatch" style="background:#4A5A3A"><span class="swatch-label">Olive</span></div>
+                  <div class="swatch" style="background:#F0EBE3"><span class="swatch-label">White</span></div>
+                  <div class="swatch" style="background:#E8DDD0"><span class="swatch-label">Cream</span></div>
+                  <div class="swatch" style="background:#6B2D35"><span class="swatch-label">Burgundy</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SHOES — empty -->
+          <div class="guided-step">
+            <div class="guided-step-header">
+              <div class="step-icon">
+                <svg viewBox="0 0 24 24"><path d="M2 18h20"/><path d="M4 18v-4c0-2 2-3 4-3h8c2 0 4 1 4 3v4"/><ellipse cx="12" cy="11" rx="4" ry="2"/></svg>
+              </div>
+              <div>
+                <div class="step-title">Dine sko</div>
+                <div class="step-sub">Siste plagg</div>
+              </div>
+            </div>
+            <div class="pickers-box">
+              <div class="picker-section">
+                <div class="picker-label">Silhuett</div>
+                <div class="sil-row">
+                  <div class="sil-option">
+                    <svg viewBox="0 0 26 34"><rect x="5" y="14" width="16" height="12" rx="2"/><rect x="7" y="10" width="12" height="6" rx="1"/></svg>
+                    <span>Structured</span>
+                  </div>
+                  <div class="sil-option">
+                    <svg viewBox="0 0 26 34"><rect x="4" y="14" width="18" height="12" rx="4"/><rect x="7" y="11" width="12" height="5" rx="2"/></svg>
+                    <span>Balanced</span>
+                  </div>
+                  <div class="sil-option">
+                    <svg viewBox="0 0 26 34"><rect x="3" y="14" width="20" height="12" rx="6"/><rect x="7" y="12" width="12" height="4" rx="2"/></svg>
+                    <span>Relaxed</span>
+                  </div>
+                </div>
+              </div>
+              <div class="picker-section">
+                <div class="picker-label">Farge</div>
+                <div class="color-row">
+                  <div class="swatch" style="background:#1A1A1A"><span class="swatch-label">Black</span></div>
+                  <div class="swatch" style="background:#4A4A4A"><span class="swatch-label">Charcoal</span></div>
+                  <div class="swatch" style="background:#1B2A3B"><span class="swatch-label">Navy</span></div>
+                  <div class="swatch" style="background:#5C3D2E"><span class="swatch-label">Brown</span></div>
+                  <div class="swatch" style="background:#4A5A3A"><span class="swatch-label">Olive</span></div>
+                  <div class="swatch" style="background:#F0EBE3"><span class="swatch-label">White</span></div>
+                  <div class="swatch" style="background:#E8DDD0"><span class="swatch-label">Cream</span></div>
+                  <div class="swatch" style="background:#6B2D35"><span class="swatch-label">Burgundy</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cta-area">
+          <button class="cta-btn" disabled>Analyser garderoben →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow">›</div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 4: AHA — STRUCTURAL IDENTITY    -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phone-wrapper">
+    <div class="flow-label">4 · Identitet</div>
+    <div class="phone-frame">
+      <div class="screen active">
+        <div class="status-bar">
+          <span>9:43</span>
+          <span class="status-logo">CORET</span>
+          <span style="font-size:11px;">●●●</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot current"></div>
+          <div class="progress-dot"></div>
+        </div>
+        <div class="screen-content">
+          <div class="aha-container">
+            <div class="aha-icon anim">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+
+            <div class="id-label anim d1">Din nåværende struktur</div>
+
+            <div class="id-string anim d2">
+              Tailored<span class="id-dot">·</span>Deep-Toned<span class="id-dot">·</span>Cool
+            </div>
+
+            <div class="insight-card anim d3">
+              <div class="insight-text">
+                Din base group dominerer <strong>66%</strong> av garderoben.<br>
+                Silhuett-alignment er <strong>høy</strong>.
+              </div>
+            </div>
+
+            <div class="precision-note anim d4">
+              Presisjonen øker når flere plagg legges til.
+            </div>
+          </div>
+        </div>
+        <div class="cta-area">
+          <button class="cta-btn">Se din første analyse →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow">›</div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 5: FIRST STATE (curated)        -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phone-wrapper">
+    <div class="flow-label">5 · First State</div>
+    <div class="phone-frame">
+      <div class="screen active">
+        <div class="status-bar">
+          <span>9:43</span>
+          <span class="status-logo">CORET</span>
+          <span style="font-size:11px;">●●●</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+          <div class="progress-dot done"></div>
+        </div>
+        <div class="screen-content">
+          <div class="first-state-center">
+
+            <div class="fs-label anim">Cohesion</div>
+            <div class="fs-score anim d1">62</div>
+            <div class="fs-status anim d2">Structuring</div>
+
+            <div class="fs-identity anim d3">
+              Tailored<span class="fs-identity-dot">·</span>Deep-Toned<span class="fs-identity-dot">·</span>Cool
+            </div>
+
+            <div class="fs-optimize anim d4">
+              <div class="fs-opt-icon">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </div>
+              <div>
+                <div class="fs-opt-text">Strukturert ytterplagg i nøytral base</div>
+                <div class="fs-opt-impact">Density +18 · Cohesion +9</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="cta-area">
+          <button class="cta-btn">Gå til Dashboard →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
