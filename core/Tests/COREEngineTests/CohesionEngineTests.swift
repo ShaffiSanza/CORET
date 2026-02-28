@@ -513,3 +513,256 @@ private func minimalWardrobe() -> [WardrobeItem] {
     #expect(identity.dominantBaseGroup == .neutral)
     #expect(identity.dominantTemperature == .cool)
 }
+
+// MARK: - Item Contributions: Empty
+
+@Test func contributionsEmptyItems() {
+    let profile = makeProfile()
+    for component in CohesionComponent.allCases {
+        let result = CohesionEngine.itemContributions(items: [], profile: profile, component: component)
+        #expect(result.isEmpty)
+    }
+}
+
+// MARK: - Item Contributions: Alignment
+
+@Test func alignmentContributionScores() {
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal),    // primary → 1.0
+        makeItem(category: .bottom, archetype: .smartCasual),       // secondary → 0.7
+        makeItem(category: .shoes, archetype: .relaxedStreet),      // conflict → 0.2
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = CohesionEngine.itemContributions(items: items, profile: profile, component: .alignment)
+
+    #expect(result.count == 3)
+    // Sorted descending: primary (1.0), secondary (0.7), conflict (0.2)
+    #expect(abs(result[0].contributionScore - 1.0) < 0.001)
+    #expect(result[0].context == .alignment(.primary))
+    #expect(abs(result[1].contributionScore - 0.7) < 0.001)
+    #expect(result[1].context == .alignment(.secondary))
+    #expect(abs(result[2].contributionScore - 0.2) < 0.001)
+    #expect(result[2].context == .alignment(.conflict))
+}
+
+@Test func alignmentContributionNeutralItem() {
+    // smartCasual vs primary=relaxedStreet, secondary=relaxedStreet → neutral (0.5)
+    let items = [makeItem(category: .top, archetype: .smartCasual)]
+    let profile = makeProfile(primary: .relaxedStreet, secondary: .relaxedStreet)
+    let result = CohesionEngine.itemContributions(items: items, profile: profile, component: .alignment)
+
+    #expect(result.count == 1)
+    #expect(abs(result[0].contributionScore - 0.5) < 0.001)
+    #expect(result[0].context == .alignment(.neutral))
+}
+
+@Test func alignmentContributionSortingTieBreaksByUUID() {
+    // Two items with same archetype → same score → UUID tie-break
+    let itemA = makeItem(category: .top, archetype: .structuredMinimal)
+    let itemB = makeItem(category: .bottom, archetype: .structuredMinimal)
+    let profile = makeProfile()
+    let result = CohesionEngine.itemContributions(items: [itemA, itemB], profile: profile, component: .alignment)
+
+    #expect(result.count == 2)
+    #expect(abs(result[0].contributionScore - result[1].contributionScore) < 0.001)
+    // Tie-broken by UUID string: first should have lexicographically smaller UUID
+    #expect(result[0].itemID.uuidString < result[1].itemID.uuidString)
+}
+
+@Test func alignmentContributionItemIDsMatch() {
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal),
+        makeItem(category: .bottom, archetype: .relaxedStreet),
+    ]
+    let profile = makeProfile()
+    let result = CohesionEngine.itemContributions(items: items, profile: profile, component: .alignment)
+
+    let resultIDs = Set(result.map(\.itemID))
+    let inputIDs = Set(items.map(\.id))
+    #expect(resultIDs == inputIDs)
+}
+
+// MARK: - Item Contributions: Rotation
+
+@Test func rotationContributionEvenUsage() {
+    let items = [
+        makeItem(category: .top, usageCount: 5),
+        makeItem(category: .top, usageCount: 5),
+        makeItem(category: .bottom, usageCount: 3),
+        makeItem(category: .bottom, usageCount: 3),
+    ]
+    let result = CohesionEngine.itemContributions(items: items, profile: makeProfile(), component: .rotation)
+
+    #expect(result.count == 4)
+    for contribution in result {
+        #expect(abs(contribution.contributionScore - 1.0) < 0.001)
+        #expect(contribution.context == .rotation(.even))
+    }
+}
+
+@Test func rotationContributionUnevenUsage() {
+    let items = [
+        makeItem(category: .top, usageCount: 10),
+        makeItem(category: .top, usageCount: 0),
+    ]
+    let result = CohesionEngine.itemContributions(items: items, profile: makeProfile(), component: .rotation)
+
+    #expect(result.count == 2)
+    // mean=5, both have deviation 5, normalized=5/5=1.0, score=0.0
+    for contribution in result {
+        #expect(abs(contribution.contributionScore - 0.0) < 0.001)
+    }
+    // One overused (10), one underused (0)
+    let overused = result.first { $0.context == .rotation(.overused) }
+    let underused = result.first { $0.context == .rotation(.underused) }
+    #expect(overused != nil)
+    #expect(underused != nil)
+}
+
+@Test func rotationContributionSingleItemCategory() {
+    // Single item in category → perfect (1.0, .even)
+    let items = [makeItem(category: .top, usageCount: 99)]
+    let result = CohesionEngine.itemContributions(items: items, profile: makeProfile(), component: .rotation)
+
+    #expect(result.count == 1)
+    #expect(abs(result[0].contributionScore - 1.0) < 0.001)
+    #expect(result[0].context == .rotation(.even))
+}
+
+// MARK: - Item Contributions: Density
+
+@Test func densityContributionOnlyBottomRemovalKillsDensity() {
+    // Removing the only bottom kills all outfits → highest delta
+    var items = minimalWardrobe() // 1 top, 1 bottom, 1 shoes
+    items.append(makeItem(category: .top)) // extra top so removing top doesn't kill density
+    let profile = makeProfile()
+    let result = CohesionEngine.itemContributions(items: items, profile: profile, component: .density)
+
+    #expect(result.count == 4)
+    // The bottom (only one) should have the highest contribution score
+    let bottomItem = items.first { $0.category == .bottom }!
+    let bottomContribution = result.first { $0.itemID == bottomItem.id }!
+    #expect(bottomContribution.context == .density(.high))
+    #expect(bottomContribution.contributionScore > 0.5)
+}
+
+@Test func densityContributionMissingCategory() {
+    // No shoes → density baseline is 0. All deltas are 0.
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+    ]
+    let result = CohesionEngine.itemContributions(items: items, profile: makeProfile(), component: .density)
+
+    #expect(result.count == 2)
+    for contribution in result {
+        #expect(abs(contribution.contributionScore - 0.5) < 0.001)
+        #expect(contribution.context == .density(.low))
+    }
+}
+
+@Test func densityContributionConflictingItemLow() {
+    // Conflicting outerwear reduces valid outfits → low participation
+    var items = minimalWardrobe()
+    items.append(makeItem(category: .outerwear, archetype: .relaxedStreet))
+    let profile = makeProfile(primary: .structuredMinimal)
+    let result = CohesionEngine.itemContributions(items: items, profile: profile, component: .density)
+
+    let conflictItem = items.last!
+    let conflictContrib = result.first { $0.itemID == conflictItem.id }!
+    // Removing conflicting outerwear should NOT hurt density (delta ≤ 0)
+    #expect(conflictContrib.context == .density(.low))
+}
+
+// MARK: - Item Contributions: Palette
+
+@Test func paletteContributionExcessAccent() {
+    // 3 accent out of 4 = 75% → excessAccent context
+    let items = [
+        makeItem(category: .top, baseGroup: .accent),
+        makeItem(category: .bottom, baseGroup: .accent),
+        makeItem(category: .shoes, baseGroup: .accent),
+        makeItem(category: .outerwear, baseGroup: .neutral),
+    ]
+    let result = CohesionEngine.itemContributions(items: items, profile: makeProfile(), component: .palette)
+
+    let accentContributions = result.filter { $0.context == .palette(.excessAccent) }
+    #expect(accentContributions.count == 3)
+}
+
+@Test func paletteContributionTemperatureClash() {
+    // 3 warm, 1 cool → cool item clashes
+    let items = [
+        makeItem(category: .top, baseGroup: .neutral, temperature: .warm),
+        makeItem(category: .bottom, baseGroup: .neutral, temperature: .warm),
+        makeItem(category: .shoes, baseGroup: .neutral, temperature: .warm),
+        makeItem(category: .outerwear, baseGroup: .deep, temperature: .cool),
+    ]
+    let result = CohesionEngine.itemContributions(items: items, profile: makeProfile(), component: .palette)
+
+    let coolItem = items.last!
+    let coolContrib = result.first { $0.itemID == coolItem.id }!
+    #expect(coolContrib.context == .palette(.temperatureClash))
+}
+
+@Test func paletteContributionBalanced() {
+    // All neutral, same temperature → all balanced
+    let items = [
+        makeItem(category: .top, baseGroup: .neutral, temperature: .warm),
+        makeItem(category: .bottom, baseGroup: .neutral, temperature: .warm),
+        makeItem(category: .shoes, baseGroup: .deep, temperature: .warm),
+    ]
+    let result = CohesionEngine.itemContributions(items: items, profile: makeProfile(), component: .palette)
+
+    for contribution in result {
+        #expect(contribution.context == .palette(.balanced))
+    }
+}
+
+// MARK: - Item Contributions: General
+
+@Test func contributionCountMatchesItemCount() {
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+    ]
+    let profile = makeProfile()
+    for component in CohesionComponent.allCases {
+        let result = CohesionEngine.itemContributions(items: items, profile: profile, component: component)
+        #expect(result.count == items.count)
+    }
+}
+
+@Test func contributionComponentFieldMatchesRequest() {
+    let items = minimalWardrobe()
+    let profile = makeProfile()
+    for component in CohesionComponent.allCases {
+        let result = CohesionEngine.itemContributions(items: items, profile: profile, component: component)
+        for contribution in result {
+            #expect(contribution.component == component)
+        }
+    }
+}
+
+@Test func contributionDeterminism() {
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal, usageCount: 3),
+        makeItem(category: .bottom, archetype: .smartCasual, usageCount: 7),
+        makeItem(category: .shoes, archetype: .relaxedStreet, usageCount: 1),
+    ]
+    let profile = makeProfile()
+
+    for component in CohesionComponent.allCases {
+        let run1 = CohesionEngine.itemContributions(items: items, profile: profile, component: component)
+        let run2 = CohesionEngine.itemContributions(items: items, profile: profile, component: component)
+
+        #expect(run1.count == run2.count)
+        for i in 0..<run1.count {
+            #expect(run1[i].itemID == run2[i].itemID)
+            #expect(abs(run1[i].contributionScore - run2[i].contributionScore) < 0.0001)
+            #expect(run1[i].context == run2[i].context)
+        }
+    }
+}

@@ -55,7 +55,7 @@ CORET/
 │   ├── Sources/COREEngine/
 │   │   ├── COREEngine.swift           (placeholder)
 │   │   ├── Engines/
-│   │   │   ├── CohesionEngine.swift   ✅ Complete (40 tests)
+│   │   │   ├── CohesionEngine.swift   ✅ Complete (57 tests)
 │   │   │   ├── OptimizeEngine.swift   ✅ Complete (19 tests)
 │   │   │   ├── SeasonalEngine.swift   ✅ Complete (19 tests)
 │   │   │   └── EvolutionEngine.swift  ✅ Complete (48 tests)
@@ -63,7 +63,7 @@ CORET/
 │   │       └── WardrobeItem.swift     ✅ Complete (all types + StructuralIdentity)
 │   └── Tests/COREEngineTests/
 │       ├── COREEngineTests.swift      (scaffold — can be removed)
-│       ├── CohesionEngineTests.swift  ✅ 40 tests passing
+│       ├── CohesionEngineTests.swift  ✅ 57 tests passing
 │       ├── OptimizeEngineTests.swift  ✅ 19 tests passing
 │       ├── SeasonalEngineTests.swift  ✅ 19 tests passing
 │       └── EvolutionEngineTests.swift ✅ 48 tests passing
@@ -165,6 +165,24 @@ Defined in `WardrobeItem.swift`. Returned by `CohesionEngine.structuralIdentity(
 | itemIDs | Set\<UUID\> (`let`) |
 | createdAt | Date (`let`) |
 
+### Item Contribution Types (Runtime Only)
+
+Defined in `CohesionEngine.swift`. Not persisted — recomputed on demand.
+
+**CohesionComponent** (enum): `alignment`, `density`, `palette`, `rotation`
+
+**AlignmentMatchType** (enum): `primary`, `secondary`, `neutral`, `conflict`
+
+**ParticipationLevel** (enum): `high`, `low`
+
+**PaletteRole** (enum): `balanced`, `excessAccent`, `temperatureClash`
+
+**UsageLevel** (enum): `even`, `overused`, `underused`
+
+**ContributionContext** (enum, associated values): `.alignment(AlignmentMatchType)`, `.density(ParticipationLevel)`, `.palette(PaletteRole)`, `.rotation(UsageLevel)`
+
+**ItemContribution** (struct): `id`, `itemID: UUID`, `component: CohesionComponent`, `contributionScore: Double`, `context: ContributionContext`
+
 ### OptimizeEngine Result Types
 
 Defined in `OptimizeEngine.swift`:
@@ -183,7 +201,7 @@ Defined in `OptimizeEngine.swift`:
 
 File: `core/Sources/COREEngine/Engines/CohesionEngine.swift`
 Pattern: `public enum CohesionEngine: Sendable` — caseless enum namespace, all static functions.
-Tests: 29 passing in `CohesionEngineTests.swift`
+Tests: 57 passing in `CohesionEngineTests.swift`
 
 ### Formula
 
@@ -203,6 +221,7 @@ public static func paletteScore(items: [WardrobeItem]) -> Double
 public static func rotationScore(items: [WardrobeItem]) -> Double
 public static func statusLevel(from totalScore: Double) -> CohesionStatus
 public static func structuralIdentity(items: [WardrobeItem]) -> StructuralIdentity
+public static func itemContributions(items: [WardrobeItem], profile: UserProfile, component: CohesionComponent) -> [ItemContribution]
 ```
 
 ### 4a. Archetype Alignment (weight 0.35)
@@ -293,6 +312,51 @@ Derives a deterministic identity from current wardrobe state via `structuralIden
 - Empty items → all nil / .neutral
 
 No identityString in engine. String composition is ViewModel responsibility.
+
+### 4g. Item Contributions
+
+Per-item contribution scoring for Component Detail screen. Hybrid approach: direct scoring for alignment/rotation, delta simulation for density/palette.
+
+**Types** (defined in `CohesionEngine.swift`, runtime only — not persisted):
+
+```swift
+public enum CohesionComponent: String, Codable, CaseIterable, Sendable {
+    case alignment, density, palette, rotation
+}
+
+public enum ContributionContext: Sendable, Equatable {
+    case alignment(AlignmentMatchType)   // .primary, .secondary, .neutral, .conflict
+    case density(ParticipationLevel)     // .high, .low
+    case palette(PaletteRole)            // .balanced, .excessAccent, .temperatureClash
+    case rotation(UsageLevel)            // .even, .overused, .underused
+}
+
+public struct ItemContribution: Identifiable, Sendable {
+    public let id: UUID
+    public let itemID: UUID
+    public let component: CohesionComponent
+    public let contributionScore: Double  // 0–1, higher = better
+    public let context: ContributionContext
+}
+```
+
+**Scoring strategy per component:**
+
+| Component | Method | Score Range | Context Labels |
+|-----------|--------|-------------|----------------|
+| Alignment | Direct (reuses `itemAlignmentValue`) | 0.2–1.0 | Primary/Secondary/Neutral/Conflict |
+| Rotation | Direct (deviation from category mean) | 0–1 | Even (< 0.2 normalized dev) / Overused / Underused |
+| Density | Delta simulation (remove item, recompute) | 0–1 (min-max normalized) | High (delta > 0) / Low (delta ≤ 0) |
+| Palette | Delta simulation (remove item, recompute) | 0–1 (min-max normalized) | Balanced / ExcessAccent / TemperatureClash |
+
+**Normalization (delta-based):** `(delta - minDelta) / (maxDelta - minDelta)`. All deltas equal → 0.5.
+
+**Sorting:** Descending by contributionScore. Tie-break: UUID string lexicographic.
+
+**Edge cases:**
+- Empty items → empty array
+- Single item → alignment/rotation use direct score; density/palette get 0.5 (only one delta)
+- Missing category (density baseline 0) → all items get 0.5, context `.low`
 
 ### Design Principles
 - Deterministic. No ML.
@@ -1022,14 +1086,14 @@ Commerce must never compromise structural integrity.
 Build: `cd core && swift build`
 Test: `cd core && swift test`
 
-**126/126 tests passing.**
+**143/143 tests passing.**
 
 ### What Is Done
 
 | Component | File | Tests | Status |
 |-----------|------|-------|--------|
 | Data models (all types) | `Models/WardrobeItem.swift` | — | ✅ Complete |
-| CohesionEngine + structuralIdentity | `Engines/CohesionEngine.swift` | 40 | ✅ Complete |
+| CohesionEngine + structuralIdentity + itemContributions | `Engines/CohesionEngine.swift` | 57 | ✅ Complete |
 | OptimizeEngine + result types | `Engines/OptimizeEngine.swift` | 19 | ✅ Complete |
 | SeasonalEngine + types | `Engines/SeasonalEngine.swift` | 19 | ✅ Complete |
 | EvolutionEngine + momentum + anchorItems | `Engines/EvolutionEngine.swift` | 48 | ✅ Complete |
