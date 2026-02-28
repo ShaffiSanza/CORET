@@ -63,7 +63,7 @@ CORET/
 │   │       └── WardrobeItem.swift     ✅ Complete (all types + StructuralIdentity)
 │   └── Tests/COREEngineTests/
 │       ├── COREEngineTests.swift      (scaffold — can be removed)
-│       ├── CohesionEngineTests.swift  ✅ 57 tests passing
+│       ├── CohesionEngineTests.swift  ✅ 79 tests passing
 │       ├── OptimizeEngineTests.swift  ✅ 19 tests passing
 │       ├── SeasonalEngineTests.swift  ✅ 19 tests passing
 │       └── EvolutionEngineTests.swift ✅ 48 tests passing
@@ -167,7 +167,7 @@ Defined in `WardrobeItem.swift`. Returned by `CohesionEngine.structuralIdentity(
 
 ### Item Contribution Types (Runtime Only)
 
-Defined in `CohesionEngine.swift`. Not persisted — recomputed on demand.
+Defined in `CohesionEngine.swift`. Not persisted — recomputed on demand. `ItemContribution` and `ContributionContext` are NOT Codable. `ContributionContext` uses associated values which prevent auto-synthesis. These types are recomputed on demand and never persisted, so Codable is not required.
 
 **CohesionComponent** (enum): `alignment`, `density`, `palette`, `rotation`
 
@@ -407,6 +407,8 @@ relaxed         0.3        0.7      1.0
 - Single item per category → 1 outfit returned
 - Empty wardrobe → empty array
 
+**outfitBuilder vs densityScore validation:** outfitBuilder does NOT filter by `isValidOutfit()`. It scores all structurally complete combinations. Outfits that would fail density validation (archetype conflict, silhouette imbalance, color violations) appear with low scores rather than being excluded. This is intentional — outfitBuilder measures quality on a spectrum, while densityScore uses binary validity.
+
 ### Design Principles
 - Deterministic. No ML.
 - Transparent breakdown. All component scores are public.
@@ -457,6 +459,10 @@ For each existing item:
 - Sorted by improvement descending
 
 Friction is labeled "Structural Friction" in UI. Only surfaced when significant.
+
+### WeaknessArea vs CohesionComponent
+
+WeaknessArea mirrors CohesionComponent cases (`alignment`, `density`, `palette`, `rotation`). Kept separate because WeaknessArea is OptimizeEngine's domain concept (what to fix), while CohesionComponent is CohesionEngine's domain concept (what to measure). Unification deferred to ViewModel layer where a shared type may make sense.
 
 ### Recalculation Triggers
 - Item added or removed
@@ -563,7 +569,7 @@ The existing `compute(items:profile:)` delegates to this with `SeasonalEngine.ba
 
 File: `core/Sources/COREEngine/Engines/EvolutionEngine.swift`
 Pattern: `public enum EvolutionEngine: Sendable`
-Tests: 29 passing in `EvolutionEngineTests.swift`
+Tests: 48 passing in `EvolutionEngineTests.swift`
 
 ### Purpose
 
@@ -1135,7 +1141,7 @@ Commerce must never compromise structural integrity.
 Build: `cd core && swift build`
 Test: `cd core && swift test`
 
-**165/165 tests passing.**
+**166/166 tests passing.**
 
 ### What Is Done
 

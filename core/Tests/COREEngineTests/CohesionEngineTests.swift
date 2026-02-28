@@ -1060,3 +1060,33 @@ private func minimalWardrobe() -> [WardrobeItem] {
         #expect(abs(run1[i].silhouetteConsistency - run2[i].silhouetteConsistency) < 0.0001)
     }
 }
+
+// MARK: - Outfit Builder: Worst Case
+
+@Test func outfitBuilderWorstCaseAllComponentsLow() {
+    // All palette rules fail + archetype conflict + inconsistent silhouettes
+    // → outfitScore near minimum, function doesn't crash
+    let items = [
+        makeItem(category: .top, silhouette: .structured, baseGroup: .accent, temperature: .warm, archetype: .relaxedStreet),
+        makeItem(category: .bottom, silhouette: .relaxed, baseGroup: .accent, temperature: .cool, archetype: .relaxedStreet),
+        makeItem(category: .shoes, silhouette: .structured, baseGroup: .deep, temperature: .warm, archetype: .relaxedStreet),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = CohesionEngine.outfitBuilder(items: items, profile: profile)
+
+    #expect(result.count == 1)
+    let outfit = result[0]
+
+    // Alignment: all conflict (relaxedStreet vs structuredMinimal) → 0.2 each → avg 0.2
+    #expect(abs(outfit.alignmentScore - 0.2) < 0.001)
+
+    // Palette: 2 accents (>1 ✗), no neutral (✗), warm+cool clash (✗) → 0/3
+    #expect(abs(outfit.paletteHarmony - 0.0) < 0.001)
+
+    // Silhouette: (s,r)=0.3, (s,s)=1.0, (r,s)=0.3 → avg 1.6/3
+    let expectedSilhouette = (0.3 + 1.0 + 0.3) / 3.0
+    #expect(abs(outfit.silhouetteConsistency - expectedSilhouette) < 0.001)
+
+    // Overall: 0.2×0.40 + 0.0×0.35 + 0.533×0.25 = 0.21
+    #expect(abs(outfit.outfitScore - 0.21) < 0.001)
+}
