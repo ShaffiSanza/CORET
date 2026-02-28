@@ -766,3 +766,297 @@ private func minimalWardrobe() -> [WardrobeItem] {
         }
     }
 }
+
+// MARK: - Outfit Builder: Empty / Missing Category
+
+@Test func outfitBuilderEmptyWardrobe() {
+    let result = CohesionEngine.outfitBuilder(items: [], profile: makeProfile())
+    #expect(result.isEmpty)
+}
+
+@Test func outfitBuilderMissingCategory() {
+    // No shoes → no valid combinations
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(result.isEmpty)
+}
+
+// MARK: - Outfit Builder: Combination Count
+
+@Test func outfitBuilderMinimalWardrobe() {
+    let items = minimalWardrobe() // 1 top, 1 bottom, 1 shoes
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    // 1×1×1×(1+0) = 1 outfit
+    #expect(result.count == 1)
+}
+
+@Test func outfitBuilderCombinationCount() {
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .bottom),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+        makeItem(category: .outerwear),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    // 2 tops × 3 bottoms × 1 shoes × (1 + 2 outerwear) = 18
+    #expect(result.count == 18)
+}
+
+@Test func outfitBuilderNoCap() {
+    // Engine returns all outfits, no hard cap
+    var items: [WardrobeItem] = []
+    for _ in 0..<4 { items.append(makeItem(category: .top)) }
+    for _ in 0..<4 { items.append(makeItem(category: .bottom)) }
+    for _ in 0..<3 { items.append(makeItem(category: .shoes)) }
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    // 4×4×3×1 = 48 outfits — all returned
+    #expect(result.count == 48)
+}
+
+// MARK: - Outfit Builder: Sorting
+
+@Test func outfitBuilderSortedByScoreDescending() {
+    // Mix archetypes to produce different alignment scores
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal),
+        makeItem(category: .top, archetype: .relaxedStreet),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = CohesionEngine.outfitBuilder(items: items, profile: profile)
+
+    #expect(result.count == 2)
+    #expect(result[0].outfitScore >= result[1].outfitScore)
+}
+
+@Test func outfitBuilderTieBreakDeterministic() {
+    // All identical items → all outfits have same score → tie-break must be stable
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+    ]
+    let profile = makeProfile()
+    let run1 = CohesionEngine.outfitBuilder(items: items, profile: profile)
+    let run2 = CohesionEngine.outfitBuilder(items: items, profile: profile)
+
+    #expect(run1.count == run2.count)
+    for i in 0..<run1.count {
+        // Same items in same order
+        let ids1 = run1[i].items.map(\.id)
+        let ids2 = run2[i].items.map(\.id)
+        #expect(ids1 == ids2)
+    }
+}
+
+// MARK: - Outfit Builder: Score Rounding
+
+@Test func outfitBuilderScoreRoundedToTwoDecimals() {
+    let items = minimalWardrobe()
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(result.count == 1)
+    let outfit = result[0]
+    // Verify score has at most 2 decimal places
+    let scaled = outfit.outfitScore * 100
+    #expect(abs(scaled - scaled.rounded()) < 0.001)
+}
+
+// MARK: - Outfit Builder: Formula Weights
+
+@Test func outfitBuilderFormulaWeights() {
+    let items = minimalWardrobe()
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(result.count == 1)
+    let outfit = result[0]
+
+    let expected = outfit.alignmentScore * 0.40
+        + outfit.paletteHarmony * 0.35
+        + outfit.silhouetteConsistency * 0.25
+    let expectedRounded = (expected * 100).rounded() / 100
+    #expect(abs(outfit.outfitScore - expectedRounded) < 0.001)
+}
+
+// MARK: - Outfit Builder: Alignment Scoring
+
+@Test func outfitBuilderAlignmentAllPrimary() {
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal),
+        makeItem(category: .bottom, archetype: .structuredMinimal),
+        makeItem(category: .shoes, archetype: .structuredMinimal),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal)
+    let result = CohesionEngine.outfitBuilder(items: items, profile: profile)
+    #expect(abs(result[0].alignmentScore - 1.0) < 0.001)
+}
+
+@Test func outfitBuilderAlignmentMixed() {
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal),    // 1.0
+        makeItem(category: .bottom, archetype: .smartCasual),       // 0.7
+        makeItem(category: .shoes, archetype: .relaxedStreet),      // 0.2
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = CohesionEngine.outfitBuilder(items: items, profile: profile)
+    let expected = (1.0 + 0.7 + 0.2) / 3.0
+    #expect(abs(result[0].alignmentScore - expected) < 0.001)
+}
+
+// MARK: - Outfit Builder: Palette Harmony
+
+@Test func outfitBuilderPaletteHarmonyAllPass() {
+    // 1 accent (≤1), has neutral, all warm (no clash) → 3/3
+    let items = [
+        makeItem(category: .top, baseGroup: .neutral, temperature: .warm),
+        makeItem(category: .bottom, baseGroup: .deep, temperature: .warm),
+        makeItem(category: .shoes, baseGroup: .accent, temperature: .warm),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(abs(result[0].paletteHarmony - 1.0) < 0.001)
+}
+
+@Test func outfitBuilderPaletteHarmonyOneFails() {
+    // 2 accents (>1), has neutral, all warm → 2/3
+    let items = [
+        makeItem(category: .top, baseGroup: .accent, temperature: .warm),
+        makeItem(category: .bottom, baseGroup: .accent, temperature: .warm),
+        makeItem(category: .shoes, baseGroup: .neutral, temperature: .warm),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(abs(result[0].paletteHarmony - 2.0 / 3.0) < 0.001)
+}
+
+@Test func outfitBuilderPaletteHarmonyTwoFail() {
+    // 2 accents (>1), no neutral, all warm → 1/3
+    let items = [
+        makeItem(category: .top, baseGroup: .accent, temperature: .warm),
+        makeItem(category: .bottom, baseGroup: .accent, temperature: .warm),
+        makeItem(category: .shoes, baseGroup: .deep, temperature: .warm),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(abs(result[0].paletteHarmony - 1.0 / 3.0) < 0.001)
+}
+
+@Test func outfitBuilderPaletteHarmonyAllFail() {
+    // 2 accents (>1), no neutral, warm+cool clash → 0/3
+    let items = [
+        makeItem(category: .top, baseGroup: .accent, temperature: .warm),
+        makeItem(category: .bottom, baseGroup: .accent, temperature: .cool),
+        makeItem(category: .shoes, baseGroup: .deep, temperature: .warm),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(abs(result[0].paletteHarmony - 0.0) < 0.001)
+}
+
+@Test func outfitBuilderPaletteMonochrome() {
+    // All same baseGroup → monochrome exception → 1.0
+    let items = [
+        makeItem(category: .top, baseGroup: .neutral, temperature: .warm),
+        makeItem(category: .bottom, baseGroup: .neutral, temperature: .cool),
+        makeItem(category: .shoes, baseGroup: .neutral, temperature: .warm),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(abs(result[0].paletteHarmony - 1.0) < 0.001)
+}
+
+// MARK: - Outfit Builder: Silhouette Consistency
+
+@Test func outfitBuilderSilhouetteUniform() {
+    // All structured → all pairs 1.0 → consistency 1.0
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .bottom, silhouette: .structured),
+        makeItem(category: .shoes, silhouette: .structured),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(abs(result[0].silhouetteConsistency - 1.0) < 0.001)
+}
+
+@Test func outfitBuilderSilhouetteAllBalanced() {
+    // All balanced → all pairs 1.0 → consistency 1.0
+    let items = [
+        makeItem(category: .top, silhouette: .balanced),
+        makeItem(category: .bottom, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .balanced),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(abs(result[0].silhouetteConsistency - 1.0) < 0.001)
+}
+
+@Test func outfitBuilderSilhouetteStructuredRelaxedMix() {
+    // structured+relaxed = 0.3 per pair
+    // 3 items, 3 pairs: (s,r)=0.3, (s,r)=0.3, (r,r)=1.0 → avg = 0.533
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .bottom, silhouette: .relaxed),
+        makeItem(category: .shoes, silhouette: .relaxed),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    let expected = (0.3 + 0.3 + 1.0) / 3.0
+    #expect(abs(result[0].silhouetteConsistency - expected) < 0.001)
+}
+
+@Test func outfitBuilderSilhouetteWithOuterwear() {
+    // 4 items = 6 pairs
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .bottom, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .balanced),
+        makeItem(category: .outerwear, silhouette: .structured),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    // Find the 4-item outfit
+    let fourItem = result.first { $0.items.count == 4 }!
+    // Pairs: s-b=0.7, s-b=0.7, s-s=1.0, b-b=1.0, b-s=0.7, b-s=0.7
+    let expected = (0.7 + 0.7 + 1.0 + 1.0 + 0.7 + 0.7) / 6.0
+    #expect(abs(fourItem.silhouetteConsistency - expected) < 0.001)
+}
+
+// MARK: - Outfit Builder: Silhouette Counts
+
+@Test func outfitBuilderSilhouetteCounts() {
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .bottom, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .structured),
+    ]
+    let result = CohesionEngine.outfitBuilder(items: items, profile: makeProfile())
+    #expect(result[0].silhouetteCounts[.structured] == 2)
+    #expect(result[0].silhouetteCounts[.balanced] == 1)
+    #expect(result[0].silhouetteCounts[.relaxed] == nil)
+}
+
+// MARK: - Outfit Builder: Determinism
+
+@Test func outfitBuilderDeterminism() {
+    let items = [
+        makeItem(category: .top, silhouette: .structured, baseGroup: .neutral, temperature: .warm, archetype: .structuredMinimal),
+        makeItem(category: .top, silhouette: .relaxed, baseGroup: .deep, temperature: .cool, archetype: .relaxedStreet),
+        makeItem(category: .bottom, baseGroup: .neutral, temperature: .warm),
+        makeItem(category: .shoes, baseGroup: .accent, temperature: .warm),
+        makeItem(category: .outerwear, silhouette: .balanced),
+    ]
+    let profile = makeProfile()
+
+    let run1 = CohesionEngine.outfitBuilder(items: items, profile: profile)
+    let run2 = CohesionEngine.outfitBuilder(items: items, profile: profile)
+
+    #expect(run1.count == run2.count)
+    for i in 0..<run1.count {
+        let ids1 = run1[i].items.map(\.id)
+        let ids2 = run2[i].items.map(\.id)
+        #expect(ids1 == ids2)
+        #expect(abs(run1[i].outfitScore - run2[i].outfitScore) < 0.0001)
+        #expect(abs(run1[i].alignmentScore - run2[i].alignmentScore) < 0.0001)
+        #expect(abs(run1[i].paletteHarmony - run2[i].paletteHarmony) < 0.0001)
+        #expect(abs(run1[i].silhouetteConsistency - run2[i].silhouetteConsistency) < 0.0001)
+    }
+}

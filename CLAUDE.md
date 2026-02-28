@@ -183,6 +183,12 @@ Defined in `CohesionEngine.swift`. Not persisted — recomputed on demand.
 
 **ItemContribution** (struct): `id`, `itemID: UUID`, `component: CohesionComponent`, `contributionScore: Double`, `context: ContributionContext`
 
+### Outfit Builder Types
+
+Defined in `CohesionEngine.swift`.
+
+**ScoredOutfit** (struct): `id`, `items: [WardrobeItem]`, `outfitScore: Double`, `alignmentScore: Double`, `paletteHarmony: Double`, `silhouetteConsistency: Double`, `silhouetteCounts: [Silhouette: Int]`
+
 ### OptimizeEngine Result Types
 
 Defined in `OptimizeEngine.swift`:
@@ -201,7 +207,7 @@ Defined in `OptimizeEngine.swift`:
 
 File: `core/Sources/COREEngine/Engines/CohesionEngine.swift`
 Pattern: `public enum CohesionEngine: Sendable` — caseless enum namespace, all static functions.
-Tests: 57 passing in `CohesionEngineTests.swift`
+Tests: 79 passing in `CohesionEngineTests.swift`
 
 ### Formula
 
@@ -222,6 +228,7 @@ public static func rotationScore(items: [WardrobeItem]) -> Double
 public static func statusLevel(from totalScore: Double) -> CohesionStatus
 public static func structuralIdentity(items: [WardrobeItem]) -> StructuralIdentity
 public static func itemContributions(items: [WardrobeItem], profile: UserProfile, component: CohesionComponent) -> [ItemContribution]
+public static func outfitBuilder(items: [WardrobeItem], profile: UserProfile) -> [ScoredOutfit]
 ```
 
 ### 4a. Archetype Alignment (weight 0.35)
@@ -357,6 +364,48 @@ public struct ItemContribution: Identifiable, Sendable {
 - Empty items → empty array
 - Single item → alignment/rotation use direct score; density/palette get 0.5 (only one delta)
 - Missing category (density baseline 0) → all items get 0.5, context `.low`
+
+### 4h. Outfit Builder
+
+Generates all structurally complete outfit combinations from a wardrobe, scores each, and returns them sorted.
+
+**Combination generation:** `tops × bottoms × shoes × (1 + outerwearCount)`. Same enumeration as density, but scores instead of binary valid/invalid.
+
+**Scoring formula:**
+```
+outfitScore = alignmentAverage × 0.40 + paletteHarmony × 0.35 + silhouetteConsistency × 0.25
+```
+
+Rounded to 2 decimal places: `(rawScore * 100).rounded() / 100`. Sub-scores computed at full Double precision.
+
+**alignmentAverage** (0–1): Average of `itemAlignmentValue()` across all items in outfit. Reuses existing alignment logic (Primary=1.0, Secondary=0.7, Neutral=0.5, Conflict=0.2).
+
+**paletteHarmony** (0–1): Ratio model with 3 binary rules, each worth 1/3:
+1. Max 1 accent item
+2. At least 1 neutral item
+3. No warm+cool clash
+
+Monochrome exception: all items share same baseGroup → paletteHarmony = 1.0 (all rules auto-pass).
+
+**silhouetteConsistency** (0–1): Pairwise compatibility matrix, averaged across all unique pairs:
+
+```
+             structured  balanced  relaxed
+structured      1.0        0.7      0.3
+balanced        0.7        1.0      0.7
+relaxed         0.3        0.7      1.0
+```
+
+3-item outfit = 3 pairs. 4-item outfit = 6 pairs.
+
+**Sorting:** Descending by outfitScore. Tie-break: sorted item UUID strings concatenated, lexicographic.
+
+**No hard cap:** Engine returns all scored outfits. ViewModel/UI applies `.prefix(N)` for display.
+
+**Edge cases:**
+- Missing any required category (top/bottom/shoes) → empty array
+- Single item per category → 1 outfit returned
+- Empty wardrobe → empty array
 
 ### Design Principles
 - Deterministic. No ML.
@@ -1086,14 +1135,14 @@ Commerce must never compromise structural integrity.
 Build: `cd core && swift build`
 Test: `cd core && swift test`
 
-**143/143 tests passing.**
+**165/165 tests passing.**
 
 ### What Is Done
 
 | Component | File | Tests | Status |
 |-----------|------|-------|--------|
 | Data models (all types) | `Models/WardrobeItem.swift` | — | ✅ Complete |
-| CohesionEngine + structuralIdentity + itemContributions | `Engines/CohesionEngine.swift` | 57 | ✅ Complete |
+| CohesionEngine + structuralIdentity + itemContributions + outfitBuilder | `Engines/CohesionEngine.swift` | 79 | ✅ Complete |
 | OptimizeEngine + result types | `Engines/OptimizeEngine.swift` | 19 | ✅ Complete |
 | SeasonalEngine + types | `Engines/SeasonalEngine.swift` | 19 | ✅ Complete |
 | EvolutionEngine + momentum + anchorItems | `Engines/EvolutionEngine.swift` | 48 | ✅ Complete |
@@ -1117,7 +1166,7 @@ SwiftUI requires Mac to build and test. Development machine is Arch Linux — ca
 ### All Engine Work Complete (on Linux)
 
 All four engines are implemented and tested:
-1. ✅ **CohesionEngine** — 40 tests
+1. ✅ **CohesionEngine** — 79 tests
 2. ✅ **OptimizeEngine** — 19 tests
 3. ✅ **SeasonalEngine** — 19 tests
 4. ✅ **EvolutionEngine** — 48 tests

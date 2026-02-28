@@ -62,6 +62,36 @@ public struct ItemContribution: Identifiable, Sendable {
     }
 }
 
+// MARK: - Outfit Builder Types
+
+public struct ScoredOutfit: Identifiable, Codable, Sendable {
+    public let id: UUID
+    public let items: [WardrobeItem]
+    public let outfitScore: Double
+    public let alignmentScore: Double
+    public let paletteHarmony: Double
+    public let silhouetteConsistency: Double
+    public let silhouetteCounts: [Silhouette: Int]
+
+    public init(
+        id: UUID = UUID(),
+        items: [WardrobeItem],
+        outfitScore: Double,
+        alignmentScore: Double,
+        paletteHarmony: Double,
+        silhouetteConsistency: Double,
+        silhouetteCounts: [Silhouette: Int]
+    ) {
+        self.id = id
+        self.items = items
+        self.outfitScore = outfitScore
+        self.alignmentScore = alignmentScore
+        self.paletteHarmony = paletteHarmony
+        self.silhouetteConsistency = silhouetteConsistency
+        self.silhouetteCounts = silhouetteCounts
+    }
+}
+
 // MARK: - CohesionEngine
 
 public enum CohesionEngine: Sendable {
@@ -160,6 +190,38 @@ public enum CohesionEngine: Sendable {
         case .rotation:
             return rotationContributions(items: items)
         }
+    }
+
+    // MARK: - Outfit Builder
+
+    public static func outfitBuilder(
+        items: [WardrobeItem],
+        profile: UserProfile
+    ) -> [ScoredOutfit] {
+        let tops = items.filter { $0.category == .top }
+        let bottoms = items.filter { $0.category == .bottom }
+        let shoes = items.filter { $0.category == .shoes }
+        let outerwear = items.filter { $0.category == .outerwear }
+
+        guard !tops.isEmpty, !bottoms.isEmpty, !shoes.isEmpty else { return [] }
+
+        var outfits: [ScoredOutfit] = []
+
+        for top in tops {
+            for bottom in bottoms {
+                for shoe in shoes {
+                    let baseItems = [top, bottom, shoe]
+                    outfits.append(scoreOutfit(baseItems, profile: profile))
+
+                    for outer in outerwear {
+                        let fullItems = [top, bottom, shoe, outer]
+                        outfits.append(scoreOutfit(fullItems, profile: profile))
+                    }
+                }
+            }
+        }
+
+        return sortedOutfits(outfits)
     }
 
     // MARK: - Archetype Alignment (35%)
@@ -514,5 +576,90 @@ public enum CohesionEngine: Sendable {
         }
 
         return true
+    }
+
+    // MARK: - Outfit Scoring Helpers
+
+    private static let silhouetteCompatibility: [Silhouette: [Silhouette: Double]] = [
+        .structured: [.structured: 1.0, .balanced: 0.7, .relaxed: 0.3],
+        .balanced:   [.structured: 0.7, .balanced: 1.0, .relaxed: 0.7],
+        .relaxed:    [.structured: 0.3, .balanced: 0.7, .relaxed: 1.0],
+    ]
+
+    private static func scoreOutfit(_ outfit: [WardrobeItem], profile: UserProfile) -> ScoredOutfit {
+        let alignment = outfitAlignmentScore(outfit, profile: profile)
+        let palette = outfitPaletteHarmony(outfit)
+        let silhouette = outfitSilhouetteConsistency(outfit)
+
+        let rawScore = alignment * 0.40 + palette * 0.35 + silhouette * 0.25
+        let rounded = (rawScore * 100).rounded() / 100
+
+        let counts = Dictionary(grouping: outfit, by: \.silhouette).mapValues(\.count)
+
+        return ScoredOutfit(
+            items: outfit,
+            outfitScore: rounded,
+            alignmentScore: alignment,
+            paletteHarmony: palette,
+            silhouetteConsistency: silhouette,
+            silhouetteCounts: counts
+        )
+    }
+
+    private static func outfitAlignmentScore(_ outfit: [WardrobeItem], profile: UserProfile) -> Double {
+        guard !outfit.isEmpty else { return 0 }
+        let sum = outfit.reduce(0.0) { $0 + itemAlignmentValue(item: $1, profile: profile) }
+        return sum / Double(outfit.count)
+    }
+
+    private static func outfitPaletteHarmony(_ outfit: [WardrobeItem]) -> Double {
+        // Monochrome exception: all same baseGroup → perfect harmony
+        let baseGroups = Set(outfit.map(\.baseGroup))
+        if baseGroups.count == 1 { return 1.0 }
+
+        var passedRules = 0.0
+
+        // Rule 1: Max 1 accent item
+        let accentCount = outfit.filter { $0.baseGroup == .accent }.count
+        if accentCount <= 1 { passedRules += 1.0 }
+
+        // Rule 2: At least 1 neutral item
+        let hasNeutral = outfit.contains { $0.baseGroup == .neutral }
+        if hasNeutral { passedRules += 1.0 }
+
+        // Rule 3: No warm+cool clash
+        let hasWarm = outfit.contains { $0.temperature == .warm }
+        let hasCool = outfit.contains { $0.temperature == .cool }
+        if !(hasWarm && hasCool) { passedRules += 1.0 }
+
+        return passedRules / 3.0
+    }
+
+    private static func outfitSilhouetteConsistency(_ outfit: [WardrobeItem]) -> Double {
+        guard outfit.count >= 2 else { return 1.0 }
+
+        var total = 0.0
+        var pairCount = 0
+
+        for i in 0..<outfit.count {
+            for j in (i + 1)..<outfit.count {
+                let score = silhouetteCompatibility[outfit[i].silhouette]?[outfit[j].silhouette] ?? 0.5
+                total += score
+                pairCount += 1
+            }
+        }
+
+        return pairCount > 0 ? total / Double(pairCount) : 1.0
+    }
+
+    private static func sortedOutfits(_ outfits: [ScoredOutfit]) -> [ScoredOutfit] {
+        outfits.sorted { a, b in
+            if abs(a.outfitScore - b.outfitScore) >= 0.001 {
+                return a.outfitScore > b.outfitScore
+            }
+            let aKey = a.items.map(\.id.uuidString).sorted().joined()
+            let bKey = b.items.map(\.id.uuidString).sorted().joined()
+            return aKey < bKey
+        }
     }
 }
