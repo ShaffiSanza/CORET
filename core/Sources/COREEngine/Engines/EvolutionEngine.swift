@@ -183,6 +183,102 @@ public enum EvolutionEngine: Sendable {
         return Array(candidates)
     }
 
+    // MARK: - Snapshot Anchors
+
+    /// Selects 3–4 structurally representative items for a snapshot's visual composition.
+    /// Uses weighted scoring: alignmentMatch(0.4) + categoryCentrality(0.35) + usageStability(0.25).
+    /// Distinct from `anchorItems(snapshots:)` which analyzes cross-snapshot frequency.
+    public static func snapshotAnchors(
+        items: [WardrobeItem],
+        profile: UserProfile
+    ) -> [WardrobeItem] {
+        guard !items.isEmpty else { return [] }
+
+        // Score each item
+        var scored: [(item: WardrobeItem, score: Double)] = []
+
+        // Pre-compute category counts for centrality
+        var categoryCounts: [ItemCategory: Int] = [:]
+        for item in items {
+            categoryCounts[item.category, default: 0] += 1
+        }
+
+        // Pre-compute category means for usage stability
+        var categoryMeans: [ItemCategory: Double] = [:]
+        let categories: [ItemCategory] = [.top, .bottom, .shoes, .outerwear]
+        for category in categories {
+            let categoryItems = items.filter { $0.category == category }
+            guard !categoryItems.isEmpty else { continue }
+            let usages = categoryItems.map { Double($0.usageCount) }
+            categoryMeans[category] = usages.reduce(0, +) / Double(usages.count)
+        }
+
+        for item in items {
+            // alignmentMatch: primary=1.0, secondary=0.7, else=0.0
+            let alignmentMatch: Double
+            if item.archetypeTag == profile.primaryArchetype {
+                alignmentMatch = 1.0
+            } else if item.archetypeTag == profile.secondaryArchetype {
+                alignmentMatch = 0.7
+            } else {
+                alignmentMatch = 0.0
+            }
+
+            // categoryCentrality: categoryWeight × (1 / categoryCount)
+            let isRequired = item.category != .outerwear
+            let categoryWeight: Double = isRequired ? 1.0 : 0.7
+            let categoryCount = categoryCounts[item.category] ?? 1
+            let categoryCentrality = min(categoryWeight * (1.0 / Double(max(categoryCount, 1))), 1.0)
+
+            // usageStability: 1 - min(normalizedDeviation, 1)
+            let categoryMean = categoryMeans[item.category] ?? 0
+            let deviation = abs(Double(item.usageCount) - categoryMean)
+            let normalizedDeviation = deviation / max(categoryMean, 1.0)
+            let usageStability = 1.0 - min(normalizedDeviation, 1.0)
+
+            let anchorScore = alignmentMatch * 0.4 + categoryCentrality * 0.35 + usageStability * 0.25
+            scored.append((item, anchorScore))
+        }
+
+        // Sort by score descending, tie-break by earlier createdAt
+        scored.sort { a, b in
+            if abs(a.score - b.score) >= 0.001 {
+                return a.score > b.score
+            }
+            return a.item.createdAt < b.item.createdAt
+        }
+
+        // Select top 3–4 with category diversity constraint
+        if items.count < 3 {
+            return scored.map(\.item)
+        }
+
+        let targetCount = min(scored.count, 4)
+        var selected: [WardrobeItem] = []
+        var usedIndices: Set<Int> = []
+
+        // Take top items greedily
+        for i in 0..<min(targetCount, scored.count) {
+            selected.append(scored[i].item)
+            usedIndices.insert(i)
+        }
+
+        // Enforce at least 2 distinct categories
+        let distinctCategories = Set(selected.map(\.category))
+        if distinctCategories.count < 2 && selected.count >= 3 {
+            // Swap last selected item with next-best from a different category
+            let dominantCategory = selected[0].category
+            for i in 0..<scored.count where !usedIndices.contains(i) {
+                if scored[i].item.category != dominantCategory {
+                    selected[selected.count - 1] = scored[i].item
+                    break
+                }
+            }
+        }
+
+        return selected
+    }
+
     // MARK: - Private Helpers
 
     private static let descriptorMatrix: [EvolutionTrend: [VolatilityLevel: String]] = [

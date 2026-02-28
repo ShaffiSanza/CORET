@@ -92,6 +92,51 @@ public struct ScoredOutfit: Identifiable, Codable, Sendable {
     }
 }
 
+// MARK: - Removal Impact Types
+
+public struct RemovalImpact: Identifiable, Codable, Sendable {
+    public let id: UUID
+    public let itemID: UUID
+    public let alignmentBefore: Double
+    public let alignmentAfter: Double
+    public let densityBefore: Double
+    public let densityAfter: Double
+    public let paletteBefore: Double
+    public let paletteAfter: Double
+    public let rotationBefore: Double
+    public let rotationAfter: Double
+    public let totalBefore: Double
+    public let totalAfter: Double
+
+    public init(
+        id: UUID = UUID(),
+        itemID: UUID,
+        alignmentBefore: Double,
+        alignmentAfter: Double,
+        densityBefore: Double,
+        densityAfter: Double,
+        paletteBefore: Double,
+        paletteAfter: Double,
+        rotationBefore: Double,
+        rotationAfter: Double,
+        totalBefore: Double,
+        totalAfter: Double
+    ) {
+        self.id = id
+        self.itemID = itemID
+        self.alignmentBefore = alignmentBefore
+        self.alignmentAfter = alignmentAfter
+        self.densityBefore = densityBefore
+        self.densityAfter = densityAfter
+        self.paletteBefore = paletteBefore
+        self.paletteAfter = paletteAfter
+        self.rotationBefore = rotationBefore
+        self.rotationAfter = rotationAfter
+        self.totalBefore = totalBefore
+        self.totalAfter = totalAfter
+    }
+}
+
 // MARK: - CohesionEngine
 
 public enum CohesionEngine: Sendable {
@@ -222,6 +267,32 @@ public enum CohesionEngine: Sendable {
         }
 
         return sortedOutfits(outfits)
+    }
+
+    // MARK: - Removal Impact
+
+    public static func removalImpact(
+        item: WardrobeItem,
+        from items: [WardrobeItem],
+        profile: UserProfile
+    ) -> RemovalImpact {
+        let before = compute(items: items, profile: profile)
+        let without = items.filter { $0.id != item.id }
+        let after = compute(items: without, profile: profile)
+
+        return RemovalImpact(
+            itemID: item.id,
+            alignmentBefore: before.alignmentScore,
+            alignmentAfter: after.alignmentScore,
+            densityBefore: before.densityScore,
+            densityAfter: after.densityScore,
+            paletteBefore: before.paletteScore,
+            paletteAfter: after.paletteScore,
+            rotationBefore: before.rotationScore,
+            rotationAfter: after.rotationScore,
+            totalBefore: before.totalScore,
+            totalAfter: after.totalScore
+        )
     }
 
     // MARK: - Archetype Alignment (35%)

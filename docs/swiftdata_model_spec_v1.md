@@ -73,6 +73,24 @@ Immutable record.
 - phaseRawValue: String
 - volatility: Double
 - isSeasonAdjusted: Bool (always false for Evolution)
+- snapshotAnchorItems: [AnchorItemData] (frozen anchor item metadata)
+- snapshotIdentityString: String (frozen structural identity display)
+- snapshotMomentumDescriptor: String (frozen momentum label)
+
+**AnchorItemData** (embedded value type, Codable):
+- itemID: UUID
+- category: String (rawValue)
+- silhouette: String (rawValue)
+- baseGroup: String (rawValue)
+- temperature: String (rawValue)
+
+Frozen fields are computed by EngineCoordinator at snapshot creation time using:
+- `EvolutionEngine.snapshotAnchors(items:profile:)` → anchor items with structural properties
+- `CohesionEngine.structuralIdentity(items:)` → identity display string (composed by ViewModel)
+- `EvolutionEngine.momentum(snapshots:)` → momentum descriptor
+
+These fields preserve historical state that cannot be recomputed after wardrobe changes.
+If an anchor item is later deleted, its structural properties are still available from AnchorItemData for rendering placeholder silhouettes (30% opacity, dashed outline).
 
 Rules:
 - Never edited after creation.

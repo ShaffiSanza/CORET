@@ -63,10 +63,10 @@ CORET/
 │   │       └── WardrobeItem.swift     ✅ Complete (all types + StructuralIdentity)
 │   └── Tests/COREEngineTests/
 │       ├── COREEngineTests.swift      (scaffold — can be removed)
-│       ├── CohesionEngineTests.swift  ✅ 79 tests passing
+│       ├── CohesionEngineTests.swift  ✅ 85 tests passing
 │       ├── OptimizeEngineTests.swift  ✅ 19 tests passing
 │       ├── SeasonalEngineTests.swift  ✅ 19 tests passing
-│       └── EvolutionEngineTests.swift ✅ 48 tests passing
+│       └── EvolutionEngineTests.swift ✅ 56 tests passing
 ├── moodboard/             ← Visual references for UI implementation
 │   ├── dashboard/
 │   │   ├── dashboard_wireframe.md   ← Full dashboard tab spec + component detail
@@ -189,6 +189,12 @@ Defined in `CohesionEngine.swift`.
 
 **ScoredOutfit** (struct): `id`, `items: [WardrobeItem]`, `outfitScore: Double`, `alignmentScore: Double`, `paletteHarmony: Double`, `silhouetteConsistency: Double`, `silhouetteCounts: [Silhouette: Int]`
 
+### Removal Impact Types
+
+Defined in `CohesionEngine.swift`.
+
+**RemovalImpact** (struct): `id`, `itemID: UUID`, `alignmentBefore: Double`, `alignmentAfter: Double`, `densityBefore: Double`, `densityAfter: Double`, `paletteBefore: Double`, `paletteAfter: Double`, `rotationBefore: Double`, `rotationAfter: Double`, `totalBefore: Double`, `totalAfter: Double`
+
 ### OptimizeEngine Result Types
 
 Defined in `OptimizeEngine.swift`:
@@ -207,7 +213,7 @@ Defined in `OptimizeEngine.swift`:
 
 File: `core/Sources/COREEngine/Engines/CohesionEngine.swift`
 Pattern: `public enum CohesionEngine: Sendable` — caseless enum namespace, all static functions.
-Tests: 79 passing in `CohesionEngineTests.swift`
+Tests: 85 passing in `CohesionEngineTests.swift`
 
 ### Formula
 
@@ -229,6 +235,7 @@ public static func statusLevel(from totalScore: Double) -> CohesionStatus
 public static func structuralIdentity(items: [WardrobeItem]) -> StructuralIdentity
 public static func itemContributions(items: [WardrobeItem], profile: UserProfile, component: CohesionComponent) -> [ItemContribution]
 public static func outfitBuilder(items: [WardrobeItem], profile: UserProfile) -> [ScoredOutfit]
+public static func removalImpact(item: WardrobeItem, from items: [WardrobeItem], profile: UserProfile) -> RemovalImpact
 ```
 
 ### 4a. Archetype Alignment (weight 0.35)
@@ -409,6 +416,23 @@ relaxed         0.3        0.7      1.0
 
 **outfitBuilder vs densityScore validation:** outfitBuilder does NOT filter by `isValidOutfit()`. It scores all structurally complete combinations. Outfits that would fail density validation (archetype conflict, silhouette imbalance, color violations) appear with low scores rather than being excluded. This is intentional — outfitBuilder measures quality on a spectrum, while densityScore uses binary validity.
 
+### 4i. Removal Impact
+
+Per-item removal simulation for delete warning UI. Computes before/after scores across all 4 components + total when removing a specific item.
+
+**Function:** `removalImpact(item:from items:profile:) -> RemovalImpact`
+
+**Algorithm:** Two `compute()` calls — one with all items, one without the target item. Returns both sets of component scores and totals.
+
+**Usage:** Wardrobe Item Detail delete confirmation alert: *"Removing this item will reduce Density by X."* The ViewModel picks the component with the largest negative delta.
+
+**Distinct from `detectFriction()`:** `detectFriction` iterates ALL items and only flags those with total improvement > 8. `removalImpact` targets a single specified item, returns per-component deltas, and has no threshold filter.
+
+**Edge cases:**
+- Item not in list → before == after (identical scores)
+- Empty items → all scores 0
+- Removing only item of required category → density drops to 0
+
 ### Design Principles
 - Deterministic. No ML.
 - Transparent breakdown. All component scores are public.
@@ -569,7 +593,7 @@ The existing `compute(items:profile:)` delegates to this with `SeasonalEngine.ba
 
 File: `core/Sources/COREEngine/Engines/EvolutionEngine.swift`
 Pattern: `public enum EvolutionEngine: Sendable`
-Tests: 48 passing in `EvolutionEngineTests.swift`
+Tests: 56 passing in `EvolutionEngineTests.swift`
 
 ### Purpose
 
@@ -657,6 +681,7 @@ public static func momentum(snapshots: [CohesionSnapshot]) -> MomentumResult
 public static func volatilityLevel(from volatility: Double) -> VolatilityLevel
 
 public static func anchorItems(snapshots: [CohesionSnapshot]) -> [UUID]
+public static func snapshotAnchors(items: [WardrobeItem], profile: UserProfile) -> [WardrobeItem]
 ```
 
 ### Momentum
@@ -689,12 +714,37 @@ Identifies structurally consistent items over time via snapshot frequency analys
 5. Item must exist in latest snapshot
 6. Returns max 3 UUIDs, sorted by frequency descending
 
+### Snapshot Anchors
+
+Selects 3–4 structurally representative items for a snapshot's visual composition on the Evolution timeline. Distinct from `anchorItems(snapshots:)` which analyzes cross-snapshot frequency.
+
+**Function:** `snapshotAnchors(items:profile:) -> [WardrobeItem]`
+
+**Formula:**
+```
+anchorScore = (alignmentMatch × 0.4) + (categoryCentrality × 0.35) + (usageStability × 0.25)
+```
+
+- **alignmentMatch**: primary=1.0, secondary=0.7, else=0.0
+- **categoryCentrality**: `categoryWeight × (1 / categoryCount)`. Required categories (top/bottom/shoes) weight 1.0, outerwear 0.7.
+- **usageStability**: `1.0 - min(normalizedDeviation, 1.0)`. Deviation = `|usageCount - categoryMean| / max(categoryMean, 1)`.
+
+**Selection rules:**
+1. Score all items, sort descending by anchorScore
+2. Tie-break: earlier `createdAt` preferred (stability bias)
+3. Select top 3–4 items
+4. Constraint: at least 2 distinct categories (swap last if needed)
+5. < 3 items total → return all items
+
+**Frozen at snapshot creation:** Results stored in `EvolutionSnapshotEntity.snapshotAnchorItems` with structural properties (category, silhouette, baseGroup, temperature) for historical rendering even after item deletion.
+
 ### Edge Cases
 - 0 snapshots → Foundation phase, volatility 0, trend .stable
 - 1–2 snapshots → Foundation or Developing only, trend based on available data
 - All snapshots identical score → volatility 0, trend .stable
 - < 3 snapshots → momentum returns "Structural Emergence"
 - < 5 snapshots → anchorItems returns empty
+- snapshotAnchors: empty items → empty, < 3 items → returns all
 
 ---
 
@@ -1141,17 +1191,17 @@ Commerce must never compromise structural integrity.
 Build: `cd core && swift build`
 Test: `cd core && swift test`
 
-**166/166 tests passing.**
+**180/180 tests passing.**
 
 ### What Is Done
 
 | Component | File | Tests | Status |
 |-----------|------|-------|--------|
 | Data models (all types) | `Models/WardrobeItem.swift` | — | ✅ Complete |
-| CohesionEngine + structuralIdentity + itemContributions + outfitBuilder | `Engines/CohesionEngine.swift` | 79 | ✅ Complete |
+| CohesionEngine + structuralIdentity + itemContributions + outfitBuilder + removalImpact | `Engines/CohesionEngine.swift` | 85 | ✅ Complete |
 | OptimizeEngine + result types | `Engines/OptimizeEngine.swift` | 19 | ✅ Complete |
 | SeasonalEngine + types | `Engines/SeasonalEngine.swift` | 19 | ✅ Complete |
-| EvolutionEngine + momentum + anchorItems | `Engines/EvolutionEngine.swift` | 48 | ✅ Complete |
+| EvolutionEngine + momentum + anchorItems + snapshotAnchors | `Engines/EvolutionEngine.swift` | 56 | ✅ Complete |
 | Package.swift | `core/Package.swift` | — | ✅ Complete |
 
 ### What Is Not Done
@@ -1172,10 +1222,10 @@ SwiftUI requires Mac to build and test. Development machine is Arch Linux — ca
 ### All Engine Work Complete (on Linux)
 
 All four engines are implemented and tested:
-1. ✅ **CohesionEngine** — 79 tests
+1. ✅ **CohesionEngine** — 85 tests
 2. ✅ **OptimizeEngine** — 19 tests
 3. ✅ **SeasonalEngine** — 19 tests
-4. ✅ **EvolutionEngine** — 48 tests
+4. ✅ **EvolutionEngine** — 56 tests
 
 ### When Mac Is Available
 - Import COREEngine as local Swift Package

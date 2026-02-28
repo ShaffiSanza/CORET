@@ -20,6 +20,39 @@ private func makeSnapshots(scores: [Double]) -> [CohesionSnapshot] {
     scores.map { makeSnapshot(score: $0) }
 }
 
+private func makeItem(
+    category: ItemCategory,
+    silhouette: Silhouette = .balanced,
+    baseGroup: BaseGroup = .neutral,
+    temperature: Temperature = .neutral,
+    archetype: Archetype = .structuredMinimal,
+    usageCount: Int = 0,
+    createdAt: Date = Date()
+) -> WardrobeItem {
+    WardrobeItem(
+        imagePath: "test.jpg",
+        category: category,
+        silhouette: silhouette,
+        rawColor: "test",
+        baseGroup: baseGroup,
+        temperature: temperature,
+        archetypeTag: archetype,
+        usageCount: usageCount,
+        createdAt: createdAt
+    )
+}
+
+private func makeProfile(
+    primary: Archetype = .structuredMinimal,
+    secondary: Archetype = .smartCasual
+) -> UserProfile {
+    UserProfile(
+        primaryArchetype: primary,
+        secondaryArchetype: secondary,
+        seasonMode: .autumnWinter
+    )
+}
+
 private func makeSnapshotWithItems(score: Double, itemIDs: some Collection<UUID>) -> CohesionSnapshot {
     let status = CohesionEngine.statusLevel(from: score)
     return CohesionSnapshot(
@@ -476,4 +509,116 @@ private func makeSnapshotWithItems(score: Double, itemIDs: some Collection<UUID>
     // Build to evolving (20 snapshots, last 5 avg >= 80)
     snapshots = makeSnapshots(scores: [20, 25, 35, 40, 50, 55, 60, 70, 72, 74, 76, 78, 80, 81, 82, 83, 84, 85, 86, 87])
     #expect(EvolutionEngine.phase(snapshots: snapshots) == .evolving)
+}
+
+// MARK: - Snapshot Anchors
+
+@Test func snapshotAnchorsEmptyItems() {
+    let result = EvolutionEngine.snapshotAnchors(items: [], profile: makeProfile())
+    #expect(result.isEmpty)
+}
+
+@Test func snapshotAnchorsFewerThan3Items() {
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+    ]
+    let result = EvolutionEngine.snapshotAnchors(items: items, profile: makeProfile())
+    #expect(result.count == 2)
+}
+
+@Test func snapshotAnchorsPrimaryArchetypeScoresHigher() {
+    // Primary archetype item should rank above secondary and neutral
+    let past = Date(timeIntervalSince1970: 0)
+    let items = [
+        makeItem(category: .top, archetype: .smartCasual, usageCount: 5, createdAt: past),
+        makeItem(category: .bottom, archetype: .relaxedStreet, usageCount: 5, createdAt: past),
+        makeItem(category: .shoes, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = EvolutionEngine.snapshotAnchors(items: items, profile: profile)
+
+    #expect(result.count == 3)
+    // Primary archetype shoes should be first (highest alignment match)
+    #expect(result[0].archetypeTag == .structuredMinimal)
+}
+
+@Test func snapshotAnchorsCategoryDiversityConstraint() {
+    // If top 3 are all same category, swap last for different category
+    let past = Date(timeIntervalSince1970: 0)
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .top, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .top, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .bottom, archetype: .smartCasual, usageCount: 5, createdAt: past),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = EvolutionEngine.snapshotAnchors(items: items, profile: profile)
+
+    let categories = Set(result.map(\.category))
+    #expect(categories.count >= 2) // Must have at least 2 distinct categories
+    #expect(categories.contains(.bottom)) // Bottom should be included for diversity
+}
+
+@Test func snapshotAnchorsTieBreakByCreatedAt() {
+    // Equal scores: older item should come first
+    let earlier = Date(timeIntervalSince1970: 1000)
+    let later = Date(timeIntervalSince1970: 2000)
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal, usageCount: 5, createdAt: later),
+        makeItem(category: .bottom, archetype: .structuredMinimal, usageCount: 5, createdAt: earlier),
+        makeItem(category: .shoes, archetype: .structuredMinimal, usageCount: 5, createdAt: later),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = EvolutionEngine.snapshotAnchors(items: items, profile: profile)
+
+    // The bottom (earlier createdAt) should sort first among equal scores
+    // But category centrality also matters — all have 1 item per category so equal there
+    #expect(result[0].createdAt == earlier)
+}
+
+@Test func snapshotAnchorsOuterwearLowerWeight() {
+    // Outerwear gets 0.7 category weight vs 1.0 for required categories
+    let past = Date(timeIntervalSince1970: 0)
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .outerwear, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .bottom, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .shoes, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = EvolutionEngine.snapshotAnchors(items: items, profile: profile)
+
+    // Outerwear has lower centrality weight (0.7 vs 1.0) so should rank last
+    #expect(result.last?.category == .outerwear)
+}
+
+@Test func snapshotAnchorsUsageStabilityAllUnused() {
+    // All items with 0 usage → categoryMean = 0 → deviation = 0 → stability = 1.0 for all
+    let past = Date(timeIntervalSince1970: 0)
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal, usageCount: 0, createdAt: past),
+        makeItem(category: .bottom, archetype: .structuredMinimal, usageCount: 0, createdAt: past),
+        makeItem(category: .shoes, archetype: .structuredMinimal, usageCount: 0, createdAt: past),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = EvolutionEngine.snapshotAnchors(items: items, profile: profile)
+
+    // Should return all 3 without crashing
+    #expect(result.count == 3)
+}
+
+@Test func snapshotAnchorsMaxFourItems() {
+    let past = Date(timeIntervalSince1970: 0)
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .bottom, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .shoes, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .outerwear, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+        makeItem(category: .top, archetype: .structuredMinimal, usageCount: 5, createdAt: past),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let result = EvolutionEngine.snapshotAnchors(items: items, profile: profile)
+
+    #expect(result.count <= 4)
 }

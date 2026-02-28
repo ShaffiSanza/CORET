@@ -1090,3 +1090,95 @@ private func minimalWardrobe() -> [WardrobeItem] {
     // Overall: 0.2×0.40 + 0.0×0.35 + 0.533×0.25 = 0.21
     #expect(abs(outfit.outfitScore - 0.21) < 0.001)
 }
+
+// MARK: - Removal Impact
+
+@Test func removalImpactAlignmentBoostingItem() {
+    // Removing a primary-archetype item should reduce alignment
+    let primary = makeItem(category: .top, archetype: .structuredMinimal)
+    let items = [
+        primary,
+        makeItem(category: .bottom, archetype: .structuredMinimal),
+        makeItem(category: .shoes, archetype: .structuredMinimal),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let impact = CohesionEngine.removalImpact(item: primary, from: items, profile: profile)
+
+    #expect(impact.itemID == primary.id)
+    #expect(impact.alignmentBefore == impact.alignmentAfter) // All same archetype, removing one doesn't change average
+    #expect(impact.totalBefore >= impact.totalAfter) // Removing item can't help when all are primary
+}
+
+@Test func removalImpactDensityKillingItem() {
+    // An item causing archetype conflict hurts density. Removing it should improve density.
+    let conflicting = makeItem(category: .outerwear, archetype: .relaxedStreet)
+    let items = [
+        makeItem(category: .top, archetype: .structuredMinimal),
+        makeItem(category: .bottom, archetype: .structuredMinimal),
+        makeItem(category: .shoes, archetype: .structuredMinimal),
+        conflicting,
+    ]
+    let profile = makeProfile(primary: .structuredMinimal, secondary: .smartCasual)
+    let impact = CohesionEngine.removalImpact(item: conflicting, from: items, profile: profile)
+
+    #expect(impact.densityAfter >= impact.densityBefore)
+    #expect(impact.totalAfter > impact.totalBefore)
+}
+
+@Test func removalImpactItemNotInList() {
+    // Removing an item that isn't in the list → before == after
+    let outsider = makeItem(category: .top)
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+    ]
+    let profile = makeProfile()
+    let impact = CohesionEngine.removalImpact(item: outsider, from: items, profile: profile)
+
+    #expect(impact.itemID == outsider.id)
+    #expect(abs(impact.totalBefore - impact.totalAfter) < 0.001)
+    #expect(abs(impact.alignmentBefore - impact.alignmentAfter) < 0.001)
+    #expect(abs(impact.densityBefore - impact.densityAfter) < 0.001)
+    #expect(abs(impact.paletteBefore - impact.paletteAfter) < 0.001)
+    #expect(abs(impact.rotationBefore - impact.rotationAfter) < 0.001)
+}
+
+@Test func removalImpactSingleItemFromMinimalWardrobe() {
+    // Removing the only bottom → density drops to 0 (missing required category)
+    let bottom = makeItem(category: .bottom)
+    let items = [
+        makeItem(category: .top),
+        bottom,
+        makeItem(category: .shoes),
+    ]
+    let profile = makeProfile()
+    let impact = CohesionEngine.removalImpact(item: bottom, from: items, profile: profile)
+
+    #expect(impact.densityBefore > 0)
+    #expect(impact.densityAfter == 0)
+}
+
+@Test func removalImpactEmptyItems() {
+    let item = makeItem(category: .top)
+    let impact = CohesionEngine.removalImpact(item: item, from: [], profile: makeProfile())
+
+    #expect(impact.totalBefore == 0)
+    #expect(impact.totalAfter == 0)
+}
+
+@Test func removalImpactReturnsAllComponentScores() {
+    // Verify all 4 component pairs + total are populated
+    let top = makeItem(category: .top)
+    let items = [top, makeItem(category: .bottom), makeItem(category: .shoes)]
+    let profile = makeProfile()
+    let impact = CohesionEngine.removalImpact(item: top, from: items, profile: profile)
+
+    // Before scores should match a fresh compute
+    let snapshot = CohesionEngine.compute(items: items, profile: profile)
+    #expect(abs(impact.alignmentBefore - snapshot.alignmentScore) < 0.001)
+    #expect(abs(impact.densityBefore - snapshot.densityScore) < 0.001)
+    #expect(abs(impact.paletteBefore - snapshot.paletteScore) < 0.001)
+    #expect(abs(impact.rotationBefore - snapshot.rotationScore) < 0.001)
+    #expect(abs(impact.totalBefore - snapshot.totalScore) < 0.001)
+}
