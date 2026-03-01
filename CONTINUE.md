@@ -1,19 +1,21 @@
 # CORET – Continue
-Last updated: 2026-02-28
+Last updated: 2026-03-01
 
 ## Completed Recently
-- [x] Engine–UI coverage audit: tab-by-tab wireframe → engine cross-check
-- [x] removalImpact() — per-component before/after scores for delete warning UI (6 tests)
-- [x] snapshotAnchors() — weighted anchor selection for evolution timeline silhouettes (8 tests)
-- [x] SwiftData spec updated with frozen snapshot fields (AnchorItemData, identityString, momentumDescriptor)
-- [x] Cross-system consistency audit (test counts, type docs, worst-case test)
+- [x] Engine → UI Mapping Specification (`docs/engine_ui_mapping_v1.md`, 21 sections, 893 lines)
+  - Council overrides applied: unified CohesionStatus descriptors, outfit-first wardrobe, Claude AI locked values
+  - Score presentation with opacity-by-status (0.6→1.0), accent color for Aligned/Architected
+  - All 10 enum display label tables, color swatch lookups, identity string composition
+  - Temperature-driven outfit card backgrounds, removal impact tiers, progressive depth triggers
+  - Full engine→screen matrix (28 functions × 6 screens) + recompute trigger summary
+- [x] All four engines complete and audited (180/180 tests)
 - [x] All wireframe tabs verified against engine API — 0 remaining engine gaps
 
 ## Build Status
 swift build: pass
 swift test: 180/180 passing
 
-## Engine Status (All Complete + Audited + UI-Verified)
+## Engine Status (All Complete)
 | Engine | File | Tests | Status |
 |--------|------|-------|--------|
 | CohesionEngine | `Engines/CohesionEngine.swift` | 85 | ✅ |
@@ -22,30 +24,41 @@ swift test: 180/180 passing
 | EvolutionEngine | `Engines/EvolutionEngine.swift` | 56 | ✅ |
 | Scaffold | `COREEngineTests.swift` | 1 | ✅ |
 
+## Documentation Status
+| Doc | File | Status |
+|-----|------|--------|
+| Engine → UI Mapping | `docs/engine_ui_mapping_v1.md` | ✅ Authoritative (21 sections) |
+| SwiftData Persistence | `docs/swiftdata_model_spec_v1.md` | ✅ Spec complete |
+| ViewModel Architecture | `docs/viewmodel_architecture_v1.md` | ✅ Spec complete |
+| UI Specification | `docs/ui_specification_v1.md` | ✅ Spec complete |
+| All wireframes | `moodboard/*/` | ✅ Complete (6 tabs) |
+
 ## In Progress
-Nothing interrupted. Engine layer is complete, audited, and verified against all wireframes.
+Nothing interrupted. Engine layer and UI mapping spec are complete.
 
 ## Next Session Prompt
 ```
-All four CORET engines are complete and UI-verified (180/180 tests passing on Linux). Read CLAUDE.md for the full system reference.
+All four CORET engines are complete (180/180 tests on Linux). The engine → UI mapping spec is done (docs/engine_ui_mapping_v1.md — 21 sections). Read CLAUDE.md for the full system reference.
 
-The engine layer is finished — every wireframe UI element has been traced to an engine function or documented as ViewModel responsibility. Remaining work requires a Mac:
+The engine + spec layer is finished. Every engine function is mapped to every screen. Every enum has display labels. Every edge case has defined behavior. Council overrides are applied.
+
+Remaining work requires a Mac:
 
 1. SwiftUI iOS app in `ios_app/` consuming the COREEngine package
    - See CLAUDE.md Section 8 (Information Architecture) for all screens
    - See CLAUDE.md Section 9 (UI Specification) for design tokens
+   - See docs/engine_ui_mapping_v1.md for engine → UI mapping rules
    - See wireframes in `moodboard/` for each tab
    - 5-tab layout: Dashboard, Wardrobe, Optimize, Evolution, Profile
-   - SwiftData persistence wrapping engine types (Section 15)
-   - ViewModel + EngineCoordinator architecture (Section 16)
+   - SwiftData persistence wrapping engine types (CLAUDE.md Section 15)
+   - ViewModel + EngineCoordinator architecture (CLAUDE.md Section 16)
 
-ViewModel-layer items confirmed as NOT engine (implement in ViewModel):
-- Component descriptors (score → "Strong"/"Optimal" mapping)
-- StructuralIdentity display strings (nil → "Balanced" fallback)
-- Color swatch → baseGroup/temperature lookup table
-- Wardrobe filtering/sorting
-- Optimize weakness explanation text (4 static strings)
-- Onboarding micro-insight rules (5 rules, first-match)
+Key council overrides to honor:
+- Component descriptors use CohesionStatus scale (Aligned/Architected, NOT Strong/Optimal)
+- Wardrobe tab is outfit-first (outfitBuilder() drives grid, not items)
+- nil silhouette/baseGroup → "Mixed" (not "Balanced"/"Neutral")
+- Score opacity by status: 0.6 (Structuring) → 1.0 (Aligned/Architected)
+- Outfit card backgrounds: temperature-driven color system
 
 If on Linux, possible next steps:
 - Build HTML mockups for remaining tabs (Dashboard, Optimize, Profile)
@@ -64,3 +77,7 @@ If on Linux, possible next steps:
 - removalImpact lives in CohesionEngine (structural measurement, not optimization)
 - snapshotAnchors lives in EvolutionEngine (per-snapshot selection, distinct from cross-snapshot anchorItems)
 - Snapshot anchor data denormalized into EvolutionSnapshotEntity (not soft-delete) for deleted item rendering
+- Component descriptors unified to CohesionStatus scale (Council Override 1, 1 March 2026)
+- Wardrobe is outfit-first, outfitBuilder() drives grid (Council Override 2, 28 February 2026)
+- nil fallback is "Mixed"/"Blandet", not "Balanced"/"Neutral" (Council Override 3, 1 March 2026)
+- BaseGroup display labels unified to evolution wireframe versions: Deep-Toned, Light-Toned, Accent-Driven
