@@ -733,4 +733,217 @@ public enum CohesionEngine: Sendable {
             return aKey < bKey
         }
     }
+
+    // MARK: - V1.5 Structural Density Expansion
+
+    // MARK: Layer Coverage
+
+    /// Three-Layer System coverage score. Returns 0–100.
+    /// Measures category depth, layering capacity (outerwear:top ratio), and silhouette spread.
+    public static func layerCoverageScore(items: [WardrobeItem], profile: UserProfile) -> Double {
+        guard !items.isEmpty else { return 0 }
+
+        let categoryCoverage = categoryCoverageSubScore(items: items, archetype: profile.primaryArchetype)
+        let layeringCapacity = layeringCapacitySubScore(items: items, archetype: profile.primaryArchetype)
+        let silhouetteSpread = silhouetteSpreadSubScore(items: items)
+
+        return categoryCoverage * 0.40 + layeringCapacity * 0.35 + silhouetteSpread * 0.25
+    }
+
+    // MARK: Capsule Ratio
+
+    /// Capsule Balance & Ratios score. Returns 0–100.
+    /// Measures top:bottom ratio, outerwear proportion, and category balance (Shannon entropy).
+    public static func capsuleRatioScore(items: [WardrobeItem], profile: UserProfile) -> Double {
+        guard !items.isEmpty else { return 0 }
+
+        let topBottom = topBottomRatioSubScore(items: items, archetype: profile.primaryArchetype)
+        let outerProp = outerProportionSubScore(items: items, archetype: profile.primaryArchetype)
+        let balance = categoryBalanceSubScore(items: items)
+
+        return (topBottom + outerProp + balance) / 3.0
+    }
+
+    // MARK: Structural Density (Composite)
+
+    /// Weighted composite of combination density (V1), layer coverage, and capsule ratio.
+    /// Returns 0–100.
+    public static func structuralDensityScore(items: [WardrobeItem], profile: UserProfile) -> Double {
+        let combination = densityScore(items: items, profile: profile)
+        let coverage = layerCoverageScore(items: items, profile: profile)
+        let capsule = capsuleRatioScore(items: items, profile: profile)
+
+        return combination * 0.50 + coverage * 0.25 + capsule * 0.25
+    }
+
+    // MARK: Compute V2
+
+    /// Like `compute()` but uses `structuralDensityScore` for the density slot.
+    public static func computeV2(items: [WardrobeItem], profile: UserProfile) -> CohesionSnapshot {
+        computeV2(items: items, profile: profile, weights: SeasonalEngine.baseWeights)
+    }
+
+    /// Like `compute(weights:)` but uses `structuralDensityScore` for the density slot.
+    public static func computeV2(items: [WardrobeItem], profile: UserProfile, weights: CohesionWeights) -> CohesionSnapshot {
+        let alignment = alignmentScore(items: items, profile: profile)
+        let density = structuralDensityScore(items: items, profile: profile)
+        let palette = paletteScore(items: items)
+        let rotation = rotationScore(items: items)
+
+        let total = alignment * weights.alignment + density * weights.density + palette * weights.palette + rotation * weights.rotation
+        let status = statusLevel(from: total)
+
+        return CohesionSnapshot(
+            alignmentScore: alignment,
+            densityScore: density,
+            paletteScore: palette,
+            rotationScore: rotation,
+            totalScore: total,
+            statusLevel: status,
+            itemIDs: Set(items.map(\.id))
+        )
+    }
+
+    // MARK: - V1.5 Private Helpers
+
+    /// Score a value against an ideal range. In range → 100. Below → proportional. Above → penalized.
+    private static func rangeScore(value: Double, idealLower: Double, idealUpper: Double, overPenaltyDivisor: Double) -> Double {
+        if value >= idealLower && value <= idealUpper {
+            return 100
+        } else if value < idealLower {
+            guard idealLower > 0 else { return 0 }
+            return (value / idealLower) * 100
+        } else {
+            guard overPenaltyDivisor > 0 else { return 0 }
+            return max(0, (1.0 - (value - idealUpper) / overPenaltyDivisor) * 100)
+        }
+    }
+
+    /// Archetype-specific category importance weights for layer coverage.
+    private static func categoryWeights(for archetype: Archetype) -> [ItemCategory: Double] {
+        switch archetype {
+        case .structuredMinimal:
+            return [.top: 0.25, .bottom: 0.25, .shoes: 0.25, .outerwear: 0.25]
+        case .smartCasual:
+            return [.top: 0.30, .bottom: 0.25, .shoes: 0.25, .outerwear: 0.20]
+        case .relaxedStreet:
+            return [.top: 0.35, .bottom: 0.25, .shoes: 0.25, .outerwear: 0.15]
+        }
+    }
+
+    /// Archetype-specific ideal outerwear:top ratio range.
+    private static func layeringCapacityRange(for archetype: Archetype) -> (lower: Double, upper: Double) {
+        switch archetype {
+        case .structuredMinimal: return (0.5, 1.0)
+        case .smartCasual:      return (0.3, 0.8)
+        case .relaxedStreet:    return (0.2, 0.6)
+        }
+    }
+
+    /// Archetype-specific ideal top:bottom ratio range.
+    private static func topBottomIdealRange(for archetype: Archetype) -> (lower: Double, upper: Double) {
+        switch archetype {
+        case .structuredMinimal: return (1.0, 1.5)
+        case .smartCasual:      return (1.25, 1.75)
+        case .relaxedStreet:    return (1.5, 2.0)
+        }
+    }
+
+    /// Archetype-specific ideal outerwear proportion range.
+    private static func outerProportionIdealRange(for archetype: Archetype) -> (lower: Double, upper: Double) {
+        switch archetype {
+        case .structuredMinimal: return (0.25, 0.40)
+        case .smartCasual:      return (0.20, 0.35)
+        case .relaxedStreet:    return (0.15, 0.30)
+        }
+    }
+
+    // MARK: Layer Coverage Sub-scores
+
+    private static func categoryCoverageSubScore(items: [WardrobeItem], archetype: Archetype) -> Double {
+        let weights = categoryWeights(for: archetype)
+        let categories: [ItemCategory] = [.top, .bottom, .shoes, .outerwear]
+
+        var score = 0.0
+        for category in categories {
+            let count = items.filter { $0.category == category }.count
+            let depthScore: Double
+            switch count {
+            case 0:  depthScore = 0.0
+            case 1:  depthScore = 0.6
+            case 2:  depthScore = 0.85
+            default: depthScore = 1.0
+            }
+            score += depthScore * (weights[category] ?? 0.25)
+        }
+        return score * 100
+    }
+
+    private static func layeringCapacitySubScore(items: [WardrobeItem], archetype: Archetype) -> Double {
+        let topCount = items.filter { $0.category == .top }.count
+        guard topCount > 0 else { return 0 }
+
+        let outerCount = items.filter { $0.category == .outerwear }.count
+        let ratio = Double(outerCount) / Double(topCount)
+        let range = layeringCapacityRange(for: archetype)
+
+        return rangeScore(value: ratio, idealLower: range.lower, idealUpper: range.upper, overPenaltyDivisor: 0.5)
+    }
+
+    private static func silhouetteSpreadSubScore(items: [WardrobeItem]) -> Double {
+        let unique = Set(items.map(\.silhouette)).count
+        switch unique {
+        case 3:  return 100
+        case 2:  return 70
+        default: return 40
+        }
+    }
+
+    // MARK: Capsule Ratio Sub-scores
+
+    private static func topBottomRatioSubScore(items: [WardrobeItem], archetype: Archetype) -> Double {
+        let topCount = items.filter { $0.category == .top }.count
+        let bottomCount = items.filter { $0.category == .bottom }.count
+        guard topCount > 0, bottomCount > 0 else { return 0 }
+
+        let ratio = Double(topCount) / Double(bottomCount)
+        let range = topBottomIdealRange(for: archetype)
+
+        return rangeScore(value: ratio, idealLower: range.lower, idealUpper: range.upper, overPenaltyDivisor: 1.0)
+    }
+
+    private static func outerProportionSubScore(items: [WardrobeItem], archetype: Archetype) -> Double {
+        let total = items.count
+        guard total > 0 else { return 0 }
+
+        let outerCount = items.filter { $0.category == .outerwear }.count
+        let proportion = Double(outerCount) / Double(total)
+        let range = outerProportionIdealRange(for: archetype)
+
+        return rangeScore(value: proportion, idealLower: range.lower, idealUpper: range.upper, overPenaltyDivisor: 0.2)
+    }
+
+    private static func categoryBalanceSubScore(items: [WardrobeItem]) -> Double {
+        let counts: [Int] = [
+            items.filter { $0.category == .top }.count,
+            items.filter { $0.category == .bottom }.count,
+            items.filter { $0.category == .shoes }.count,
+            items.filter { $0.category == .outerwear }.count,
+        ].filter { $0 > 0 }
+
+        let n = counts.count
+        guard n >= 2 else { return 0 }
+
+        let total = Double(counts.reduce(0, +))
+        let proportions = counts.map { Double($0) / total }
+        var entropy = 0.0
+        for p in proportions {
+            entropy -= p * (log(p) / log(2.0))
+        }
+
+        let maxEntropy = log(Double(n)) / log(2.0)
+        guard maxEntropy > 0 else { return 0 }
+
+        return (entropy / maxEntropy) * 100
+    }
 }

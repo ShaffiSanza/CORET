@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORET — Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1714;
+    --card: #221f1a;
+    --border: #2e2a22;
+    --border-light: #3a3530;
+    --text: #EAE5DE;
+    --text-2: #B0A99E;
+    --text-3: #6B625C;
+    --text-4: #4a4540;
+    --gold: #C9A96E;
+    --gold-dim: rgba(201,169,110,0.55);
+    --gold-soft: rgba(201,169,110,0.10);
+    --green: #7A9A6E;
+    --green-soft: rgba(122,154,110,0.10);
+    --r: 14px;
+    --r-sm: 10px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0e0c0a;
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 2.5px solid #2a2520;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 0;
+    font-size: 15px;
+    font-weight: 600;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ═══════════════════════════════════════
+     FULL BACKGROUND — Outfit photo layer
+  ═══════════════════════════════════════ */
+  .bg-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-photo {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 2s ease;
+  }
+
+  .bg-photo.active { opacity: 1; }
+
+  /* Simulated outfit photo backgrounds — warm tones matching garments */
+  .bg-photo-1 {
+    background: linear-gradient(175deg, 
+      #2A2218 0%, 
+      #3D2B1F 20%, 
+      #4A3525 35%,
+      #3D2B1F 50%,
+      #1A1814 75%, 
+      var(--bg) 100%
+    );
+  }
+
+  .bg-photo-2 {
+    background: linear-gradient(175deg, 
+      #1A2230 0%, 
+      #1E2A3A 20%, 
+      #253548 35%,
+      #1E2A3A 50%,
+      #1A1A20 75%, 
+      var(--bg) 100%
+    );
+  }
+
+  .bg-photo-3 {
+    background: linear-gradient(175deg, 
+      #1A2018 0%, 
+      #2A3520 20%, 
+      #354530 35%,
+      #2A3520 50%,
+      #1A1A18 75%, 
+      var(--bg) 100%
+    );
+  }
+
+  /* Person silhouette — subtle light shape suggesting a figure */
+  .bg-figure {
+    position: absolute;
+    width: 220px;
+    height: 480px;
+    bottom: 250px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at 50% 35%, 
+      rgba(255,255,255,0.03) 0%,
+      rgba(255,255,255,0.015) 40%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  /* Living ambient blobs */
+  .bg-blobs {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .bg-blobs .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    transition: opacity 2s ease, background 2s ease;
+  }
+
+  .blob-1 { width: 220px; height: 220px; top: 5%; left: -15%; animation: blobFloat1 8s ease-in-out infinite alternate; }
+  .blob-2 { width: 180px; height: 180px; top: 20%; right: -10%; animation: blobFloat2 7s ease-in-out infinite alternate; }
+  .blob-3 { width: 150px; height: 150px; top: 40%; left: 10%; animation: blobFloat3 9s ease-in-out infinite alternate; }
+
+  @keyframes blobFloat1 {
+    0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+    100% { transform: translate(15px, -20px) scale(1.15); opacity: 0.45; }
+  }
+  @keyframes blobFloat2 {
+    0% { transform: translate(0, 0) scale(1); opacity: 0.25; }
+    100% { transform: translate(-10px, 15px) scale(1.1); opacity: 0.4; }
+  }
+  @keyframes blobFloat3 {
+    0% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+    100% { transform: translate(10px, -10px) scale(1.2); opacity: 0.35; }
+  }
+
+  /* ═══ SCROLL ═══ */
+  .scroll {
+    position: relative;
+    z-index: 5;
+    height: calc(100% - 108px);
+    overflow-y: auto;
+    padding-bottom: 16px;
+  }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  .brand-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .brand {
+    font-family: 'Instrument Serif', serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+  }
+
+  .settings-icon {
+    color: var(--text-4);
+    font-size: 16px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
+
+  /* ═══════════════════════════════════════
+     OUTFIT SHOWCASE — The hero
+  ═══════════════════════════════════════ */
+  .showcase {
+    padding: 60px 20px 0;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  /* Outfit name floating at top */
+  .showcase-name {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--text-3);
+    letter-spacing: 1px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeDown 0.6s ease-out 0.2s forwards;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Floating garment cards — DigiCo inspired */
+  .floating-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .float-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(26,23,20,0.55);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(201,169,110,0.08);
+    border-radius: 12px;
+    opacity: 0;
+    animation: cardFloat 0.5s ease-out forwards;
+    transition: transform 0.3s, border-color 0.3s;
+    cursor: pointer;
+  }
+
+  .float-card:hover {
+    transform: translateX(4px);
+    border-color: rgba(201,169,110,0.15);
+  }
+
+  .float-card:nth-child(1) { animation-delay: 0.3s; }
+  .float-card:nth-child(2) { animation-delay: 0.45s; }
+  .float-card:nth-child(3) { animation-delay: 0.6s; }
+
+  @keyframes cardFloat {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Even cards slide from right */
+  .float-card:nth-child(2) {
+    align-self: flex-end;
+  }
+
+  @keyframes cardFloatRight {
+    from { opacity: 0; transform: translateX(12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .float-card:nth-child(2) {
+    animation-name: cardFloatRight;
+  }
+
+  .fc-emoji {
+    font-size: 28px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(34,31,26,0.6);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .fc-info { flex: 1; }
+
+  .fc-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 1px;
+  }
+
+  .fc-meta {
+    font-size: 9px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-4);
+  }
+
+  .fc-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* Photo indicator dots */
+  .showcase-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 28px;
+  }
+
+  .s-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-4);
+    transition: all 0.4s;
+    cursor: pointer;
+  }
+
+  .s-dot.active {
+    background: var(--gold);
+    width: 20px;
+    border-radius: 3px;
+  }
+
+  /* ═══════════════════════════════════════
+     PROFILE IDENTITY — Minimal
+  ═══════════════════════════════════════ */
+  .identity {
+    text-align: center;
+    padding: 24px 20px 20px;
+  }
+
+  .identity-label {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin-bottom: 6px;
+  }
+
+  .identity-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 26px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .identity-sub {
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  /* ═══════════════════════════════════════
+     FAVORITE FITS — Carousel
+  ═══════════════════════════════════════ */
+  .fits-section {
+    padding: 20px 0 0;
+  }
+
+  .fits-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 12px;
+  }
+
+  .fits-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .fits-count {
+    font-size: 11px;
+    color: var(--text-4);
+  }
+
+  .fits-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 0 20px 20px;
+  }
+
+  .fits-scroll::-webkit-scrollbar { display: none; }
+
+  .fit-item {
+    width: 100px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .fit-item:hover { transform: translateY(-3px); }
+
+  .fit-thumb {
+    width: 100px;
+    height: 130px;
+    border-radius: var(--r-sm);
+    overflow: hidden;
+    position: relative;
+    border: 1.5px solid var(--border);
+    margin-bottom: 6px;
+    transition: border-color 0.3s;
+  }
+
+  .fit-item.active .fit-thumb {
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(201,169,110,0.1);
+  }
+
+  .fit-item:hover .fit-thumb { border-color: var(--border-light); }
+
+  .fit-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .fit-bg .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(20px);
+    animation: fitBreathe 5s ease-in-out infinite alternate;
+  }
+
+  @keyframes fitBreathe {
+    0% { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 0.7; transform: scale(1.1); }
+  }
+
+  .fit-emojis {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+    font-size: 18px;
+    z-index: 1;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  }
+
+  .fit-name {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: var(--text-3);
+    text-align: center;
+  }
+
+  .fit-item.active .fit-name { color: var(--gold-dim); }
+
+  /* Add new fit */
+  .fit-add {
+    width: 100px;
+    flex-shrink: 0;
+  }
+
+  .fit-add-thumb {
+    width: 100px;
+    height: 130px;
+    border: 1.5px dashed var(--border-light);
+    border-radius: var(--r-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    margin-bottom: 6px;
+    transition: border-color 0.2s;
+  }
+
+  .fit-add-thumb:hover { border-color: var(--gold-dim); }
+
+  .fit-add-icon { font-size: 24px; opacity: 0.4; }
+
+  .fit-add-text {
+    font-size: 9px;
+    color: var(--text-4);
+    text-align: center;
+    line-height: 1.3;
+    padding: 0 8px;
+  }
+
+  /* ═══════════════════════════════════════
+     GLASS SECTIONS — Import & Settings
+  ═══════════════════════════════════════ */
+  .glass {
+    margin: 0 16px 12px;
+    background: rgba(34,31,26,0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(46,42,34,0.6);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+
+  /* Import */
+  .import-section { padding: 16px; }
+
+  .import-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin-bottom: 12px;
+  }
+
+  .import-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .import-row + .import-row {
+    border-top: 1px solid rgba(46,42,34,0.5);
+  }
+
+  .import-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .import-info { flex: 1; }
+
+  .import-name {
+    font-size: 12px;
+    color: var(--text-2);
+    font-weight: 500;
+  }
+
+  .import-desc {
+    font-size: 10px;
+    color: var(--text-4);
+    margin-top: 1px;
+  }
+
+  .import-status {
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  .import-status.connected {
+    background: var(--green-soft);
+    color: var(--green);
+  }
+
+  .import-status.available {
+    background: rgba(255,255,255,0.03);
+    color: var(--text-3);
+    cursor: pointer;
+  }
+
+  /* Settings */
+  .settings-section { padding: 4px 0; }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .setting-row:hover { background: rgba(255,255,255,0.015); }
+
+  .setting-row + .setting-row {
+    border-top: 1px solid rgba(46,42,34,0.4);
+  }
+
+  .setting-icon {
+    font-size: 15px;
+    opacity: 0.4;
+    width: 20px;
+    text-align: center;
+  }
+
+  .setting-name {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-2);
+  }
+
+  .setting-val {
+    font-size: 10px;
+    color: var(--text-4);
+  }
+
+  .setting-arrow {
+    font-size: 12px;
+    color: var(--text-4);
+    margin-left: 4px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 14px 20px 8px;
+  }
+
+  .footer-text {
+    font-size: 10px;
+    color: var(--text-4);
+    opacity: 0.5;
+  }
+
+  /* ═══ TAB BAR ═══ */
+  .tab-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 68px;
+    background: rgba(30,26,21,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 6px;
+    z-index: 10;
+  }
+
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 6px 10px;
+  }
+
+  .tab-i { font-size: 17px; opacity: 0.3; }
+  .tab-l { font-size: 8.5px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-4); }
+  .tab.on .tab-i { opacity: 1; }
+  .tab.on .tab-l { color: var(--gold-dim); }
+
+  .phone-label {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-4);
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <div class="phone">
+    <div class="top-bar">
+      <span>9:41</span>
+      <span style="font-size:12px;color:var(--text-3);">●●●●  📶  🔋</span>
+    </div>
+
+    <!-- ═══ BACKGROUND ═══ -->
+    <div class="bg-layer">
+      <div class="bg-photo bg-photo-1 active" id="bg1"></div>
+      <div class="bg-photo bg-photo-2" id="bg2"></div>
+      <div class="bg-photo bg-photo-3" id="bg3"></div>
+
+      <div class="bg-figure"></div>
+
+      <div class="bg-blobs">
+        <div class="blob blob-1" id="blob1" style="background:#5C3D1E;"></div>
+        <div class="blob blob-2" id="blob2" style="background:#3D2B1F;"></div>
+        <div class="blob blob-3" id="blob3" style="background:#4A3520;"></div>
+      </div>
+    </div>
+
+    <div class="brand-row">
+      <span class="brand">CORET</span>
+      <button class="settings-icon">⚙</button>
+    </div>
+
+    <div class="scroll">
+
+      <!-- ═══ OUTFIT SHOWCASE ═══ -->
+      <div class="showcase">
+
+        <div class="showcase-name" id="outfitName">Vinterstruktur</div>
+
+        <div class="floating-cards" id="floatingCards">
+          <div class="float-card">
+            <div class="fc-emoji">🧥</div>
+            <div class="fc-info">
+              <div class="fc-name">Brun Frakk</div>
+              <div class="fc-meta">Outerwear · Relaxed</div>
+            </div>
+            <div class="fc-color" style="background:#8B6B4A;"></div>
+          </div>
+
+          <div class="float-card">
+            <div class="fc-emoji">👔</div>
+            <div class="fc-info">
+              <div class="fc-name">Navy Skjorte</div>
+              <div class="fc-meta">Top · Fitted</div>
+            </div>
+            <div class="fc-color" style="background:#2C3E50;"></div>
+          </div>
+
+          <div class="float-card">
+            <div class="fc-emoji">👖</div>
+            <div class="fc-info">
+              <div class="fc-name">Beige Chinos</div>
+              <div class="fc-meta">Bottom · Tapered</div>
+            </div>
+            <div class="fc-color" style="background:#C4B08A;"></div>
+          </div>
+        </div>
+
+        <div class="showcase-dots">
+          <div class="s-dot active" onclick="switchOutfit(0)"></div>
+          <div class="s-dot" onclick="switchOutfit(1)"></div>
+          <div class="s-dot" onclick="switchOutfit(2)"></div>
+        </div>
+
+      </div>
+
+      <!-- ═══ IDENTITY ═══ -->
+      <div class="identity">
+        <div class="identity-label">Oppdaget profil</div>
+        <div class="identity-name">Structured · Warm</div>
+        <div class="identity-sub">Medlem siden januar 2026</div>
+      </div>
+
+      <!-- ═══ FAVORITE FITS ═══ -->
+      <div class="fits-section">
+        <div class="fits-head">
+          <span class="fits-title">Favoritt-antrekk</span>
+          <span class="fits-count">3</span>
+        </div>
+        <div class="fits-scroll">
+
+          <div class="fit-item active" onclick="switchOutfit(0)">
+            <div class="fit-thumb">
+              <div class="fit-bg">
+                <div class="blob" style="width:70px;height:70px;background:#5C3D1E;top:5%;left:0;opacity:0.6;"></div>
+                <div class="blob" style="width:50px;height:50px;background:#2C3E50;bottom:5%;right:0;opacity:0.4;animation-delay:-2s;"></div>
+              </div>
+              <div class="fit-emojis">🧥👔👖</div>
+            </div>
+            <div class="fit-name">Vinterstruktur</div>
+          </div>
+
+          <div class="fit-item" onclick="switchOutfit(1)">
+            <div class="fit-thumb">
+              <div class="fit-bg">
+                <div class="blob" style="width:70px;height:70px;background:#1A2A40;top:5%;left:0;opacity:0.6;"></div>
+                <div class="blob" style="width:50px;height:50px;background:#7A9AB0;bottom:5%;right:0;opacity:0.4;animation-delay:-1.5s;"></div>
+              </div>
+              <div class="fit-emojis">👕👖👟</div>
+            </div>
+            <div class="fit-name">Sommerlett</div>
+          </div>
+
+          <div class="fit-item" onclick="switchOutfit(2)">
+            <div class="fit-thumb">
+              <div class="fit-bg">
+                <div class="blob" style="width:70px;height:70px;background:#2A3520;top:5%;left:0;opacity:0.6;"></div>
+                <div class="blob" style="width:50px;height:50px;background:#1A1A1A;bottom:5%;right:0;opacity:0.4;animation-delay:-1s;"></div>
+              </div>
+              <div class="fit-emojis">🧥🧶👖</div>
+            </div>
+            <div class="fit-name">Mørk Street</div>
+          </div>
+
+          <div class="fit-add">
+            <div class="fit-add-thumb">
+              <span class="fit-add-icon">📸</span>
+              <span class="fit-add-text">Ta bilde i<br>favoritt-antrekk</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ IMPORT ═══ -->
+      <div class="glass">
+        <div class="import-section">
+          <div class="import-title">Importkilder</div>
+          <div class="import-row">
+            <div class="import-icon">📧</div>
+            <div class="import-info">
+              <div class="import-name">E-post</div>
+              <div class="import-desc">12 plagg importert via Gmail</div>
+            </div>
+            <span class="import-status connected">Koblet</span>
+          </div>
+          <div class="import-row">
+            <div class="import-icon">🟠</div>
+            <div class="import-info">
+              <div class="import-name">Zalando</div>
+              <div class="import-desc">Automatisk import</div>
+            </div>
+            <span class="import-status available">Koble til</span>
+          </div>
+          <div class="import-row">
+            <div class="import-icon">🔴</div>
+            <div class="import-info">
+              <div class="import-name">H&M</div>
+              <div class="import-desc">Automatisk import</div>
+            </div>
+            <span class="import-status available">Koble til</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SETTINGS ═══ -->
+      <div class="glass">
+        <div class="settings-section">
+          <div class="setting-row">
+            <span class="setting-icon">🌍</span>
+            <span class="setting-name">Sesong & region</span>
+            <span class="setting-val">Oslo</span>
+            <span class="setting-arrow">›</span>
+          </div>
+          <div class="setting-row">
+            <span class="setting-icon">🔔</span>
+            <span class="setting-name">Varsler</span>
+            <span class="setting-arrow">›</span>
+          </div>
+          <div class="setting-row">
+            <span class="setting-icon">📊</span>
+            <span class="setting-name">Eksporter data</span>
+            <span class="setting-arrow">›</span>
+          </div>
+          <div class="setting-row">
+            <span class="setting-icon">🔒</span>
+            <span class="setting-name">Personvern</span>
+            <span class="setting-arrow">›</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-text">CORET v1.0</div>
+      </div>
+
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab"><span class="tab-i">◻</span><span class="tab-l">Dashboard</span></div>
+      <div class="tab"><span class="tab-i">▦</span><span class="tab-l">Wardrobe</span></div>
+      <div class="tab"><span class="tab-i">◎</span><span class="tab-l">Optimize</span></div>
+      <div class="tab"><span class="tab-i">◈</span><span class="tab-l">Journey</span></div>
+      <div class="tab on"><span class="tab-i">○</span><span class="tab-l">Profile</span></div>
+    </div>
+  </div>
+  <div class="phone-label">Profile — Outfit Showcase</div>
+</div>
+
+<script>
+  const outfits = [
+    {
+      name: 'Vinterstruktur',
+      bgColors: ['#5C3D1E', '#3D2B1F', '#4A3520'],
+      cards: [
+        { emoji: '🧥', name: 'Brun Frakk', meta: 'Outerwear · Relaxed', color: '#8B6B4A' },
+        { emoji: '👔', name: 'Navy Skjorte', meta: 'Top · Fitted', color: '#2C3E50' },
+        { emoji: '👖', name: 'Beige Chinos', meta: 'Bottom · Tapered', color: '#C4B08A' },
+      ]
+    },
+    {
+      name: 'Sommerlett',
+      bgColors: ['#1A2A40', '#3A4A60', '#2A3548'],
+      cards: [
+        { emoji: '👕', name: 'Hvit T-shirt', meta: 'Top · Fitted', color: '#D4CFC7' },
+        { emoji: '👖', name: 'Lyse Jeans', meta: 'Bottom · Regular', color: '#7A9AB0' },
+        { emoji: '👟', name: 'Hvite Sneakers', meta: 'Shoes · Casual', color: '#E8E0D4' },
+      ]
+    },
+    {
+      name: 'Mørk Street',
+      bgColors: ['#2A3520', '#1A1A1A', '#2A2A1E'],
+      cards: [
+        { emoji: '🧥', name: 'Oliven Bomber', meta: 'Outerwear · Relaxed', color: '#5A6B3A' },
+        { emoji: '🧶', name: 'Svart Hoodie', meta: 'Mid · Relaxed', color: '#3A3530' },
+        { emoji: '👖', name: 'Svarte Bukser', meta: 'Bottom · Slim', color: '#2A2520' },
+      ]
+    }
+  ];
+
+  let currentOutfit = 0;
+
+  function switchOutfit(index) {
+    const o = outfits[index];
+    currentOutfit = index;
+
+    // Switch background
+    document.querySelectorAll('.bg-photo').forEach(b => b.classList.remove('active'));
+    document.getElementById('bg' + (index + 1)).classList.add('active');
+
+    // Switch blobs
+    document.getElementById('blob1').style.background = o.bgColors[0];
+    document.getElementById('blob2').style.background = o.bgColors[1];
+    document.getElementById('blob3').style.background = o.bgColors[2];
+
+    // Update outfit name
+    document.getElementById('outfitName').textContent = o.name;
+
+    // Update floating cards
+    const container = document.getElementById('floatingCards');
+    container.innerHTML = o.cards.map((c, i) => `
+      <div class="float-card" style="animation: ${i === 1 ? 'cardFloatRight' : 'cardFloat'} 0.5s ease-out ${0.1 + i * 0.12}s forwards; opacity: 0;">
+        <div class="fc-emoji">${c.emoji}</div>
+        <div class="fc-info">
+          <div class="fc-name">${c.name}</div>
+          <div class="fc-meta">${c.meta}</div>
+        </div>
+        <div class="fc-color" style="background:${c.color};"></div>
+      </div>
+    `).join('');
+
+    // Update dots
+    document.querySelectorAll('.s-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+    });
+
+    // Update fit cards
+    document.querySelectorAll('.fit-item').forEach((f, i) => {
+      f.classList.toggle('active', i === index);
+    });
+  }
+
+  // Auto-rotate
+  setInterval(() => {
+    switchOutfit((currentOutfit + 1) % 3);
+  }, 6000);
+</script>
+
+</body>
+</html>

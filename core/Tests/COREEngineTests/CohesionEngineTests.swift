@@ -1182,3 +1182,480 @@ private func minimalWardrobe() -> [WardrobeItem] {
     #expect(abs(impact.rotationBefore - snapshot.rotationScore) < 0.001)
     #expect(abs(impact.totalBefore - snapshot.totalScore) < 0.001)
 }
+
+// MARK: - V1.5 Layer Coverage Score
+
+@Test func layerCoverageEmptyReturnsZero() {
+    let score = CohesionEngine.layerCoverageScore(items: [], profile: makeProfile())
+    #expect(score == 0)
+}
+
+@Test func layerCoverageSingleItem() {
+    let items = [makeItem(category: .top)]
+    let score = CohesionEngine.layerCoverageScore(items: items, profile: makeProfile())
+    // Single item: categoryCoverage low, layeringCapacity 0 (no outerwear, has tops), silhouetteSpread 40 (1 unique)
+    #expect(score > 0)
+    #expect(score < 30)
+}
+
+@Test func layerCoverageMinimalWardrobe() {
+    // 1 top, 1 bottom, 1 shoes — no outerwear
+    let items = minimalWardrobe()
+    let score = CohesionEngine.layerCoverageScore(items: items, profile: makeProfile())
+    #expect(score > 0)
+    #expect(score < 60)
+}
+
+@Test func layerCoverageFullCoverage() {
+    // 3+ of each category, all 3 silhouettes
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .top, silhouette: .balanced),
+        makeItem(category: .top, silhouette: .relaxed),
+        makeItem(category: .bottom, silhouette: .structured),
+        makeItem(category: .bottom, silhouette: .balanced),
+        makeItem(category: .bottom, silhouette: .relaxed),
+        makeItem(category: .shoes, silhouette: .structured),
+        makeItem(category: .shoes, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .relaxed),
+        makeItem(category: .outerwear, silhouette: .structured),
+        makeItem(category: .outerwear, silhouette: .balanced),
+        makeItem(category: .outerwear, silhouette: .relaxed),
+    ]
+    let score = CohesionEngine.layerCoverageScore(items: items, profile: makeProfile())
+    // All categories at 3+ (depth=1.0), ratio 3:3 in range for structured, 3 silhouettes
+    #expect(score > 80)
+}
+
+@Test func layerCoverageNoOuterwear() {
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .shoes),
+    ]
+    let score = CohesionEngine.layerCoverageScore(items: items, profile: makeProfile())
+    // No outerwear: categoryCoverage penalized for outerwear=0, layeringCapacity=0
+    let withOuter = [
+        makeItem(category: .top),
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+    ]
+    let scoreWithOuter = CohesionEngine.layerCoverageScore(items: withOuter, profile: makeProfile())
+    #expect(scoreWithOuter > score)
+}
+
+@Test func layerCoverageExcessiveOuterwear() {
+    // Many outerwear, few tops — ratio above range
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+        makeItem(category: .outerwear),
+        makeItem(category: .outerwear),
+        makeItem(category: .outerwear),
+        makeItem(category: .outerwear),
+    ]
+    let profile = makeProfile()
+    let score = CohesionEngine.layerCoverageScore(items: items, profile: profile)
+    // ratio = 5/1 = 5.0, way above any archetype's upper bound → layeringCapacity penalized
+    // But categoryCoverage and silhouetteSpread still contribute
+    #expect(score > 0)
+    #expect(score < 50)
+}
+
+@Test func layerCoverageArchetypeAffectsScore() {
+    // Same wardrobe, different archetypes → different scores
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+    ]
+    let structured = CohesionEngine.layerCoverageScore(items: items, profile: makeProfile(primary: .structuredMinimal))
+    let relaxed = CohesionEngine.layerCoverageScore(items: items, profile: makeProfile(primary: .relaxedStreet))
+    // Different category weights and layering ranges → scores differ
+    #expect(abs(structured - relaxed) > 0.001)
+}
+
+@Test func layerCoverageSilhouetteSpreadThreeUnique() {
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .bottom, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .relaxed),
+        makeItem(category: .outerwear, silhouette: .structured),
+    ]
+    let scoreThree = CohesionEngine.layerCoverageScore(items: items, profile: makeProfile())
+    // All same silhouette
+    let itemsOne = [
+        makeItem(category: .top, silhouette: .balanced),
+        makeItem(category: .bottom, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .balanced),
+        makeItem(category: .outerwear, silhouette: .balanced),
+    ]
+    let scoreOne = CohesionEngine.layerCoverageScore(items: itemsOne, profile: makeProfile())
+    #expect(scoreThree > scoreOne)
+}
+
+@Test func layerCoverageLayeringInRange() {
+    // structuredMinimal range: 0.5–1.0. 1 outer, 2 tops → ratio = 0.5
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+    ]
+    let score = CohesionEngine.layerCoverageScore(items: items, profile: makeProfile(primary: .structuredMinimal))
+    #expect(score > 30)
+}
+
+@Test func layerCoverageLayeringBelowRange() {
+    // relaxedStreet range: 0.2–0.6. 1 outer, 10 tops → ratio = 0.1, below lower
+    var items: [WardrobeItem] = []
+    for _ in 0..<10 { items.append(makeItem(category: .top)) }
+    items.append(makeItem(category: .bottom))
+    items.append(makeItem(category: .shoes))
+    items.append(makeItem(category: .outerwear))
+    let score = CohesionEngine.layerCoverageScore(items: items, profile: makeProfile(primary: .relaxedStreet))
+    // ratio = 1/10 = 0.1, below 0.2 → penalized layering capacity
+    #expect(score > 0)
+}
+
+@Test func layerCoverageDeterminism() {
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .bottom, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .relaxed),
+        makeItem(category: .outerwear),
+    ]
+    let profile = makeProfile()
+    let s1 = CohesionEngine.layerCoverageScore(items: items, profile: profile)
+    let s2 = CohesionEngine.layerCoverageScore(items: items, profile: profile)
+    #expect(s1 == s2)
+}
+
+@Test func layerCoverageCategoryDepthScoring() {
+    // 2 items in a category should score higher than 1
+    let items1 = [makeItem(category: .top), makeItem(category: .bottom), makeItem(category: .shoes)]
+    let items2 = [makeItem(category: .top), makeItem(category: .top), makeItem(category: .bottom), makeItem(category: .shoes)]
+    let profile = makeProfile()
+    let s1 = CohesionEngine.layerCoverageScore(items: items1, profile: profile)
+    let s2 = CohesionEngine.layerCoverageScore(items: items2, profile: profile)
+    #expect(s2 > s1)
+}
+
+// MARK: - V1.5 Capsule Ratio Score
+
+@Test func capsuleRatioEmptyReturnsZero() {
+    let score = CohesionEngine.capsuleRatioScore(items: [], profile: makeProfile())
+    #expect(score == 0)
+}
+
+@Test func capsuleRatioSingleCategory() {
+    let items = [makeItem(category: .top), makeItem(category: .top)]
+    let score = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile())
+    // No bottoms → topBottomRatio = 0, no outerwear → outerProportion low, 1 category → balance = 0
+    #expect(abs(score) < 0.001)
+}
+
+@Test func capsuleRatioIdealStructured() {
+    // structuredMinimal: top:bottom 1.0–1.5, outer proportion 0.25–0.40
+    // 3 tops, 2 bottoms (ratio=1.5), 2 shoes, 3 outer → 10 items, outer prop = 0.3
+    let items = [
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .bottom), makeItem(category: .bottom),
+        makeItem(category: .shoes), makeItem(category: .shoes),
+        makeItem(category: .outerwear), makeItem(category: .outerwear), makeItem(category: .outerwear),
+    ]
+    let score = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile(primary: .structuredMinimal))
+    #expect(score > 70)
+}
+
+@Test func capsuleRatioIdealRelaxedStreet() {
+    // relaxedStreet: top:bottom 1.5–2.0, outer proportion 0.15–0.30
+    // 6 tops, 3 bottoms (ratio=2.0), 3 shoes, 3 outer → 15 items, outer prop = 0.2
+    let items = [
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .bottom), makeItem(category: .bottom), makeItem(category: .bottom),
+        makeItem(category: .shoes), makeItem(category: .shoes), makeItem(category: .shoes),
+        makeItem(category: .outerwear), makeItem(category: .outerwear), makeItem(category: .outerwear),
+    ]
+    let score = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile(primary: .relaxedStreet))
+    #expect(score > 70)
+}
+
+@Test func capsuleRatioTooManyTops() {
+    // 10 tops, 1 bottom → ratio = 10, way above any ideal
+    let items = [
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+    ]
+    let profile = makeProfile(primary: .structuredMinimal)
+    let score = CohesionEngine.capsuleRatioScore(items: items, profile: profile)
+    // Top:bottom ratio way above range → topBottomRatio penalized
+    #expect(score < 50)
+}
+
+@Test func capsuleRatioNoBottoms() {
+    let items = [makeItem(category: .top), makeItem(category: .shoes)]
+    let score = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile())
+    // topBottomRatio = 0 (no bottoms), balance partial
+    #expect(score < 40)
+}
+
+@Test func capsuleRatioNoOuterwear() {
+    let items = [
+        makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .bottom), makeItem(category: .bottom),
+        makeItem(category: .shoes), makeItem(category: .shoes),
+    ]
+    let score = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile())
+    // No outerwear → outerProportion below range but not zero score overall
+    #expect(score > 0)
+}
+
+@Test func capsuleRatioArchetypeAffectsIdeals() {
+    // Same wardrobe, different archetypes
+    let items = [
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .bottom), makeItem(category: .bottom),
+        makeItem(category: .shoes), makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+    ]
+    let structured = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile(primary: .structuredMinimal))
+    let relaxed = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile(primary: .relaxedStreet))
+    #expect(abs(structured - relaxed) > 0.001)
+}
+
+@Test func capsuleRatioPerfectBalance() {
+    // Equal counts across all 4 categories → max entropy
+    let items = [
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .bottom), makeItem(category: .bottom), makeItem(category: .bottom),
+        makeItem(category: .shoes), makeItem(category: .shoes), makeItem(category: .shoes),
+        makeItem(category: .outerwear), makeItem(category: .outerwear), makeItem(category: .outerwear),
+    ]
+    let score = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile(primary: .structuredMinimal))
+    // Perfect balance (entropy max) but top:bottom = 1.0 in range, outer proportion = 0.25 in range
+    #expect(score > 70)
+}
+
+@Test func capsuleRatioImbalanced() {
+    // Very imbalanced: 8 tops, 1 bottom, 1 shoes, 0 outerwear
+    let items = [
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .top), makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+    ]
+    let score = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile())
+    // Top:bottom = 8.0 (way over), no outerwear, poor balance
+    #expect(score < 40)
+}
+
+@Test func capsuleRatioTwoCategoryEntropy() {
+    // Only 2 categories present → lower max entropy
+    let items = [
+        makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .bottom), makeItem(category: .bottom),
+    ]
+    let score = CohesionEngine.capsuleRatioScore(items: items, profile: makeProfile())
+    // Balance with 2 categories still works, but topBottomRatio and outerProp affected
+    #expect(score > 0)
+}
+
+@Test func capsuleRatioDeterminism() {
+    let items = [
+        makeItem(category: .top), makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+    ]
+    let profile = makeProfile()
+    let s1 = CohesionEngine.capsuleRatioScore(items: items, profile: profile)
+    let s2 = CohesionEngine.capsuleRatioScore(items: items, profile: profile)
+    #expect(s1 == s2)
+}
+
+// MARK: - V1.5 Structural Density Score
+
+@Test func structuralDensityEmptyReturnsZero() {
+    let score = CohesionEngine.structuralDensityScore(items: [], profile: makeProfile())
+    #expect(score == 0)
+}
+
+@Test func structuralDensityMinimalWardrobe() {
+    let items = minimalWardrobe()
+    let score = CohesionEngine.structuralDensityScore(items: items, profile: makeProfile())
+    #expect(score > 0)
+    #expect(score <= 100)
+}
+
+@Test func structuralDensityWeightVerification() {
+    // Verify the 0.50/0.25/0.25 weight split
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .top, silhouette: .balanced),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear, silhouette: .relaxed),
+    ]
+    let profile = makeProfile()
+    let combination = CohesionEngine.densityScore(items: items, profile: profile)
+    let coverage = CohesionEngine.layerCoverageScore(items: items, profile: profile)
+    let capsule = CohesionEngine.capsuleRatioScore(items: items, profile: profile)
+    let expected = combination * 0.50 + coverage * 0.25 + capsule * 0.25
+    let actual = CohesionEngine.structuralDensityScore(items: items, profile: profile)
+    #expect(abs(actual - expected) < 0.001)
+}
+
+@Test func structuralDensityNeverExceeds100() {
+    // Build a high-scoring wardrobe
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .top, silhouette: .balanced),
+        makeItem(category: .top, silhouette: .relaxed),
+        makeItem(category: .bottom, silhouette: .structured),
+        makeItem(category: .bottom, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .relaxed),
+        makeItem(category: .outerwear, silhouette: .structured),
+        makeItem(category: .outerwear, silhouette: .balanced),
+    ]
+    let score = CohesionEngine.structuralDensityScore(items: items, profile: makeProfile())
+    #expect(score <= 100)
+}
+
+@Test func structuralDensityNeverBelowZero() {
+    // Worst-case wardrobe
+    let items = [makeItem(category: .top, archetype: .relaxedStreet)]
+    let profile = makeProfile(primary: .structuredMinimal)
+    let score = CohesionEngine.structuralDensityScore(items: items, profile: profile)
+    #expect(score >= 0)
+}
+
+@Test func structuralDensityDeterminism() {
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+    ]
+    let profile = makeProfile()
+    let s1 = CohesionEngine.structuralDensityScore(items: items, profile: profile)
+    let s2 = CohesionEngine.structuralDensityScore(items: items, profile: profile)
+    #expect(s1 == s2)
+}
+
+// MARK: - V1.5 Compute V2
+
+@Test func computeV2EmptyReturnsZero() {
+    let snapshot = CohesionEngine.computeV2(items: [], profile: makeProfile())
+    #expect(snapshot.totalScore == 0)
+    #expect(snapshot.densityScore == 0)
+    #expect(snapshot.statusLevel == .structuring)
+}
+
+@Test func computeV2UsesStructuralDensity() {
+    // V2 density should differ from V1 density for non-trivial wardrobe
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .top, silhouette: .balanced),
+        makeItem(category: .bottom),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear, silhouette: .relaxed),
+    ]
+    let profile = makeProfile()
+    let v1 = CohesionEngine.compute(items: items, profile: profile)
+    let v2 = CohesionEngine.computeV2(items: items, profile: profile)
+    // V1 density = pure combination density. V2 = 0.50*combination + 0.25*coverage + 0.25*capsule
+    #expect(abs(v1.densityScore - v2.densityScore) > 0.001)
+}
+
+@Test func computeV2FormulaWeightsCorrect() {
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+        makeItem(category: .outerwear),
+    ]
+    let profile = makeProfile()
+    let snapshot = CohesionEngine.computeV2(items: items, profile: profile)
+    let alignment = CohesionEngine.alignmentScore(items: items, profile: profile)
+    let density = CohesionEngine.structuralDensityScore(items: items, profile: profile)
+    let palette = CohesionEngine.paletteScore(items: items)
+    let rotation = CohesionEngine.rotationScore(items: items)
+    let expected = alignment * 0.35 + density * 0.30 + palette * 0.20 + rotation * 0.15
+    #expect(abs(snapshot.totalScore - expected) < 0.001)
+}
+
+@Test func computeV2PopulatesItemIDs() {
+    let items = minimalWardrobe()
+    let snapshot = CohesionEngine.computeV2(items: items, profile: makeProfile())
+    #expect(snapshot.itemIDs.count == 3)
+    for item in items {
+        #expect(snapshot.itemIDs.contains(item.id))
+    }
+}
+
+@Test func computeV2CorrectStatus() {
+    let snapshot = CohesionEngine.computeV2(items: [], profile: makeProfile())
+    #expect(snapshot.statusLevel == .structuring)
+}
+
+@Test func computeV2WeightedOverloadWorks() {
+    let items = [
+        makeItem(category: .top),
+        makeItem(category: .bottom),
+        makeItem(category: .shoes),
+    ]
+    let profile = makeProfile()
+    let customWeights = CohesionWeights(alignment: 0.25, density: 0.25, palette: 0.25, rotation: 0.25)
+    let snapshot = CohesionEngine.computeV2(items: items, profile: profile, weights: customWeights)
+    let alignment = CohesionEngine.alignmentScore(items: items, profile: profile)
+    let density = CohesionEngine.structuralDensityScore(items: items, profile: profile)
+    let palette = CohesionEngine.paletteScore(items: items)
+    let rotation = CohesionEngine.rotationScore(items: items)
+    let expected = alignment * 0.25 + density * 0.25 + palette * 0.25 + rotation * 0.25
+    #expect(abs(snapshot.totalScore - expected) < 0.001)
+}
+
+@Test func computeV1Unchanged() {
+    // V1 compute must be completely unaffected
+    let items = minimalWardrobe()
+    let profile = makeProfile()
+    let v1 = CohesionEngine.compute(items: items, profile: profile)
+    let v1Density = CohesionEngine.densityScore(items: items, profile: profile)
+    #expect(abs(v1.densityScore - v1Density) < 0.001)
+}
+
+@Test func computeV2Determinism() {
+    let items = [
+        makeItem(category: .top, silhouette: .structured),
+        makeItem(category: .bottom, silhouette: .balanced),
+        makeItem(category: .shoes, silhouette: .relaxed),
+        makeItem(category: .outerwear),
+    ]
+    let profile = makeProfile()
+    let s1 = CohesionEngine.computeV2(items: items, profile: profile)
+    let s2 = CohesionEngine.computeV2(items: items, profile: profile)
+    #expect(s1.totalScore == s2.totalScore)
+    #expect(s1.densityScore == s2.densityScore)
+    #expect(s1.alignmentScore == s2.alignmentScore)
+}

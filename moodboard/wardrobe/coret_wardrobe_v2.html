@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0">
+<title>CORET — Wardrobe Tab v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1A1210;
+    --surface: #231C18;
+    --surface-2: #2B2320;
+    --border: rgba(201,169,110,0.10);
+    --gold: #C9A96E;
+    --gold-dim: #A08754;
+    --text: #F2EDEA;
+    --text-secondary: #A09889;
+    --text-muted: #6B6058;
+    --green: #8AB88A;
+    --green-bg: rgba(106,155,106,0.08);
+    --amber: #C4944A;
+    --amber-soft: rgba(196,148,74,0.14);
+    --radius: 20px;
+    --radius-sm: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0E0A08;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px 60px;
+  }
+
+  .page-tag { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 4px; text-align: center; }
+  .page-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; color: var(--text); margin-bottom: 32px; text-align: center; }
+
+  .phones { display: flex; gap: 32px; flex-wrap: wrap; justify-content: center; }
+  .phone-col { display: flex; flex-direction: column; align-items: center; }
+  .phone-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 4px; }
+  .phone-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400; color: var(--text); margin-bottom: 12px; }
+
+  .phone {
+    width: 393px;
+    height: 852px;
+    background: var(--bg);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(201,169,110,0.06), 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .scr { position: absolute; inset: 0; display: flex; flex-direction: column; overflow-y: auto; scrollbar-width: none; }
+  .scr::-webkit-scrollbar { display: none; }
+
+  .sb { padding: 16px 28px 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; color: var(--text-secondary); flex-shrink: 0; }
+  .logo { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 400; letter-spacing: 2px; color: var(--gold-dim); }
+
+  /* Tab header */
+  .tab-header { padding: 8px 24px 4px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .tab-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--text); }
+  .tab-add { width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
+  .tab-add:hover { background: rgba(201,169,110,0.12); border-color: rgba(201,169,110,0.25); }
+  .tab-add svg { width: 16px; height: 16px; stroke: var(--gold-dim); fill: none; stroke-width: 1.5; stroke-linecap: round; }
+
+  /* View toggle */
+  .view-toggle {
+    display: flex;
+    margin: 0 24px 14px;
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 3px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .vt-btn {
+    flex: 1;
+    padding: 7px 0;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s;
+    border: none;
+    background: none;
+    font-family: inherit;
+  }
+  .vt-btn.active {
+    background: var(--surface-2);
+    color: var(--gold);
+    border: 1px solid rgba(201,169,110,0.15);
+  }
+  .vt-btn:not(.active):hover {
+    color: var(--text-secondary);
+  }
+
+  .tab-meta { padding: 0 24px 12px; font-size: 12px; color: var(--text-muted); letter-spacing: 0.5px; flex-shrink: 0; }
+
+  .content { flex: 1; padding: 0 16px 16px; }
+
+  /* ═══ OUTFIT CARDS ═══ */
+  .card { border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; cursor: pointer; transition: all 0.35s; position: relative; border: 1px solid rgba(255,255,255,0.05); animation: fadeUp 0.5s ease-out backwards; }
+  .card:nth-child(1) { animation-delay: 0s; }
+  .card:nth-child(2) { animation-delay: 0.06s; }
+  .card:nth-child(3) { animation-delay: 0.12s; }
+  .card:nth-child(4) { animation-delay: 0.18s; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.08); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .card::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+
+  .card-visual { height: 150px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+  .card-info { padding: 4px 18px 6px; display: flex; align-items: flex-end; justify-content: space-between; position: relative; z-index: 1; }
+  .card-info-left { display: flex; flex-direction: column; gap: 6px; }
+  .card-name { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; font-style: italic; }
+  .card-pills { display: flex; gap: 5px; }
+  .pill { font-size: 9.5px; letter-spacing: 0.8px; text-transform: uppercase; padding: 4px 10px; border-radius: 5px; font-weight: 500; font-family: inherit; }
+  .pill-type { border: 1px solid rgba(255,255,255,0.08); color: var(--text-secondary); }
+  .pill-count { background: rgba(255,255,255,0.06); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.05); }
+  .card-status { font-size: 12px; font-weight: 500; padding: 4px 11px; border-radius: 8px; white-space: nowrap; }
+  .status-aligned { color: var(--green); background: var(--green-bg); border: 1px solid rgba(106,155,106,0.14); }
+  .status-gap { color: var(--amber); background: var(--amber-soft); border: 1px solid rgba(196,148,74,0.14); }
+
+  .garment-group { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .garment-row { display: flex; gap: 7px; align-items: flex-end; }
+  .source-colors { position: absolute; bottom: 10px; right: 14px; display: flex; gap: 4px; z-index: 2; }
+  .source-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+
+  /* Color explanation */
+  .explain {
+    padding: 8px 14px 10px;
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(255,255,255,0.03);
+  }
+  .explain p {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .color-ref {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 0 2px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  /* Per-card styles */
+  .card-winter { background: linear-gradient(155deg, #2E1F1A 0%, #1E1820 40%, #1A1520 100%); }
+  .card-winter::before { background: radial-gradient(ellipse at 40% 25%, rgba(139,85,55,0.10) 0%, transparent 55%), radial-gradient(ellipse at 70% 70%, rgba(44,62,80,0.08) 0%, transparent 50%); }
+  .card-winter .pill-type { background: rgba(139,85,55,0.15); border-color: rgba(139,85,55,0.2); color: #C4976A; }
+
+  .card-summer { background: linear-gradient(155deg, #1E2228 0%, #1A2030 40%, #182028 100%); }
+  .card-summer::before { background: radial-gradient(ellipse at 45% 20%, rgba(160,180,210,0.08) 0%, transparent 55%), radial-gradient(ellipse at 60% 75%, rgba(140,170,200,0.05) 0%, transparent 50%); }
+  .card-summer .pill-type { background: rgba(140,170,200,0.15); border-color: rgba(140,170,200,0.2); color: #8EB4D0; }
+
+  .card-street { background: linear-gradient(155deg, #1A2018 0%, #181E16 40%, #141A14 100%); }
+  .card-street::before { background: radial-gradient(ellipse at 35% 30%, rgba(90,110,70,0.10) 0%, transparent 55%), radial-gradient(ellipse at 65% 65%, rgba(40,50,35,0.08) 0%, transparent 50%); }
+  .card-street .pill-type { background: rgba(90,120,70,0.15); border-color: rgba(90,120,70,0.2); color: #8AAB6E; }
+
+  .card-black { background: linear-gradient(155deg, #1C1C1E 0%, #18181A 40%, #141416 100%); }
+  .card-black::before { background: radial-gradient(ellipse at 50% 25%, rgba(180,180,190,0.04) 0%, transparent 50%), radial-gradient(ellipse at 50% 75%, rgba(100,100,110,0.03) 0%, transparent 50%); }
+  .card-black .pill-type { background: rgba(180,180,190,0.10); border-color: rgba(180,180,190,0.12); color: #A0A0AA; }
+
+  /* ═══ ITEMS GRID ═══ */
+  .items-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 0 16px 16px;
+  }
+  .item-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    animation: fadeUp 0.4s ease-out backwards;
+  }
+  .item-card:nth-child(1) { animation-delay: 0s; }
+  .item-card:nth-child(2) { animation-delay: 0.03s; }
+  .item-card:nth-child(3) { animation-delay: 0.06s; }
+  .item-card:nth-child(4) { animation-delay: 0.09s; }
+  .item-card:nth-child(5) { animation-delay: 0.12s; }
+  .item-card:nth-child(6) { animation-delay: 0.15s; }
+  .item-card:nth-child(7) { animation-delay: 0.18s; }
+  .item-card:nth-child(8) { animation-delay: 0.21s; }
+  .item-card:nth-child(9) { animation-delay: 0.24s; }
+  .item-card:hover { transform: translateY(-1px); border-color: rgba(201,169,110,0.2); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+
+  .item-visual {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .item-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .item-swatch {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .item-info {
+    padding: 8px 10px 10px;
+  }
+  .item-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .item-meta {
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Item card gradient tints */
+  .item-brown .item-visual::before { background: radial-gradient(ellipse at 50% 40%, rgba(139,85,55,0.08) 0%, transparent 70%); }
+  .item-navy .item-visual::before { background: radial-gradient(ellipse at 50% 40%, rgba(44,62,80,0.08) 0%, transparent 70%); }
+  .item-beige .item-visual::before { background: radial-gradient(ellipse at 50% 40%, rgba(196,170,130,0.06) 0%, transparent 70%); }
+  .item-white .item-visual::before { background: radial-gradient(ellipse at 50% 40%, rgba(200,210,220,0.06) 0%, transparent 70%); }
+  .item-blue .item-visual::before { background: radial-gradient(ellipse at 50% 40%, rgba(138,170,200,0.08) 0%, transparent 70%); }
+  .item-olive .item-visual::before { background: radial-gradient(ellipse at 50% 40%, rgba(90,122,58,0.08) 0%, transparent 70%); }
+  .item-black .item-visual::before { background: radial-gradient(ellipse at 50% 40%, rgba(100,100,110,0.04) 0%, transparent 70%); }
+  .item-charcoal .item-visual::before { background: radial-gradient(ellipse at 50% 40%, rgba(80,80,85,0.05) 0%, transparent 70%); }
+  .item-darkbrown .item-visual::before { background: radial-gradient(ellipse at 50% 40%, rgba(107,74,42,0.08) 0%, transparent 70%); }
+
+  /* ═══ CATEGORY FILTER ═══ */
+  .cat-row {
+    display: flex;
+    gap: 6px;
+    padding: 0 16px 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-shrink: 0;
+  }
+  .cat-row::-webkit-scrollbar { display: none; }
+  .cat-pill {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.25s;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-family: inherit;
+  }
+  .cat-pill.active {
+    background: rgba(201,169,110,0.12);
+    border-color: rgba(201,169,110,0.25);
+    color: var(--gold);
+  }
+  .cat-pill:not(.active):hover { color: var(--text-secondary); }
+
+  /* ═══ NAV ═══ */
+  .bn { display: flex; justify-content: space-around; align-items: center; padding: 8px 16px 28px; background: rgba(26,18,16,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(201,169,110,0.06); flex-shrink: 0; }
+  .ni { display: flex; flex-direction: column; align-items: center; gap: 3px; opacity: 0.25; }
+  .ni.a { opacity: 1; }
+  .ni svg { width: 20px; height: 20px; stroke: var(--text-secondary); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .ni.a svg { stroke: var(--gold-dim); }
+  .nl { font-size: 10px; color: var(--text-muted); letter-spacing: 0.3px; }
+  .ni.a .nl { color: var(--gold-dim); }
+
+  .scr::after { content: ''; position: fixed; inset: 0; opacity: 0.015; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); pointer-events: none; z-index: 100; }
+</style>
+</head>
+<body>
+
+<div class="page-tag">Wardrobe</div>
+<div class="page-name">Outfits + Items</div>
+
+<div class="phones">
+
+<!-- ═══════════ OUTFITS VIEW ═══════════ -->
+<div class="phone-col">
+  <div class="phone-label">View</div>
+  <div class="phone-title">Outfits</div>
+  <div class="phone"><div class="scr">
+    <div class="sb"><span>9:41</span><span class="logo">CORET</span><span style="font-size:11px; opacity:0.3;">●●●</span></div>
+    <div class="tab-header">
+      <div class="tab-title">Wardrobe</div>
+      <div class="tab-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    </div>
+
+    <div class="view-toggle">
+      <button class="vt-btn active">Outfits</button>
+      <button class="vt-btn">Items</button>
+    </div>
+
+    <div class="tab-meta">15 plagg · 4 outfits</div>
+
+    <div class="content">
+
+      <!-- VINTERSTRUKTUR -->
+      <div class="card card-winter">
+        <div class="card-visual">
+          <div class="garment-group"><div class="garment-row"><svg width="46" height="58" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" stroke="#B8845A" stroke-width="1.2" opacity="0.6"/><line x1="26" y1="7" x2="26" y2="62" stroke="#B8845A" stroke-width="0.5" opacity="0.3"/></svg><svg width="36" height="46" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" stroke="#5B7B9A" stroke-width="1.2" opacity="0.55"/><line x1="20" y1="4" x2="20" y2="52" stroke="#5B7B9A" stroke-width="0.5" opacity="0.25"/></svg></div><div class="garment-row"><svg width="28" height="38" viewBox="0 0 32 42" fill="none"><path d="M3 0H29C31 0 32 2 32 4V18L23 42H18L16 21L14 42H9L0 18V4C0 2 1 0 3 0Z" stroke="#C4AA82" stroke-width="1.2" opacity="0.5"/></svg><svg width="26" height="12" viewBox="0 0 30 14" fill="none"><path d="M2 6C2 3 5 1 9 1H12L14 0H16L18 1H21C25 1 28 3 28 6V9C28 12 25 14 21 14H9C5 14 2 12 2 9V6Z" stroke="#8B6B4A" stroke-width="1.2" opacity="0.5"/></svg></div></div>
+          <div class="source-colors"><div class="source-dot" style="background:#8B5537;"></div><div class="source-dot" style="background:#2C3E50;"></div><div class="source-dot" style="background:#C4AA82;"></div><div class="source-dot" style="background:#6B4A2A;"></div></div>
+        </div>
+        <div class="card-info"><div class="card-info-left"><div class="card-name">Vinterstruktur</div><div class="card-pills"><span class="pill pill-type">Structured</span><span class="pill pill-count">4 plagg</span></div></div><div class="card-status status-aligned">Aligned</div></div>
+        <div class="explain"><p>Gradient fra <span class="color-ref" style="background:#8B5537;"></span> brun frakk og <span class="color-ref" style="background:#2C3E50;"></span> navy skjorte → varm brun/mørk blå.</p></div>
+      </div>
+
+      <!-- SOMMERLETT -->
+      <div class="card card-summer">
+        <div class="card-visual">
+          <div class="garment-group"><div class="garment-row"><svg width="34" height="40" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" stroke="#B8C4D4" stroke-width="1.2" opacity="0.6"/></svg><svg width="28" height="38" viewBox="0 0 32 42" fill="none"><path d="M3 0H29C31 0 32 2 32 4V18L23 42H18L16 21L14 42H9L0 18V4C0 2 1 0 3 0Z" stroke="#8AAAC8" stroke-width="1.2" opacity="0.55"/></svg></div><div class="garment-row"><svg width="26" height="12" viewBox="0 0 30 14" fill="none"><path d="M2 6C2 3 5 1 9 1H12L14 0H16L18 1H21C25 1 28 3 28 6V9C28 12 25 14 21 14H9C5 14 2 12 2 9V6Z" stroke="#C0CCD8" stroke-width="1.2" opacity="0.55"/></svg></div></div>
+          <div class="source-colors"><div class="source-dot" style="background:#E8E4E0;"></div><div class="source-dot" style="background:#8AAAC8;"></div><div class="source-dot" style="background:#E0DCD8;"></div></div>
+        </div>
+        <div class="card-info"><div class="card-info-left"><div class="card-name">Sommerlett</div><div class="card-pills"><span class="pill pill-type">Balanced</span><span class="pill pill-count">3 plagg</span></div></div><div class="card-status status-gap">+1 Gap</div></div>
+        <div class="explain"><p>Lyse plagg gir <span class="color-ref" style="background:#E8E4E0;"></span> hvit og <span class="color-ref" style="background:#8AAAC8;"></span> lyseblå → kjølig, dempet blågrå. Kortet føles lett.</p></div>
+      </div>
+
+      <!-- STREET OLIVEN -->
+      <div class="card card-street">
+        <div class="card-visual">
+          <div class="garment-group"><div class="garment-row"><svg width="42" height="50" viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" stroke="#7A9B5A" stroke-width="1.2" opacity="0.55"/></svg><svg width="34" height="42" viewBox="0 0 38 46" fill="none"><path d="M10 6C10 2 28 2 28 6L30 10C30 12 36 12 38 16V18C36 20 32 20 30 18V40C30 44 8 44 8 40V18C6 20 2 20 0 18V16C2 12 8 12 8 10L10 6Z" stroke="#6A6A6A" stroke-width="1.2" opacity="0.5"/><path d="M14 2C14 2 16 8 19 8C22 8 24 2 24 2" stroke="#6A6A6A" stroke-width="0.8" opacity="0.3"/></svg></div><div class="garment-row"><svg width="30" height="40" viewBox="0 0 34 44" fill="none"><path d="M3 0H31C33 0 34 2 34 4V20L25 44H20L17 22L14 44H9L0 20V4C0 2 1 0 3 0Z" stroke="#6B8B4A" stroke-width="1.2" opacity="0.5"/><rect x="4" y="18" width="5" height="6" rx="1" stroke="#6B8B4A" stroke-width="0.6" opacity="0.3"/><rect x="25" y="18" width="5" height="6" rx="1" stroke="#6B8B4A" stroke-width="0.6" opacity="0.3"/></svg><svg width="26" height="14" viewBox="0 0 30 16" fill="none"><path d="M2 7C2 4 5 1 9 1H12L14 0H16L18 1H21C25 1 28 4 28 7V10C28 13 25 16 21 16H9C5 16 2 13 2 10V7Z" stroke="#5A5A5A" stroke-width="1.2" opacity="0.5"/></svg></div></div>
+          <div class="source-colors"><div class="source-dot" style="background:#5A7A3A;"></div><div class="source-dot" style="background:#2A2A2A;"></div><div class="source-dot" style="background:#4A6A2A;"></div><div class="source-dot" style="background:#1A1A1A;"></div></div>
+        </div>
+        <div class="card-info"><div class="card-info-left"><div class="card-name">Street Oliven</div><div class="card-pills"><span class="pill pill-type">Relaxed</span><span class="pill pill-count">4 plagg</span></div></div><div class="card-status status-aligned">Aligned</div></div>
+        <div class="explain"><p>Oliven <span class="color-ref" style="background:#5A7A3A;"></span> + svart <span class="color-ref" style="background:#2A2A2A;"></span> → mørk, militær-inspirert grønn gradient.</p></div>
+      </div>
+
+      <!-- ALL BLACK -->
+      <div class="card card-black">
+        <div class="card-visual">
+          <div class="garment-group"><div class="garment-row"><svg width="46" height="58" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" stroke="#808088" stroke-width="1.2" opacity="0.45"/><line x1="26" y1="7" x2="26" y2="62" stroke="#808088" stroke-width="0.5" opacity="0.2"/></svg><svg width="36" height="46" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" stroke="#707078" stroke-width="1.2" opacity="0.42"/><line x1="20" y1="4" x2="20" y2="52" stroke="#707078" stroke-width="0.5" opacity="0.2"/></svg></div><div class="garment-row"><svg width="28" height="38" viewBox="0 0 32 42" fill="none"><path d="M3 0H29C31 0 32 2 32 4V18L23 42H18L16 21L14 42H9L0 18V4C0 2 1 0 3 0Z" stroke="#686870" stroke-width="1.2" opacity="0.4"/></svg><svg width="26" height="12" viewBox="0 0 30 14" fill="none"><path d="M2 6C2 3 5 1 9 1H12L14 0H16L18 1H21C25 1 28 3 28 6V9C28 12 25 14 21 14H9C5 14 2 12 2 9V6Z" stroke="#606068" stroke-width="1.2" opacity="0.4"/></svg></div></div>
+          <div class="source-colors"><div class="source-dot" style="background:#1A1A1E;"></div><div class="source-dot" style="background:#222228;"></div><div class="source-dot" style="background:#181820;"></div><div class="source-dot" style="background:#141418;"></div></div>
+        </div>
+        <div class="card-info"><div class="card-info-left"><div class="card-name">All Black</div><div class="card-pills"><span class="pill pill-type">Structured</span><span class="pill pill-count">4 plagg</span></div></div><div class="card-status status-aligned">Aligned</div></div>
+        <div class="explain"><p>Kun svart <span class="color-ref" style="background:#1A1A1E;"></span> → nøytral kull-gradient. Subtile lilla/blå undertoner fra stoff-variasjoner.</p></div>
+      </div>
+
+    </div>
+
+    <div class="bn"><div class="ni"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nl">Dashboard</span></div><div class="ni a"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="nl">Wardrobe</span></div><div class="ni"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="nl">Optimize</span></div><div class="ni"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span class="nl">Evolution</span></div><div class="ni"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Profile</span></div></div>
+  </div></div>
+</div>
+
+<!-- ═══════════ ITEMS VIEW ═══════════ -->
+<div class="phone-col">
+  <div class="phone-label">View</div>
+  <div class="phone-title">Items</div>
+  <div class="phone"><div class="scr">
+    <div class="sb"><span>9:41</span><span class="logo">CORET</span><span style="font-size:11px; opacity:0.3;">●●●</span></div>
+    <div class="tab-header">
+      <div class="tab-title">Wardrobe</div>
+      <div class="tab-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    </div>
+
+    <div class="view-toggle">
+      <button class="vt-btn">Outfits</button>
+      <button class="vt-btn active">Items</button>
+    </div>
+
+    <div class="cat-row">
+      <div class="cat-pill active">All</div>
+      <div class="cat-pill">Tops</div>
+      <div class="cat-pill">Bottoms</div>
+      <div class="cat-pill">Outerwear</div>
+      <div class="cat-pill">Shoes</div>
+    </div>
+
+    <div class="tab-meta">15 plagg</div>
+
+    <div class="items-grid">
+
+      <div class="item-card item-brown">
+        <div class="item-visual"><svg width="36" height="46" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" stroke="#B8845A" stroke-width="1.3" opacity="0.6"/></svg><div class="item-swatch" style="background:#8B5537;"></div></div>
+        <div class="item-info"><div class="item-name">Brun Frakk</div><div class="item-meta">Outerwear · Warm</div></div>
+      </div>
+
+      <div class="item-card item-navy">
+        <div class="item-visual"><svg width="30" height="38" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" stroke="#5B7B9A" stroke-width="1.3" opacity="0.55"/></svg><div class="item-swatch" style="background:#2C3E50;"></div></div>
+        <div class="item-info"><div class="item-name">Navy Skjorte</div><div class="item-meta">Top · Cool</div></div>
+      </div>
+
+      <div class="item-card item-beige">
+        <div class="item-visual"><svg width="26" height="34" viewBox="0 0 32 42" fill="none"><path d="M3 0H29C31 0 32 2 32 4V18L23 42H18L16 21L14 42H9L0 18V4C0 2 1 0 3 0Z" stroke="#C4AA82" stroke-width="1.3" opacity="0.5"/></svg><div class="item-swatch" style="background:#C4AA82;"></div></div>
+        <div class="item-info"><div class="item-name">Beige Chinos</div><div class="item-meta">Bottom · Warm</div></div>
+      </div>
+
+      <div class="item-card item-darkbrown">
+        <div class="item-visual"><svg width="24" height="12" viewBox="0 0 30 14" fill="none"><path d="M2 6C2 3 5 1 9 1H12L14 0H16L18 1H21C25 1 28 3 28 6V9C28 12 25 14 21 14H9C5 14 2 12 2 9V6Z" stroke="#8B6B4A" stroke-width="1.3" opacity="0.5"/></svg><div class="item-swatch" style="background:#6B4A2A;"></div></div>
+        <div class="item-info"><div class="item-name">Brune Boots</div><div class="item-meta">Shoes · Warm</div></div>
+      </div>
+
+      <div class="item-card item-white">
+        <div class="item-visual"><svg width="28" height="34" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" stroke="#B8C4D4" stroke-width="1.3" opacity="0.6"/></svg><div class="item-swatch" style="background:#E8E4E0;"></div></div>
+        <div class="item-info"><div class="item-name">Hvit T-shirt</div><div class="item-meta">Top · Neutral</div></div>
+      </div>
+
+      <div class="item-card item-blue">
+        <div class="item-visual"><svg width="26" height="34" viewBox="0 0 32 42" fill="none"><path d="M3 0H29C31 0 32 2 32 4V18L23 42H18L16 21L14 42H9L0 18V4C0 2 1 0 3 0Z" stroke="#8AAAC8" stroke-width="1.3" opacity="0.55"/></svg><div class="item-swatch" style="background:#8AAAC8;"></div></div>
+        <div class="item-info"><div class="item-name">Lyse Jeans</div><div class="item-meta">Bottom · Cool</div></div>
+      </div>
+
+      <div class="item-card item-olive">
+        <div class="item-visual"><svg width="34" height="42" viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" stroke="#7A9B5A" stroke-width="1.3" opacity="0.55"/></svg><div class="item-swatch" style="background:#5A7A3A;"></div></div>
+        <div class="item-info"><div class="item-name">Oliven Bomber</div><div class="item-meta">Outerwear · Warm</div></div>
+      </div>
+
+      <div class="item-card item-charcoal">
+        <div class="item-visual"><svg width="30" height="36" viewBox="0 0 38 46" fill="none"><path d="M10 6C10 2 28 2 28 6L30 10C30 12 36 12 38 16V18C36 20 32 20 30 18V40C30 44 8 44 8 40V18C6 20 2 20 0 18V16C2 12 8 12 8 10L10 6Z" stroke="#6A6A6A" stroke-width="1.3" opacity="0.5"/></svg><div class="item-swatch" style="background:#2A2A2A;"></div></div>
+        <div class="item-info"><div class="item-name">Svart Hoodie</div><div class="item-meta">Top · Neutral</div></div>
+      </div>
+
+      <div class="item-card item-black">
+        <div class="item-visual"><svg width="26" height="34" viewBox="0 0 32 42" fill="none"><path d="M3 0H29C31 0 32 2 32 4V18L23 42H18L16 21L14 42H9L0 18V4C0 2 1 0 3 0Z" stroke="#686870" stroke-width="1.3" opacity="0.4"/></svg><div class="item-swatch" style="background:#1A1A1E;"></div></div>
+        <div class="item-info"><div class="item-name">Svarte Bukser</div><div class="item-meta">Bottom · Neutral</div></div>
+      </div>
+
+    </div>
+
+    <div class="bn"><div class="ni"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nl">Dashboard</span></div><div class="ni a"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="nl">Wardrobe</span></div><div class="ni"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="nl">Optimize</span></div><div class="ni"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span class="nl">Evolution</span></div><div class="ni"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Profile</span></div></div>
+  </div></div>
+</div>
+
+</div>
+</body>
+</html>

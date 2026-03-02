@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORET — Garment Detail</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1714;
+    --card: #221f1a;
+    --border: #2e2a22;
+    --border-light: #3a3530;
+    --text: #EAE5DE;
+    --text-2: #B0A99E;
+    --text-3: #6B625C;
+    --text-4: #4a4540;
+    --gold: #C9A96E;
+    --gold-dim: rgba(201,169,110,0.55);
+    --gold-soft: rgba(201,169,110,0.10);
+    --green: #7A9A6E;
+    --green-soft: rgba(122,154,110,0.10);
+    --red: #B4705A;
+    --red-soft: rgba(180,90,70,0.10);
+    --r: 14px;
+    --r-sm: 10px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0e0c0a;
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 2.5px solid #2a2520;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 0;
+    font-size: 15px;
+    font-weight: 600;
+    position: relative;
+    z-index: 5;
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px 0;
+    position: relative;
+    z-index: 5;
+  }
+
+  .back-btn {
+    font-size: 13px;
+    color: var(--text-3);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s;
+  }
+
+  .back-btn:hover { color: var(--text-2); }
+
+  .edit-btn {
+    font-size: 12px;
+    color: var(--text-4);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
+
+  .scroll {
+    height: calc(100% - 54px);
+    overflow-y: auto;
+    padding-bottom: 24px;
+  }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* ═══════════════════════════════════════
+     HERO — Garment showcase
+  ═══════════════════════════════════════ */
+  .hero {
+    height: 240px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-ambient {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .hero-ambient .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: heroBreathe 5s ease-in-out infinite alternate;
+  }
+
+  @keyframes heroBreathe {
+    0% { transform: scale(1) translate(0,0); opacity: 0.5; }
+    100% { transform: scale(1.2) translate(8px,-8px); opacity: 0.7; }
+  }
+
+  .hero-emoji {
+    font-size: 100px;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.3));
+  }
+
+  /* Key garment badge */
+  .hero-key {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: var(--gold-soft);
+    border: 1px solid rgba(201,169,110,0.15);
+    border-radius: 6px;
+    font-size: 10px;
+    color: var(--gold);
+    z-index: 2;
+  }
+
+  .hero-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(transparent, var(--bg));
+    z-index: 1;
+  }
+
+  /* ═══ GARMENT INFO ═══ */
+  .garment-info {
+    padding: 0 20px 16px;
+    position: relative;
+    z-index: 2;
+    margin-top: -20px;
+  }
+
+  .garment-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    margin-bottom: 6px;
+  }
+
+  .garment-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .g-tag {
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .g-tag .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  .g-tag.highlight {
+    border-color: rgba(201,169,110,0.2);
+    color: var(--gold-dim);
+    background: var(--gold-soft);
+  }
+
+  /* ═══════════════════════════════════════
+     ROLE CARD — How important is this garment
+  ═══════════════════════════════════════ */
+  .role-card {
+    margin: 0 16px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .role-ring-area {
+    width: 72px;
+    height: 72px;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .role-ring-area svg {
+    width: 72px;
+    height: 72px;
+    transform: rotate(-90deg);
+  }
+
+  .rr-bg { fill: none; stroke: var(--border); stroke-width: 4; }
+
+  .rr-fill {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 176;
+    stroke-dashoffset: 176;
+    animation: roleFill 1s ease-out 0.3s forwards;
+  }
+
+  @keyframes roleFill {
+    to { stroke-dashoffset: 125; }
+  }
+
+  .role-ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .role-ring-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .role-ring-label {
+    font-size: 7px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin-top: 2px;
+  }
+
+  .role-info { flex: 1; }
+
+  .role-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .role-desc {
+    font-size: 11.5px;
+    color: var(--text-3);
+    line-height: 1.4;
+  }
+
+  .role-desc strong { color: var(--gold-dim); font-weight: 500; }
+
+  /* ═══════════════════════════════════════
+     COMBINATIONS — Outfits this garment is in
+  ═══════════════════════════════════════ */
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 20px 10px;
+  }
+
+  .sh-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .combos-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 16px 16px;
+  }
+
+  .combos-scroll::-webkit-scrollbar { display: none; }
+
+  .combo-card {
+    width: 130px;
+    flex-shrink: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .combo-card:hover { border-color: var(--border-light); }
+
+  .combo-emojis {
+    display: flex;
+    gap: 4px;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .combo-emojis .self {
+    position: relative;
+  }
+
+  .combo-emojis .self::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 1px;
+  }
+
+  .combo-strength-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 6px;
+    overflow: hidden;
+  }
+
+  .combo-strength-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+
+  .combo-strength-fill.strong { background: var(--gold); width: 90%; }
+  .combo-strength-fill.good { background: var(--gold-dim); width: 70%; }
+  .combo-strength-fill.ok { background: var(--text-4); width: 50%; }
+
+  .combo-label {
+    font-size: 10px;
+    color: var(--text-3);
+  }
+
+  /* ═══════════════════════════════════════
+     REMOVAL SIMULATION — The killer feature
+  ═══════════════════════════════════════ */
+  .removal-card {
+    margin: 0 16px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+    transition: all 0.4s;
+  }
+
+  .removal-header {
+    padding: 16px 16px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .removal-title-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .removal-icon {
+    font-size: 16px;
+    opacity: 0.5;
+  }
+
+  .removal-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-4);
+  }
+
+  .removal-toggle {
+    padding: 5px 12px;
+    background: var(--red-soft);
+    border: 1px solid rgba(180,90,70,0.15);
+    border-radius: 6px;
+    font-size: 10px;
+    color: var(--red);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s;
+  }
+
+  .removal-toggle.active {
+    background: rgba(180,90,70,0.2);
+    border-color: rgba(180,90,70,0.3);
+  }
+
+  /* Simulation content */
+  .removal-sim {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .removal-sim.visible {
+    max-height: 400px;
+  }
+
+  .removal-sim-inner {
+    padding: 0 16px 16px;
+  }
+
+  .sim-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sim-row:last-child { border-bottom: none; }
+
+  .sim-label {
+    font-size: 12px;
+    color: var(--text-2);
+    flex: 1;
+  }
+
+  .sim-values {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sim-current {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    color: var(--text-3);
+  }
+
+  .sim-arrow {
+    font-size: 10px;
+    color: var(--red);
+  }
+
+  .sim-projected {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    color: var(--red);
+  }
+
+  .sim-delta {
+    font-size: 10px;
+    padding: 2px 6px;
+    background: var(--red-soft);
+    border-radius: 3px;
+    color: var(--red);
+  }
+
+  .sim-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
+    background: var(--red-soft);
+    border: 1px solid rgba(180,90,70,0.12);
+    border-radius: var(--r-sm);
+    margin-top: 10px;
+  }
+
+  .sim-warning-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .sim-warning-text {
+    font-size: 11.5px;
+    color: var(--text-3);
+    line-height: 1.45;
+  }
+
+  .sim-warning-text strong {
+    color: var(--red);
+    font-weight: 500;
+  }
+
+  /* ═══════════════════════════════════════
+     ARCHETYPE CONTRIBUTION
+  ═══════════════════════════════════════ */
+  .contrib-card {
+    margin: 0 16px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 16px;
+  }
+
+  .contrib-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin-bottom: 14px;
+  }
+
+  .contrib-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+  }
+
+  .contrib-name {
+    font-size: 12px;
+    color: var(--text-2);
+    width: 85px;
+    flex-shrink: 0;
+  }
+
+  .contrib-bar-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .contrib-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s ease-out;
+  }
+
+  .contrib-bar-fill.high { background: var(--gold); }
+  .contrib-bar-fill.medium { background: var(--gold-dim); }
+  .contrib-bar-fill.low { background: var(--text-4); }
+
+  .contrib-val {
+    font-size: 11px;
+    color: var(--text-3);
+    width: 30px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ═══ QUICK ACTIONS ═══ */
+  .detail-actions {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 16px;
+  }
+
+  .detail-action {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--r-sm);
+    text-align: center;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .detail-action.primary {
+    background: var(--gold-soft);
+    border: 1px solid rgba(201,169,110,0.12);
+    color: var(--gold);
+  }
+
+  .detail-action.secondary {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text-3);
+  }
+
+  .detail-action.danger {
+    background: var(--red-soft);
+    border: 1px solid rgba(180,90,70,0.1);
+    color: var(--red);
+  }
+
+  /* ── Animations ── */
+  .garment-info { animation: up 0.4s ease-out; }
+  .role-card { animation: up 0.4s ease-out 0.05s backwards; }
+  .combos-scroll { animation: up 0.4s ease-out 0.1s backwards; }
+  .removal-card { animation: up 0.4s ease-out 0.15s backwards; }
+  .contrib-card { animation: up 0.4s ease-out 0.2s backwards; }
+  .detail-actions { animation: up 0.4s ease-out 0.25s backwards; }
+
+  @keyframes up {
+    from { opacity:0; transform:translateY(10px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .phone-label {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-4);
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <div class="phone">
+    <div class="top-bar">
+      <span>9:41</span>
+      <span style="font-size:12px;color:var(--text-3);">●●●●  📶  🔋</span>
+    </div>
+
+    <div class="nav-row">
+      <button class="back-btn">← Wardrobe</button>
+      <button class="edit-btn">Rediger</button>
+    </div>
+
+    <div class="scroll">
+
+      <!-- ═══ HERO ═══ -->
+      <div class="hero">
+        <div class="hero-ambient">
+          <div class="blob" style="width:200px;height:200px;background:#5C3D1E;top:10%;left:-10%;opacity:0.5;"></div>
+          <div class="blob" style="width:160px;height:160px;background:#3D2B1F;bottom:0;right:-5%;opacity:0.4;animation-delay:-2.5s;"></div>
+          <div class="blob" style="width:120px;height:120px;background:#4A3520;top:40%;left:40%;opacity:0.3;animation-delay:-1.2s;"></div>
+        </div>
+        <span class="hero-emoji">🧥</span>
+        <div class="hero-key">★ Nøkkelplagg</div>
+        <div class="hero-gradient"></div>
+      </div>
+
+      <!-- ═══ GARMENT INFO ═══ -->
+      <div class="garment-info">
+        <div class="garment-name">Brun Frakk</div>
+        <div class="garment-tags">
+          <span class="g-tag highlight">Ytterlag</span>
+          <span class="g-tag">Relaxed</span>
+          <span class="g-tag"><span class="dot" style="background:#8B6B4A;"></span> Warm</span>
+          <span class="g-tag">Vinter/Høst</span>
+        </div>
+      </div>
+
+      <!-- ═══ ROLE ═══ -->
+      <div class="role-card">
+        <div class="role-ring-area">
+          <svg viewBox="0 0 72 72">
+            <circle class="rr-bg" cx="36" cy="36" r="28"/>
+            <circle class="rr-fill" cx="36" cy="36" r="28"/>
+          </svg>
+          <div class="role-ring-center">
+            <span class="role-ring-num">14</span>
+            <span class="role-ring-label">Kombos</span>
+          </div>
+        </div>
+        <div class="role-info">
+          <div class="role-title">29% av alle kombinasjoner</div>
+          <div class="role-desc">Dette plagget er involvert i <strong>14 av 48</strong> aktive kombinasjoner. Det er ditt mest tilkoblede ytterplagg.</div>
+        </div>
+      </div>
+
+      <!-- ═══ COMBINATIONS ═══ -->
+      <div class="section-head">
+        <span class="sh-label">Inngår i</span>
+      </div>
+
+      <div class="combos-scroll">
+        <div class="combo-card">
+          <div class="combo-emojis">
+            <span class="self">🧥</span><span>👔</span><span>👖</span>
+          </div>
+          <div class="combo-strength-bar"><div class="combo-strength-fill strong"></div></div>
+          <div class="combo-label">Frakk + Navy skj + Chinos</div>
+        </div>
+        <div class="combo-card">
+          <div class="combo-emojis">
+            <span class="self">🧥</span><span>👕</span><span>👖</span>
+          </div>
+          <div class="combo-strength-bar"><div class="combo-strength-fill strong"></div></div>
+          <div class="combo-label">Frakk + Hvit tee + Chinos</div>
+        </div>
+        <div class="combo-card">
+          <div class="combo-emojis">
+            <span class="self">🧥</span><span>👕</span><span>👖</span>
+          </div>
+          <div class="combo-strength-bar"><div class="combo-strength-fill good"></div></div>
+          <div class="combo-label">Frakk + Hvit tee + Sort jns</div>
+        </div>
+        <div class="combo-card">
+          <div class="combo-emojis">
+            <span class="self">🧥</span><span>🧶</span><span>👖</span>
+          </div>
+          <div class="combo-strength-bar"><div class="combo-strength-fill ok"></div></div>
+          <div class="combo-label">Frakk + Hoodie + Lyse jns</div>
+        </div>
+      </div>
+
+      <!-- ═══ REMOVAL SIMULATION ═══ -->
+      <div class="removal-card" id="removalCard">
+        <div class="removal-header">
+          <div class="removal-title-area">
+            <span class="removal-icon">⚠</span>
+            <span class="removal-title">Uten dette plagget</span>
+          </div>
+          <button class="removal-toggle" id="removalBtn" onclick="toggleRemoval()">Simuler</button>
+        </div>
+        <div class="removal-sim" id="removalSim">
+          <div class="removal-sim-inner">
+
+            <div class="sim-row">
+              <span class="sim-label">Clarity Score</span>
+              <div class="sim-values">
+                <span class="sim-current">78</span>
+                <span class="sim-arrow">→</span>
+                <span class="sim-projected">64</span>
+                <span class="sim-delta">-14</span>
+              </div>
+            </div>
+
+            <div class="sim-row">
+              <span class="sim-label">Smart Casual</span>
+              <div class="sim-values">
+                <span class="sim-current">87</span>
+                <span class="sim-arrow">→</span>
+                <span class="sim-projected">71</span>
+                <span class="sim-delta">-16</span>
+              </div>
+            </div>
+
+            <div class="sim-row">
+              <span class="sim-label">Kombinasjoner</span>
+              <div class="sim-values">
+                <span class="sim-current">48</span>
+                <span class="sim-arrow">→</span>
+                <span class="sim-projected">34</span>
+                <span class="sim-delta">-14</span>
+              </div>
+            </div>
+
+            <div class="sim-row">
+              <span class="sim-label">Vinterdekning</span>
+              <div class="sim-values">
+                <span class="sim-current">75%</span>
+                <span class="sim-arrow">→</span>
+                <span class="sim-projected">52%</span>
+                <span class="sim-delta">-23%</span>
+              </div>
+            </div>
+
+            <div class="sim-warning">
+              <span class="sim-warning-icon">🔴</span>
+              <div class="sim-warning-text">
+                Å fjerne dette plagget ville <strong>åpne et ytterlag-gap</strong> og svekke vinterdekningen alvorlig. Det er ditt eneste strukturerte ytterplagg med warm tone.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ARCHETYPE CONTRIBUTION ═══ -->
+      <div class="contrib-card">
+        <div class="contrib-title">Archetype-bidrag</div>
+        <div class="contrib-row">
+          <span class="contrib-name">Smart Casual</span>
+          <div class="contrib-bar-track"><div class="contrib-bar-fill high" style="width:72%;"></div></div>
+          <span class="contrib-val">+8 pts</span>
+        </div>
+        <div class="contrib-row">
+          <span class="contrib-name">Tailored</span>
+          <div class="contrib-bar-track"><div class="contrib-bar-fill medium" style="width:40%;"></div></div>
+          <span class="contrib-val">+4 pts</span>
+        </div>
+        <div class="contrib-row">
+          <span class="contrib-name">Street</span>
+          <div class="contrib-bar-track"><div class="contrib-bar-fill low" style="width:12%;"></div></div>
+          <span class="contrib-val">+1 pt</span>
+        </div>
+      </div>
+
+      <!-- ═══ ACTIONS ═══ -->
+      <div class="detail-actions">
+        <button class="detail-action primary">Finn lignende</button>
+        <button class="detail-action secondary">Flytt lag</button>
+        <button class="detail-action danger">Fjern</button>
+      </div>
+
+    </div>
+  </div>
+  <div class="phone-label">Plagg-detalj — Brun Frakk</div>
+</div>
+
+<script>
+  function toggleRemoval() {
+    const sim = document.getElementById('removalSim');
+    const btn = document.getElementById('removalBtn');
+    sim.classList.toggle('visible');
+    btn.classList.toggle('active');
+    btn.textContent = sim.classList.contains('visible') ? 'Skjul' : 'Simuler';
+  }
+</script>
+
+</body>
+</html>
