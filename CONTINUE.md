@@ -1,83 +1,92 @@
 # CORET – Continue
-Last updated: 2026-03-01
+Last updated: 2026-03-02
 
-## Completed Recently
-- [x] Engine → UI Mapping Specification (`docs/engine_ui_mapping_v1.md`, 21 sections, 893 lines)
-  - Council overrides applied: unified CohesionStatus descriptors, outfit-first wardrobe, Claude AI locked values
-  - Score presentation with opacity-by-status (0.6→1.0), accent color for Aligned/Architected
-  - All 10 enum display label tables, color swatch lookups, identity string composition
-  - Temperature-driven outfit card backgrounds, removal impact tiers, progressive depth triggers
-  - Full engine→screen matrix (28 functions × 6 screens) + recompute trigger summary
-- [x] All four engines complete and audited (180/180 tests)
-- [x] All wireframe tabs verified against engine API — 0 remaining engine gaps
+## Completed This Session
+
+- [x] **CLAUDE.md split**: ENGINE_SPECS.md written (`docs/ENGINE_SPECS.md`, all §3–28 detail). CLAUDE.md slimmed to ~4k (identity, project structure, build status, blocker, conventions, session protocol).
+- [x] **Pass 3 — Persistence layer** (6 SwiftData entities in `ios_app/Persistence/`):
+  - `GarmentEntity.swift` — V2 Garment as primitives + `toGarment()` / `from()` / `apply()`
+  - `UserProfileEntity.swift` — singleton, V2 UserProfile fields
+  - `ClaritySnapshotEntity.swift` — immutable JSON blob + `shouldPersist()` policy
+  - `MilestoneEntity.swift` — journey milestone record
+  - `SavedOutfitEntity.swift` — user-pinned outfits (garment ID list + saved score)
+  - `EngineCacheEntity.swift` — optional performance cache (clarity + gaps as JSON)
+  - `SwiftDataStack.swift` — ModelContainer factory + preview container
+- [x] **Pass 3 — Coordinator** (`ios_app/Coordinators/EngineCoordinator.swift`):
+  - Full CRUD: addGarment, removeGarment, updateGarment
+  - Profile mutations: updateArchetype, updateLocation, applyRecalibration, resetProfile
+  - What-if simulation: projectAdding, projectRemoving (no persistence side effects)
+  - Snapshot persistence policy: delta > 5 or first-of-month
+  - Milestone deduplication and persistence
+  - Key garment flag sync after each recompute
+  - Concurrency: Task.detached for heavy computation, results delivered on MainActor
+- [x] **Pass 3 — ViewModels** (5 files in `ios_app/ViewModels/`):
+  - `DashboardViewModel.swift` — clarity, gaps, identity, journey, seasonal coverage
+  - `WardrobeViewModel.swift` — garment grid + filter + CRUD + removal warning
+  - `OptimizeViewModel.swift` — gap selection, suggestion actions (acquire/dismiss)
+  - `EvolutionViewModel.swift` — read-only journey timeline, milestones, history
+  - `ProfileViewModel.swift` — archetype, location, seasonal recalibration, reset
 
 ## Build Status
-swift build: pass
-swift test: 180/180 passing
 
-## Engine Status (All Complete)
-| Engine | File | Tests | Status |
-|--------|------|-------|--------|
-| CohesionEngine | `Engines/CohesionEngine.swift` | 85 | ✅ |
-| OptimizeEngine | `Engines/OptimizeEngine.swift` | 19 | ✅ |
-| SeasonalEngine | `Engines/SeasonalEngine.swift` | 19 | ✅ |
-| EvolutionEngine | `Engines/EvolutionEngine.swift` | 56 | ✅ |
-| Scaffold | `COREEngineTests.swift` | 1 | ✅ |
+```
+core-v2: swift build pass, swift test 244/244 passing
+core (V1): swift build pass, swift test 218/218 passing (archived)
+ios_app/: NOT compilable on Linux — requires Mac + Xcode + Apple SDK
+```
 
-## Documentation Status
-| Doc | File | Status |
-|-----|------|--------|
-| Engine → UI Mapping | `docs/engine_ui_mapping_v1.md` | ✅ Authoritative (21 sections) |
-| SwiftData Persistence | `docs/swiftdata_model_spec_v1.md` | ✅ Spec complete |
-| ViewModel Architecture | `docs/viewmodel_architecture_v1.md` | ✅ Spec complete |
-| UI Specification | `docs/ui_specification_v1.md` | ✅ Spec complete |
-| All wireframes | `moodboard/*/` | ✅ Complete (6 tabs) |
+## V2 iOS Layer Status
+
+| Component | File | Status |
+|-----------|------|--------|
+| SwiftData stack | `Persistence/SwiftDataStack.swift` | ✅ Written |
+| GarmentEntity | `Persistence/GarmentEntity.swift` | ✅ Written |
+| UserProfileEntity | `Persistence/UserProfileEntity.swift` | ✅ Written |
+| ClaritySnapshotEntity | `Persistence/ClaritySnapshotEntity.swift` | ✅ Written |
+| MilestoneEntity | `Persistence/MilestoneEntity.swift` | ✅ Written |
+| SavedOutfitEntity | `Persistence/SavedOutfitEntity.swift` | ✅ Written |
+| EngineCacheEntity | `Persistence/EngineCacheEntity.swift` | ✅ Written |
+| EngineCoordinator | `Coordinators/EngineCoordinator.swift` | ✅ Written |
+| DashboardViewModel | `ViewModels/DashboardViewModel.swift` | ✅ Written |
+| WardrobeViewModel | `ViewModels/WardrobeViewModel.swift` | ✅ Written |
+| OptimizeViewModel | `ViewModels/OptimizeViewModel.swift` | ✅ Written |
+| EvolutionViewModel | `ViewModels/EvolutionViewModel.swift` | ✅ Written |
+| ProfileViewModel | `ViewModels/ProfileViewModel.swift` | ✅ Written |
+| SwiftUI Views | — | ⛔ Requires Mac |
 
 ## In Progress
-Nothing interrupted. Engine layer and UI mapping spec are complete.
+Nothing interrupted. Pass 3 (persistence + coordination + ViewModels) is complete.
+
+## Decisions Made This Session
+
+- **CLAUDE.md split**: ENGINE_SPECS.md gets all §3–28 detail. CLAUDE.md keeps only identity, structure overview, build status, blocker, conventions, session protocol.
+- **ClaritySnapshotEntity**: JSON blob (not individual fields) — ClaritySnapshot is Codable, simpler schema, future-proof.
+- **GapResult not persisted**: Derived from current garments, not historical. Only ClaritySnapshot history is stored.
+- **SavedOutfitEntity**: Stores garment IDs + score at save time. Garment IDs reference live entities; EngineCoordinator rescores on demand.
+- **EngineCoordinator as ObservableObject (not @Observable)**: Uses `@Published`-equivalent pattern via SwiftData + explicit sync calls from ViewModels. ViewModels call `sync()` after recompute.
+- **ViewModels use @Observable** (Swift 6 native Observation), not ObservableObject.
+- **isKeyGarment flag**: Updated on GarmentEntity by EngineCoordinator after each recompute using KeyGarmentResolver.keyGarmentIDs().
+- **Snapshot trigger**: delta > 5.0 OR first-of-month. First snapshot always persisted.
+- **Milestone deduplication**: key = type.rawValue + "-" + snapshotIndex.
 
 ## Next Session Prompt
+
 ```
-All four CORET engines are complete (180/180 tests on Linux). The engine → UI mapping spec is done (docs/engine_ui_mapping_v1.md — 21 sections). Read CLAUDE.md for the full system reference.
+CORET Pass 3 is complete in ios_app/ (persistence + EngineCoordinator + 5 ViewModels).
 
-The engine + spec layer is finished. Every engine function is mapped to every screen. Every enum has display labels. Every edge case has defined behavior. Council overrides are applied.
+V2 engine: core-v2/ (244/244 tests). V1 archived: core/ (218/218 tests).
+ios_app/ requires Mac + Xcode to compile (SwiftData, Observation, COREEngine import).
 
-Remaining work requires a Mac:
+Read CLAUDE.md for slim reference. Read docs/ENGINE_SPECS.md for engine detail.
 
-1. SwiftUI iOS app in `ios_app/` consuming the COREEngine package
-   - See CLAUDE.md Section 8 (Information Architecture) for all screens
-   - See CLAUDE.md Section 9 (UI Specification) for design tokens
-   - See docs/engine_ui_mapping_v1.md for engine → UI mapping rules
-   - See wireframes in `moodboard/` for each tab
-   - 5-tab layout: Dashboard, Wardrobe, Optimize, Evolution, Profile
-   - SwiftData persistence wrapping engine types (CLAUDE.md Section 15)
-   - ViewModel + EngineCoordinator architecture (CLAUDE.md Section 16)
+Remaining work requires Mac:
+- SwiftUI Views for all 5 tabs (Dashboard, Wardrobe, Optimize, Evolution, Profile)
+- Xcode project setup: add ios_app/ files, import core-v2/ as local package
+- On-Mac compilation and testing of ios_app/ layer
+- COREApp.swift entry point (SwiftUI App + .modelContainer)
 
-Key council overrides to honor:
-- Component descriptors use CohesionStatus scale (Aligned/Architected, NOT Strong/Optimal)
-- Wardrobe tab is outfit-first (outfitBuilder() drives grid, not items)
-- nil silhouette/baseGroup → "Mixed" (not "Balanced"/"Neutral")
-- Score opacity by status: 0.6 (Structuring) → 1.0 (Aligned/Architected)
-- Outfit card backgrounds: temperature-driven color system
-
-If on Linux, possible next steps:
-- Build HTML mockups for remaining tabs (Dashboard, Optimize, Profile)
-- Expand archetype system (more archetypes, more conflict pairs)
-- Refine wireframes or UI spec details
+Optional work possible on Linux:
+- HTML moodboard updates
+- Engine refinements
+- Additional spec documentation
 ```
-
-## Decisions Made
-- CohesionWeights and SeasonalRecommendation types live in SeasonalEngine.swift (not Models/)
-- EvolutionPhase, EvolutionTrend, EvolutionSnapshot types live in EvolutionEngine.swift (not Models/)
-- CohesionEngine's original compute() delegates to weighted overload with SeasonalEngine.baseWeights
-- Volatility uses population standard deviation (÷N, not ÷(N-1))
-- WeaknessArea and CohesionComponent kept separate (different domain concepts)
-- ItemContribution/ContributionContext are NOT Codable (runtime-only, associated values)
-- outfitBuilder scores all combinations without filtering (spectrum, not binary)
-- removalImpact lives in CohesionEngine (structural measurement, not optimization)
-- snapshotAnchors lives in EvolutionEngine (per-snapshot selection, distinct from cross-snapshot anchorItems)
-- Snapshot anchor data denormalized into EvolutionSnapshotEntity (not soft-delete) for deleted item rendering
-- Component descriptors unified to CohesionStatus scale (Council Override 1, 1 March 2026)
-- Wardrobe is outfit-first, outfitBuilder() drives grid (Council Override 2, 28 February 2026)
-- nil fallback is "Mixed"/"Blandet", not "Balanced"/"Neutral" (Council Override 3, 1 March 2026)
-- BaseGroup display labels unified to evolution wireframe versions: Deep-Toned, Light-Toned, Accent-Driven
