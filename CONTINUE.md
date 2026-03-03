@@ -1,5 +1,5 @@
 # CORET – Continue
-Last updated: 2026-03-02
+Last updated: 2026-03-03
 
 ## Completed This Session
 
@@ -54,8 +54,27 @@ ios_app/: NOT compilable on Linux — requires Mac + Xcode + Apple SDK
 | ProfileViewModel | `ViewModels/ProfileViewModel.swift` | ✅ Written |
 | SwiftUI Views | — | ⛔ Requires Mac |
 
-## In Progress
-Nothing interrupted. Pass 3 (persistence + coordination + ViewModels) is complete.
+## In Progress — Image Pipeline Design (Decided, Not Yet Implemented)
+
+Discussed and decided on a **hybrid image pipeline** for garment photos:
+
+### Strategy (Tier System):
+1. **Tier 1 — Product image search** (preferred): User enters brand + model → search web for official studio photo (Diesel.com, Zalando, etc.). Free, perfect quality, no privacy concern.
+2. **Tier 2 — On-device cleanup** (fallback): iOS 16+ subject lifting (Core Image) → remove background → place on CORET dark surface (#231C18). Free, private, offline.
+3. **Tier 3 — AI studio enhancement** (V1.5 Pro): Server-side processing (Photoroom/Remove.bg style). Pay-per-image. Optional premium feature.
+
+### Key decisions:
+- Raw user photos break CORET's premium aesthetic — pipeline is necessary
+- Product images first because 90%+ of branded garments have studio photos online
+- On-device cleanup as fallback for vintage/unknown brands
+- AI enhancement deferred to V1.5 as paid Pro feature
+- All processed images placed on #231C18 (CORET card surface) for visual consistency
+
+### Implementation needed:
+- `ImportSource` enum (`.productSearch`, `.photoLibrary`, `.camera`)
+- Image pipeline service in ios_app/
+- Subject lifting integration (Vision framework)
+- Product image search integration
 
 ## Decisions Made This Session
 
@@ -78,6 +97,12 @@ V2 engine: core-v2/ (244/244 tests). V1 archived: core/ (218/218 tests).
 ios_app/ requires Mac + Xcode to compile (SwiftData, Observation, COREEngine import).
 
 Read CLAUDE.md for slim reference. Read docs/ENGINE_SPECS.md for engine detail.
+Read CONTINUE.md "In Progress" section for image pipeline design decisions.
+
+Next priority — Image Pipeline:
+- Implement ImportSource enum and image pipeline service
+- Hybrid strategy: product image search → on-device cleanup → AI enhancement (V1.5)
+- See CONTINUE.md for full tier breakdown and decisions
 
 Remaining work requires Mac:
 - SwiftUI Views for all 5 tabs (Dashboard, Wardrobe, Optimize, Evolution, Profile)
