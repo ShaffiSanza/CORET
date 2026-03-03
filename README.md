@@ -150,6 +150,7 @@ Full UI spec: [`docs/ENGINE_SPECS.md §9`](docs/ENGINE_SPECS.md)
 | File | What it covers |
 |------|---------------|
 | `docs/ENGINE_SPECS.md` | All engine specs, IA, UI, brand, monetization |
+| `docs/OPPORTUNITIES_UPGRADES.md` | Product + business opportunities mapped (ML, onboarding, B2B) |
 | `CLAUDE.md` | Project rules + conventions (for AI-assisted sessions) |
 | `CONTINUE.md` | Session state — what was last done, what's next |
 | `moodboard/*/` | HTML mockups for each tab (open in browser) |
