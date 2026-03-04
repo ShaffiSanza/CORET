@@ -37,22 +37,28 @@ CORET/
 ├── CLAUDE.md              ← You are here (slim reference)
 ├── CONTINUE.md            ← Session state for resuming
 ├── docs/
-│   ├── ENGINE_SPECS.md    ← All engine specs, IA, UI, brand, monetization (detailed)
-│   ├── swiftdata_model_spec_v1.md
-│   └── viewmodel_architecture_v1.md
-├── core/                  ← V1 Swift package: COREEngine (ARCHIVED, 218/218 tests)
-├── core-v2/               ← V2 Swift package: COREEngine (ACTIVE, 244/244 tests)
+│   ├── ENGINE_SPECS.md    ← All engine specs, IA, UI, brand, monetization
+│   ├── OPPORTUNITIES_UPGRADES.md
+│   ├── strategy/          Feature roadmap
+│   └── archive/           Superseded v1 specs (historical)
+├── engine/                ← V2 Swift package: COREEngine (244/244 tests)
 │   └── Sources/COREEngine/
 │       ├── Models/        Garment.swift, Scoring.swift, Identity.swift
 │       ├── Engines/       CohesionEngine, ClarityEngine, ScoreProjector,
 │       │                  IdentityResolver, KeyGarmentResolver, MilestoneTracker,
 │       │                  SeasonalEngineV2, OptimizeEngineV2
 │       └── Helpers/       ScoringHelpers.swift (internal)
-├── ios_app/               ← Pass 3: SwiftData + ViewModels (requires Mac)
+├── ios/                   ← iOS frontend: SwiftData + ViewModels (requires Mac)
 │   ├── Persistence/       6 SwiftData @Model entities
 │   ├── Coordinators/      EngineCoordinator.swift
 │   └── ViewModels/        5 @Observable ViewModels (one per tab)
-└── moodboard/             ← Visual references for UI (HTML + wireframe .md files)
+├── backend/               ← Python/FastAPI backend (image pipeline + metadata)
+│   ├── models/            Enums + Pydantic schemas
+│   ├── services/          Business logic (color extraction, product search, etc.)
+│   ├── routers/           API endpoint handlers
+│   └── tests/             pytest test suite
+├── moodboard/             ← Visual references for UI (HTML + wireframe .md files)
+└── archive/               ← V1 engine (core-v1, 218/218 tests, historical)
 ```
 
 **Moodboard note — `digico_wardrobe_grid.png`:**
@@ -65,26 +71,27 @@ NOT reference for: prices, brand names, social features, shopping UI, lifestyle 
 
 | Package | Tests | Status |
 |---------|-------|--------|
-| core-v2 (V2 — ACTIVE) | 244/244 | ✅ All passing |
-| core (V1 — ARCHIVED) | 218/218 | ✅ All passing |
+| engine/ (V2 — ACTIVE) | 244/244 | ✅ All passing |
+| backend/ (Python/FastAPI) | 24/24 | ✅ All passing |
+| archive/core-v1/ (V1 — ARCHIVED) | 218/218 | ✅ All passing |
 
 **V2 engines:** CohesionEngine (70), ClarityEngine (23), ScoreProjector (22), IdentityResolver (15), KeyGarmentResolver (13), MilestoneTracker (38), SeasonalEngineV2 (26), OptimizeEngineV2 (19), Models (18).
 
 Build commands:
 ```
-cd core-v2 && swift build && swift test
-cd core    && swift build && swift test
+cd engine  && swift build && swift test
+cd backend && source .venv/bin/activate && python -m pytest tests/ -v
 ```
 
 ---
 
 ## 4. Current Blocker and Build Order
 
-SwiftUI and SwiftData require Mac + Xcode. Development machine is Arch Linux. Engine layer (core-v2) is complete. Pass 3 files (ios_app/) are written as plain Swift for compilation on Mac. SwiftUI views are not yet written.
+SwiftUI and SwiftData require Mac + Xcode. Development machine is Arch Linux. Engine layer (engine/) is complete. iOS files (ios/) are written as plain Swift for compilation on Mac. Backend (backend/) runs on Linux.
 
 **When Mac is available:**
-1. Open Xcode, add `ios_app/` files to iOS target
-2. Import `core-v2/COREEngine` as local Swift package
+1. Open Xcode, add `ios/` files to iOS target
+2. Import `engine/COREEngine` as local Swift package
 3. Build and wire SwiftUI views to ViewModels
 
 ---
@@ -94,7 +101,7 @@ SwiftUI and SwiftData require Mac + Xcode. Development machine is Arch Linux. En
 - **Language**: Swift 6 (strict concurrency). swift-tools-version: 6.2.
 - **All public types**: Codable, Sendable. Structs also Identifiable. Enums also CaseIterable.
 - **Engine pattern**: Caseless `enum` with `static` functions. No state. Pure functions. Deterministic.
-- **Architecture**: V2 engine is standalone Swift package in `core-v2/`. No UIKit/SwiftUI dependencies in engine. iOS app imports core-v2 as local package.
+- **Architecture**: V2 engine is standalone Swift package in `engine/`. No UIKit/SwiftUI dependencies in engine. iOS app imports engine as local package. Python backend in `backend/` (FastAPI on Railway).
 - **Storage**: SwiftData (local-first). No cloud sync in V1.
 - **Testing**: Swift Testing framework (`import Testing`, `@Test`, `#expect`). NOT XCTest. Engines must be deterministic and fully testable.
 - **No external dependencies** in the engine package.
@@ -115,7 +122,7 @@ SwiftUI and SwiftData require Mac + Xcode. Development machine is Arch Linux. En
 
 ### Auto-save Trigger
 When context hits 70%+, automatically:
-1. Run: `cd core-v2 && swift build && swift test`
+1. Run: `cd engine && swift build && swift test`
 2. Update CONTINUE.md with:
    - Timestamp
    - Completed this session (bullet list)
