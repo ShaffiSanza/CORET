@@ -26,6 +26,7 @@ Last updated: 2026-03-03
   - `OptimizeViewModel.swift` — gap selection, suggestion actions (acquire/dismiss)
   - `EvolutionViewModel.swift` — read-only journey timeline, milestones, history
   - `ProfileViewModel.swift` — archetype, location, seasonal recalibration, reset
+- [x] **Image Pipeline — Design finalized** (decided, not yet implemented)
 
 ## Build Status
 
@@ -33,6 +34,7 @@ Last updated: 2026-03-03
 core-v2: swift build pass, swift test 244/244 passing
 core (V1): swift build pass, swift test 218/218 passing (archived)
 ios_app/: NOT compilable on Linux — requires Mac + Xcode + Apple SDK
+backend/: NOT yet created
 ```
 
 ## V2 iOS Layer Status
@@ -54,27 +56,94 @@ ios_app/: NOT compilable on Linux — requires Mac + Xcode + Apple SDK
 | ProfileViewModel | `ViewModels/ProfileViewModel.swift` | ✅ Written |
 | SwiftUI Views | — | ⛔ Requires Mac |
 
-## In Progress — Image Pipeline Design (Decided, Not Yet Implemented)
+## Image Pipeline — Final Design
 
-Discussed and decided on a **hybrid image pipeline** for garment photos:
+### Architecture: iOS (Swift) + Backend (Python/FastAPI on Railway)
 
-### Strategy (Tier System):
-1. **Tier 1 — Product image search** (preferred): User enters brand + model → search web for official studio photo (Diesel.com, Zalando, etc.). Free, perfect quality, no privacy concern.
-2. **Tier 2 — On-device cleanup** (fallback): iOS 16+ subject lifting (Core Image) → remove background → place on CORET dark surface (#231C18). Free, private, offline.
-3. **Tier 3 — AI studio enhancement** (V1.5 Pro): Server-side processing (Photoroom/Remove.bg style). Pay-per-image. Optional premium feature.
+```
+Telefon (Swift)                    Server (Python/FastAPI)
+┌──────────────────────┐           ┌─────────────────────────┐
+│ Kamera / UI          │           │ POST /api/product-search│
+│ Guided Capture       │──HTTP────▶│ POST /api/barcode-lookup│
+│ Subject Lifting      │◀─────────│ POST /api/image-polish  │
+│ SwiftData            │           │                         │
+└──────────────────────┘           │ API keys: SerpAPI,      │
+                                   │ UPCitemdb, Photoroom    │
+                                   └─────────────────────────┘
+                                   Hosted: Railway (free tier)
+```
+
+### Pipeline Flow (2 steps + Pro upgrade):
+
+```
+Legg til plagg
+  │
+  ├─ Steg 1: PRODUCT LOOKUP (via Python backend)
+  │   Innganger (kombinert i én tjeneste):
+  │     • Skann strekkode → barcode-lookup → studiobilde
+  │     • Skriv merke + modell → product-search → studiobilde
+  │   → Hent studiobilde → plassér på #231C18 → ferdig ✓
+  │
+  ├─ Steg 2: GUIDED CAPTURE (on-device fallback)
+  │   Når product lookup ikke finner noe:
+  │     • Guidet kamera med overlay (flat-lay, belysning, framing)
+  │     • Vision framework subject lifting (VNGenerateForegroundInstanceMaskRequest)
+  │     • Core Image composit på #231C18
+  │   → ferdig ✓
+  │
+  └─ Steg 3: API POLISH (Pro-funksjon, valgfri)
+      Forbedrer steg 2-resultat via backend:
+        • POST /api/image-polish → Photoroom API → polert bilde
+        • Kun for Pro-brukere
+      → erstatt lokalt bilde → ferdig ✓
+```
 
 ### Key decisions:
 - Raw user photos break CORET's premium aesthetic — pipeline is necessary
-- Product images first because 90%+ of branded garments have studio photos online
-- On-device cleanup as fallback for vintage/unknown brands
-- AI enhancement deferred to V1.5 as paid Pro feature
+- Product images first (steg 1) because 90%+ of branded garments have studio photos
+- Guided Capture (steg 2) as fallback for vintage/thrift/unknown brands
+- API polish (steg 3) deferred to Pro tier — enhances steg 2 results
 - All processed images placed on #231C18 (CORET card surface) for visual consistency
+- **Python backend** chosen over Cloudflare Workers — user has Python experience, $0 cost difference
+- Backend hosted on **Railway** (free tier, no cold starts)
+- Barcode scan and text search combined into one Product Lookup service (not separate tiers)
 
-### Implementation needed:
-- `ImportSource` enum (`.productSearch`, `.photoLibrary`, `.camera`)
-- Image pipeline service in ios_app/
-- Subject lifting integration (Vision framework)
-- Product image search integration
+### Backend implementation (Python):
+
+```
+backend/
+  main.py                  ← FastAPI app (3 endpoints)
+  requirements.txt         ← fastapi, uvicorn, httpx
+  .env                     ← API keys (SerpAPI, UPCitemdb, Photoroom)
+```
+
+Endpoints:
+- `POST /api/product-search` — text query → SerpAPI → best studio image URL
+- `POST /api/barcode-lookup` — barcode string → UPCitemdb → product image URL
+- `POST /api/image-polish` — upload image → Photoroom API → polished image (Pro only)
+
+### iOS implementation (Swift):
+
+```
+ios_app/
+  Services/
+    ImagePipeline.swift          ← Orchestrator (steg 1 → 2 → 3)
+    ProductLookupService.swift   ← HTTP calls to Python backend
+    GuidedCaptureService.swift   ← AVFoundation camera + overlay
+    SubjectLiftingService.swift  ← Vision framework wrapper
+    ImagePolishService.swift     ← HTTP call to backend /image-polish (Pro)
+```
+
+## What Python Backend Changes
+
+Adding a Python backend is a **new architectural component**. This affects:
+
+1. **Project structure** — New `backend/` directory at project root
+2. **No longer purely local-first** — Steg 1 (product lookup) requires network. Steg 2 (guided capture) remains fully offline as fallback.
+3. **Development unblocked on Linux** — Backend can be built and tested NOW on Arch Linux without Mac. This is a major unlock.
+4. **CLAUDE.md** — Needs update: add `backend/` to project structure, note Python/FastAPI conventions
+5. **Deployment** — Railway deployment config needed (Procfile or railway.toml)
+6. **Offline strategy** — App must gracefully handle no-network: skip steg 1, go straight to steg 2 (guided capture). Product lookup is enhancement, not requirement.
 
 ## Decisions Made This Session
 
@@ -87,30 +156,37 @@ Discussed and decided on a **hybrid image pipeline** for garment photos:
 - **isKeyGarment flag**: Updated on GarmentEntity by EngineCoordinator after each recompute using KeyGarmentResolver.keyGarmentIDs().
 - **Snapshot trigger**: delta > 5.0 OR first-of-month. First snapshot always persisted.
 - **Milestone deduplication**: key = type.rawValue + "-" + snapshotIndex.
+- **Image pipeline**: 2-step + Pro. Product Lookup (backend) → Guided Capture (on-device) → API Polish (Pro/backend).
+- **Python backend**: FastAPI on Railway, chosen over Cloudflare Workers for developer familiarity.
+- **Barcode + text search combined**: Single Product Lookup service, multiple input methods.
+- **Offline strategy**: No network → skip steg 1, go directly to steg 2 (guided capture). Pipeline never blocks on network.
 
 ## Next Session Prompt
 
 ```
-CORET Pass 3 is complete in ios_app/ (persistence + EngineCoordinator + 5 ViewModels).
+CORET — resuming. Read CLAUDE.md, then CONTINUE.md.
 
-V2 engine: core-v2/ (244/244 tests). V1 archived: core/ (218/218 tests).
-ios_app/ requires Mac + Xcode to compile (SwiftData, Observation, COREEngine import).
+Pass 3 complete: ios_app/ has persistence + EngineCoordinator + 5 ViewModels.
+V2 engine: core-v2/ (244/244 tests). V1 archived.
 
-Read CLAUDE.md for slim reference. Read docs/ENGINE_SPECS.md for engine detail.
-Read CONTINUE.md "In Progress" section for image pipeline design decisions.
+Image pipeline is fully designed (see CONTINUE.md "Image Pipeline — Final Design").
+Architecture: iOS (Swift) + Python backend (FastAPI on Railway).
 
-Next priority — Image Pipeline:
-- Implement ImportSource enum and image pipeline service
-- Hybrid strategy: product image search → on-device cleanup → AI enhancement (V1.5)
-- See CONTINUE.md for full tier breakdown and decisions
+Next priority — Build Python backend (CAN be done on Linux now!):
+1. Create backend/ directory with FastAPI project
+2. Implement POST /api/product-search (SerpAPI integration)
+3. Implement POST /api/barcode-lookup (UPCitemdb integration)
+4. Implement POST /api/image-polish (Photoroom API proxy, Pro only)
+5. Add tests for all endpoints
+6. Railway deployment config
 
-Remaining work requires Mac:
-- SwiftUI Views for all 5 tabs (Dashboard, Wardrobe, Optimize, Evolution, Profile)
-- Xcode project setup: add ios_app/ files, import core-v2/ as local package
-- On-Mac compilation and testing of ios_app/ layer
-- COREApp.swift entry point (SwiftUI App + .modelContainer)
+After backend, remaining work:
+- iOS image pipeline services (ios_app/Services/) — requires Mac
+- SwiftUI Views for all 5 tabs — requires Mac
+- Xcode project setup — requires Mac
+- Update CLAUDE.md with backend/ in project structure
 
-Optional work possible on Linux:
+Optional work on Linux:
 - HTML moodboard updates
 - Engine refinements
 - Additional spec documentation

@@ -19,12 +19,13 @@ CORET measures structural cohesion in a wardrobe and guides optimization. It is 
 
 | Package | Tests | Status |
 |---------|-------|--------|
-| `core-v2/` — V2 engine (active) | 244/244 | ✅ All passing |
-| `core/` — V1 engine (archived) | 218/218 | ✅ All passing |
+| `engine/` — V2 engine (active) | 244/244 | ✅ All passing |
+| `backend/` — Python/FastAPI | 24/24 | ✅ All passing |
+| `archive/core-v1/` — V1 engine (archived) | 218/218 | ✅ All passing |
 
 ```bash
-cd core-v2 && swift build && swift test
-cd core    && swift build && swift test
+cd engine  && swift build && swift test
+cd backend && source .venv/bin/activate && python -m pytest tests/ -v
 ```
 
 Requires Swift 6.2+. No external dependencies.
@@ -35,21 +36,25 @@ Requires Swift 6.2+. No external dependencies.
 
 ```
 CORET/
-├── core/           V1 engine — archived, stable (218 tests)
-├── core-v2/        V2 engine — active, complete (244 tests)
+├── engine/         V2 engine — active, complete (244 tests)
 │   └── Sources/COREEngine/
 │       ├── Models/     Garment, Scoring, Identity
 │       ├── Engines/    8 engines (see below)
 │       └── Helpers/    ScoringHelpers (internal)
-├── ios_app/        iOS layer — written, not yet compiled (requires Mac)
+├── ios/            iOS frontend — written, not yet compiled (requires Mac)
 │   ├── Persistence/    6 SwiftData @Model entities
 │   ├── Coordinators/   EngineCoordinator (engine ↔ persistence bridge)
 │   └── ViewModels/     5 @Observable ViewModels (one per tab)
+├── backend/        Python/FastAPI — image pipeline + metadata services
+│   ├── services/       Color extraction, product search, barcode, metadata
+│   ├── routers/        API endpoint handlers
+│   └── tests/          pytest test suite (24 tests)
 ├── docs/
 │   ├── ENGINE_SPECS.md     ← Full technical specs for all engines + IA + UI
-│   ├── swiftdata_model_spec_v1.md
-│   └── viewmodel_architecture_v1.md
-└── moodboard/      HTML mockups + wireframes for all 5 tabs
+│   ├── OPPORTUNITIES_UPGRADES.md
+│   └── strategy/           Feature roadmap
+├── moodboard/      HTML mockups + wireframes for all 5 tabs
+└── archive/        V1 engine (core-v1, 218 tests, historical)
 ```
 
 ---
@@ -86,7 +91,7 @@ Deterministic. No ML. All component scores are individually callable and explain
 
 ## iOS Layer — Written, Not Yet Compiled
 
-The `ios_app/` directory contains production-ready Swift files that require **Mac + Xcode** to compile (SwiftData and Observation are Apple-platform-only).
+The `ios/` directory contains production-ready Swift files that require **Mac + Xcode** to compile (SwiftData and Observation are Apple-platform-only).
 
 **Written (Pass 3):**
 - `GarmentEntity`, `UserProfileEntity`, `ClaritySnapshotEntity`, `MilestoneEntity`, `SavedOutfitEntity`, `EngineCacheEntity` — SwiftData persistence
@@ -96,7 +101,7 @@ The `ios_app/` directory contains production-ready Swift files that require **Ma
 **Not yet written (Pass 4 — requires Mac):**
 - SwiftUI views for all 5 tabs
 - `COREApp.swift` entry point
-- Xcode project setup (add `ios_app/` files, import `core-v2/` as local package)
+- Xcode project setup (add `ios/` files, import `engine/` as local package)
 
 ---
 
@@ -104,7 +109,7 @@ The `ios_app/` directory contains production-ready Swift files that require **Ma
 
 | Task | Blocker |
 |------|---------|
-| Compile + test `ios_app/` | Mac + Xcode |
+| Compile + test `ios/` | Mac + Xcode |
 | SwiftUI views (5 tabs) | Mac + Xcode |
 | Xcode project setup | Mac |
 | SwiftData persistence testing | Mac |
@@ -126,7 +131,7 @@ ViewModels (@Observable)
 EngineCoordinator
      ↓              ↓
 V2 Engines     SwiftData
-(core-v2/)     (ios_app/Persistence/)
+(engine/)     (ios/Persistence/)
 ```
 
 ViewModels never call engines directly — only through `EngineCoordinator`.
