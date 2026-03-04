@@ -33,7 +33,7 @@ Full technical reference for all V1 and V2 engines, data models, IA, UI, and per
 
 ## 3. Data Model (V1)
 
-All types live in `core/Sources/COREEngine/Models/WardrobeItem.swift`. All public types are Codable, Sendable. Structs are Identifiable. Enums are CaseIterable.
+All types live in `archive/Sources/COREEngine/Models/WardrobeItem.swift`. All public types are Codable, Sendable. Structs are Identifiable. Enums are CaseIterable.
 
 ### Enums
 
@@ -149,7 +149,7 @@ Defined in `OptimizeEngine.swift`:
 
 ## 4. Cohesion Engine (V1) — IMPLEMENTED
 
-File: `core/Sources/COREEngine/Engines/CohesionEngine.swift`
+File: `archive/Sources/COREEngine/Engines/CohesionEngine.swift`
 Pattern: `public enum CohesionEngine: Sendable` — caseless enum namespace, all static functions.
 Tests: 123 passing in `CohesionEngineTests.swift`
 
@@ -447,7 +447,7 @@ Returns `CohesionSnapshot` where `.densityScore` holds the structural density va
 
 ## 5. Optimize Engine (V1) — IMPLEMENTED
 
-File: `core/Sources/COREEngine/Engines/OptimizeEngine.swift`
+File: `archive/Sources/COREEngine/Engines/OptimizeEngine.swift`
 Pattern: `public enum OptimizeEngine: Sendable` — caseless enum, all static.
 Tests: 19 passing in `OptimizeEngineTests.swift`
 
@@ -502,7 +502,7 @@ WeaknessArea mirrors CohesionComponent cases. Kept separate because WeaknessArea
 
 ## 6. Seasonal Engine (V1) — IMPLEMENTED
 
-File: `core/Sources/COREEngine/Engines/SeasonalEngine.swift`
+File: `archive/Sources/COREEngine/Engines/SeasonalEngine.swift`
 Pattern: `public enum SeasonalEngine: Sendable`
 Tests: 19 passing in `SeasonalEngineTests.swift`
 
@@ -579,7 +579,7 @@ public static let baseWeights: CohesionWeights
 
 ## 7. Structural Evolution (V1) — IMPLEMENTED
 
-File: `core/Sources/COREEngine/Engines/EvolutionEngine.swift`
+File: `archive/Sources/COREEngine/Engines/EvolutionEngine.swift`
 Pattern: `public enum EvolutionEngine: Sendable`
 Tests: 56 passing in `EvolutionEngineTests.swift`
 
@@ -1078,7 +1078,7 @@ ViewModels must NOT: contain structural logic, modify engine math, cache busines
 
 ## 19. V2 Data Model
 
-All types live in `core-v2/Sources/COREEngine/Models/`. All public types are Codable, Sendable. Structs are Identifiable. Enums are CaseIterable.
+All types live in `engine/Sources/COREEngine/Models/`. All public types are Codable, Sendable. Structs are Identifiable. Enums are CaseIterable.
 
 ### Enums
 
@@ -1150,7 +1150,7 @@ Archetype conforms to `CodingKeyRepresentable` for `[Archetype: Double]` Codable
 
 ## 20. V2 CohesionEngine — IMPLEMENTED
 
-File: `core-v2/Sources/COREEngine/Engines/CohesionEngine.swift`
+File: `engine/Sources/COREEngine/Engines/CohesionEngine.swift`
 Tests: 70 passing in `CohesionEngineTests.swift`
 
 ### Formula
@@ -1264,7 +1264,7 @@ Per-garment versatility averaged across wardrobe. Three sub-dimensions (each 1/3
 
 ## 21. V2 ClarityEngine — IMPLEMENTED
 
-File: `core-v2/Sources/COREEngine/Engines/ClarityEngine.swift`
+File: `engine/Sources/COREEngine/Engines/ClarityEngine.swift`
 Tests: 23 passing in `ClarityEngineTests.swift`
 
 ### Formula
@@ -1300,7 +1300,7 @@ Based on last 3 snapshots: monotonically increasing (some increase) → `.improv
 
 ## 22. V2 ScoreProjector — IMPLEMENTED
 
-File: `core-v2/Sources/COREEngine/Engines/ScoreProjector.swift`
+File: `engine/Sources/COREEngine/Engines/ScoreProjector.swift`
 Tests: 22 passing in `ScoreProjectorTests.swift`
 
 ### Public API
@@ -1329,7 +1329,7 @@ Edge cases: Symmetry — project(add X) then reverseProject(remove X) → net ze
 
 ## 23. V2 Scoring Helpers (Internal)
 
-File: `core-v2/Sources/COREEngine/Helpers/ScoringHelpers.swift`
+File: `engine/Sources/COREEngine/Helpers/ScoringHelpers.swift`
 Visibility: `internal` — shared across V2 engines, not part of public API.
 
 **rangeScore(value:idealLower:idealUpper:overPenaltyDivisor:) → Double (0–100)**
@@ -1348,8 +1348,8 @@ All combinations: `uppers × lowers × shoes`. Accessories excluded. Empty if an
 
 ## 24. V2 IdentityResolver — IMPLEMENTED
 
-File: `core-v2/Sources/COREEngine/Engines/IdentityResolver.swift`
-Model: `core-v2/Sources/COREEngine/Models/Identity.swift`
+File: `engine/Sources/COREEngine/Engines/IdentityResolver.swift`
+Model: `engine/Sources/COREEngine/Models/Identity.swift`
 Tests: 15 passing in `IdentityResolverTests.swift`
 
 ### Purpose
@@ -1383,7 +1383,7 @@ Edge cases: Empty → label "Blandet · Nøytral", tags `["Ukjent profil"]`, pro
 
 ## 25. V2 KeyGarmentResolver — IMPLEMENTED
 
-File: `core-v2/Sources/COREEngine/Engines/KeyGarmentResolver.swift`
+File: `engine/Sources/COREEngine/Engines/KeyGarmentResolver.swift`
 Tests: 13 passing in `KeyGarmentResolverTests.swift`
 
 ### Purpose
@@ -1416,7 +1416,7 @@ public static let keyGarmentThreshold: Double  // 0.20
 
 ## 26. V2 MilestoneTracker — IMPLEMENTED
 
-File: `core-v2/Sources/COREEngine/Engines/MilestoneTracker.swift`
+File: `engine/Sources/COREEngine/Engines/MilestoneTracker.swift`
 Tests: 38 passing in `MilestoneTrackerTests.swift`
 
 ### Types
@@ -1469,7 +1469,7 @@ Narratives in Norwegian. Regression narrative: "Garderoben rekalibrerer. Dette e
 
 ## 27. V2 SeasonalEngineV2 — IMPLEMENTED
 
-File: `core-v2/Sources/COREEngine/Engines/SeasonalEngineV2.swift`
+File: `engine/Sources/COREEngine/Engines/SeasonalEngineV2.swift`
 Tests: 26 passing in `SeasonalEngineV2Tests.swift`
 
 ### Types
@@ -1516,7 +1516,7 @@ Per season, multiplicative modifiers on 6 cohesion weights, then renormalized to
 
 ## 28. V2 OptimizeEngineV2 — IMPLEMENTED
 
-File: `core-v2/Sources/COREEngine/Engines/OptimizeEngineV2.swift`
+File: `engine/Sources/COREEngine/Engines/OptimizeEngineV2.swift`
 Tests: 19 passing in `OptimizeEngineV2Tests.swift`
 
 ### Types
