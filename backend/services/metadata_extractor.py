@@ -48,10 +48,41 @@ def extract_metadata(product_title: str, brand: str | None = None, description: 
     Returnerer; 
     {
     
-        "suggested_base_group}
-    
-    
-    
-    
-    
+        "suggested_base_group": BaseGroup.sneakers,
+        "suggested_category": Category.shoes,
+        "confidence":0.8,
+        "success": True 
+    }
     """
+    title_lower = product_title.lower()
+
+    # Søk gjennom alle keywords og finn match
+    matched_group = None
+
+    for base_group, keywords in KEYWORDS.items():
+        for keyword in keywords:
+            if keyword in title_lower:
+                matched_group = base_group
+                break
+        if matched_group:
+            break
+    if not matched_group:
+        return {
+            "suggested_base_group": None,
+            "suggested_category": None,
+            "confidence": 0.0,
+            "success": False
+        }
+    
+    # Foreslå kategori basert på BaseGroup
+    base_group = BaseGroup(matched_group)
+    category = BASEGROUP_TO_CATEGORY[base_group]
+    return {
+        "suggested_base_group": base_group,
+        "suggested_category": category,
+        "confidence": 0.8,
+        "success": True
+    }
+
+
+

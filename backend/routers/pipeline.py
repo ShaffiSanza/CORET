@@ -17,6 +17,7 @@ from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import Response
 
 from backend.services.color_extraction import extract_colors_from_image
+from backend.services.metadata_extractor import extract_metadata
 from backend.models.schemas import (
     ProductSearchRequest, ProductSearchResponse,
     BarcodeLookupRequest, BarcodeLookupResponse,
@@ -104,13 +105,13 @@ async def product_metadata(request: ProductMetadataRequest):
 
     # TODO: Koble til services/metadata_extractor.py
     # DU skal implementere denne!
+    result = extract_metadata(request.product_title, request.brand, request.description)
+
     return ProductMetadataResponse(
-        suggested_name=None,
-        suggested_category=None,
-        suggested_base_group=None,
-        suggested_color_temperature=None,
-        confidence=0.0,
-        success=False,
+        suggested_base_group=result["suggested_base_group"],
+        suggested_category=result["suggested_category"],
+        confidence=result["confidence"],
+        success=result["success"],
     )
 
 
@@ -126,3 +127,5 @@ async def image_polish(image: UploadFile = File(...)):
     # TODO: Koble til services/image_polish.py
     # DU skal implementere denne!
     return ImagePolishResponse(success=False, error="Not implemented yet")
+
+
