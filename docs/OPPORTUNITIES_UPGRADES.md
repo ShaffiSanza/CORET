@@ -84,7 +84,7 @@ fra dag én — data gjenspeiler faktisk bruk, ikke hva som henger bakerst.
 
 ### 1.2 ML Lag 1 — Appen lærer av deg (V1.5)
 
-Ny engine-fil: `core-v2/Engines/BehaviouralEngine.swift`
+Ny engine-fil: `engine/Engines/BehaviouralEngine.swift`
 Ny SwiftData-entitet: `WearLogEntity` (dato + garmentID per bruk)
 
 #### Arketype-drift deteksjon
@@ -134,7 +134,7 @@ generisk; personlig sesong er din.
 
 ### 1.3 ML Lag 2 — Visuell intelligens (V1.5–V2)
 
-Ny engine-fil: `core-v2/Engines/SimilarityEngine.swift`
+Ny engine-fil: `engine/Engines/SimilarityEngine.swift`
 Ny felt på `GarmentEntity`: `imageEmbedding: Data?`
 
 Bruker **MobileCLIP** (Apple, on-device Core ML). Konverterer garment-bilde
@@ -171,7 +171,7 @@ uten at brukeren tenker på det.
 
 ### 1.4 ML Lag 3 — Naturlig språk-grensesnitt (V2)
 
-Nye filer: `ios_app/Networking/COREAssistant.swift`, `ios_app/ViewModels/AssistantViewModel.swift`
+Nye filer: `ios/Networking/COREAssistant.swift`, `ios/ViewModels/AssistantViewModel.swift`
 
 Engine-output er allerede strukturert og rik. COREAssistant pakker det som kontekst
 til en LLM og svarer på naturlige spørsmål:
