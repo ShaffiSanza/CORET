@@ -8,7 +8,7 @@ Bruker både API-keys og httpx
 """
 
 import httpx
-from backend.config import settings
+from config import settings
 
 # UpciteEmdb-endepunktet vi bruker
 UPCITEMDB_URL = "https://api.upcitemdb.com/prod/trial/lookup"

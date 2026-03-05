@@ -17,7 +17,7 @@ Hva er en TestClient?
 import pytest
 from httpx import AsyncClient, ASGITransport
 
-from backend.main import app
+from main import app
 
 
 @pytest.fixture

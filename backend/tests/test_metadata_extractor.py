@@ -3,8 +3,8 @@ CORET Backend - Metadata Extractor Tester
 """
 
 
-from backend.services.metadata_extractor import extract_metadata
-from backend.models.enums import BaseGroup, Category
+from services.metadata_extractor import extract_metadata
+from models.enums import BaseGroup, Category
 
 def test_sneakers_match():
     """Test at 'snekaers' i tittlen gir BaseGroup.sneakers"""

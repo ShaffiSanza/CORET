@@ -9,8 +9,8 @@ import pytest
 import respx
 from httpx import Response
 
-from backend.services.product_search import search_product
-from backend.config import settings
+from services.product_search import search_product
+from config import settings
 
 
 @pytest.mark.asyncio

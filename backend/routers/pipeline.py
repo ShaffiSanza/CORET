@@ -16,12 +16,12 @@ FastAPI APIRouter:
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import Response
 
-from backend.services.color_extraction import extract_colors_from_image
-from backend.services.metadata_extractor import extract_metadata
-from backend.services.product_search import search_product
-from backend.services.barcode_lookup import lookup_barcode as lookup_barcode_service 
-from backend.services.image_polish import polish_image 
-from backend.models.schemas import (
+from services.color_extraction import extract_colors_from_image
+from services.metadata_extractor import extract_metadata
+from services.product_search import search_product
+from services.barcode_lookup import lookup_barcode as lookup_barcode_service
+from services.image_polish import polish_image
+from models.schemas import (
     ProductSearchRequest, ProductSearchResponse,
     BarcodeLookupRequest, BarcodeLookupResponse,
     ColorExtractionResponse,

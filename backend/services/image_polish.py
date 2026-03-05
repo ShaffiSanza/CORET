@@ -8,7 +8,7 @@ Bruker: httpx for HTTP-kall, Photoroom API for bildeforbedring.
 """
 
 import httpx
-from backend.config import settings
+from config import settings
 
 # Photoroom API-endepunktet
 PHOTOROOM_URL = "https://sdk.photoroom.com/v1/segment"

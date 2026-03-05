@@ -15,13 +15,13 @@ import io
 import pytest
 from PIL import Image
 
-from backend.services.color_extraction import (
+from services.color_extraction import (
     rgb_to_hex,
     rgb_to_hsl,
     classify_color_temp,
     extract_colors_from_image,
 )
-from backend.models.enums import ColorTemp
+from models.enums import ColorTemp
 
 
 # ============================================================

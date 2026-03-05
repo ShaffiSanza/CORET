@@ -19,7 +19,7 @@ from io import BytesIO
 
 from colorthief import ColorThief
 
-from backend.models.enums import ColorTemp
+from models.enums import ColorTemp
 
 
 def rgb_to_hex(r: int, g: int, b: int) -> str:

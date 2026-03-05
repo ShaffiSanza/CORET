@@ -1,14 +1,14 @@
 """
 CORET Backend - Barcode Lookup Tester
 
-bruker respx til å mocke HTTP-kall til UPCitemDB.
+Bruker respx til å mocke HTTP-kall til UPCitemDB.
 Ingen ekte API-kall blir sendt!
 """
 import pytest
 import respx
 from httpx import Response
 
-from backend.services.barcode_lookup import lookup_barcode
+from services.barcode_lookup import lookup_barcode
 
 
 @pytest.mark.asyncio

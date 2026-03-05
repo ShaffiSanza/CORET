@@ -8,8 +8,8 @@ import pytest
 import respx
 from httpx import Response
 
-from backend.services.image_polish import polish_image
-from backend.config import settings
+from services.image_polish import polish_image
+from config import settings
 
 
 @pytest.mark.asyncio

@@ -9,7 +9,7 @@ Bruker: httpx for HTTP-kall, SerpAPI for søk.
 """
 
 import httpx
-from backend.config import settings
+from config import settings
 
 # SerpAPI-endepunktet vi kaller
 SERPAPI_URL = "https://serpapi.com/search"

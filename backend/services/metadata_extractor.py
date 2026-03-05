@@ -7,7 +7,7 @@ og gjetter hvilken CORET-plaggtype (BaseGroup) og kategori (Category) det tilhø
 Bruker: Kun keyword-matching - ingen AI, Ingen API-Kall, Ren python-logikk.
 """
 
-from backend.models.enums import BaseGroup, Category, BASEGROUP_TO_CATEGORY
+from models.enums import BaseGroup, Category, BASEGROUP_TO_CATEGORY
 
 
 KEYWORDS: dict[str, list[str]] = {

@@ -15,8 +15,8 @@ Hva den gjor:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.config import settings
-from backend.routers import pipeline
+from config import settings
+from routers import pipeline
 
 # Opprett FastAPI-appen
 # title/description vises på den automatiske API-dokumentasjonen (/docs)
