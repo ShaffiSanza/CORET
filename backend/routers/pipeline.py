@@ -20,6 +20,7 @@ from backend.services.color_extraction import extract_colors_from_image
 from backend.services.metadata_extractor import extract_metadata
 from backend.services.product_search import search_product
 from backend.services.barcode_lookup import lookup_barcode as lookup_barcode_service 
+from backend.services.image_polish import polish_image 
 from backend.models.schemas import (
     ProductSearchRequest, ProductSearchResponse,
     BarcodeLookupRequest, BarcodeLookupResponse,
@@ -105,8 +106,7 @@ async def product_metadata(request: ProductMetadataRequest):
     """Auto-utfylling: gi en produkttittel, få tilbake foreslåtte CORET-verdier.
     Eksempel: {"product_title": "Nike Air Force 1 Sneakers", "brand": "Nike"}"""
 
-    # TODO: Koble til services/metadata_extractor.py
-    # DU skal implementere denne!
+    #
     result = extract_metadata(request.product_title, request.brand, request.description)
 
     return ProductMetadataResponse(
@@ -126,9 +126,19 @@ async def image_polish(image: UploadFile = File(...)):
     """Forbedre et bilde via Photoroom API (Pro-funksjon).
     Returnerer polert bilde som PNG ved suksess, eller JSON ved feil."""
 
-    # TODO: Koble til services/image_polish.py
-    # DU skal implementere denne!
-    return ImagePolishResponse(success=False, error="Not implemented yet")
+    image_bytes = await image.read()
+    
+    result = await polish_image(image_bytes) 
+
+    if not result["success"]:
+        return ImagePolishResponse(success=False, error=result["error"])
+
+    return Response(content=result["image_bytes"], media_type="image/png")
+
+
+
+
+
 
 
 
