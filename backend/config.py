@@ -25,8 +25,12 @@ class Settings(BaseSettings):
     upcitemdb_key: str = ""           # For strekkode-oppslag (ikke nodvendig for trial)
     photoroom_api_key: str = ""       # For bildeforbedring (Photoroom, Pro-funksjon)
 
+    # --- Sikkerhet ---
+    coret_api_key: str = ""           # API-nøkkel som iOS-appen sender med hver request
+    rate_limit_per_minute: int = 30   # Maks antall requests per minutt per IP
+
     # --- App-innstillinger ---
-    allowed_origins: str = "*"        # CORS: hvilke domener som kan kalle API-et
+    allowed_origins: str = "https://coret-production.up.railway.app"  # CORS: kun egne domener
     environment: str = "development"  # "development" eller "production"
 
     # model_config forteller pydantic-settings HVOR den skal lete etter verdier
