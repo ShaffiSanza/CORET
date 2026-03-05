@@ -41,12 +41,13 @@ CORET/
 │   ├── OPPORTUNITIES_UPGRADES.md
 │   ├── strategy/          Feature roadmap
 │   └── archive/           Superseded v1 specs (historical)
-├── engine/                ← V2 Swift package: COREEngine (244/244 tests)
+├── engine/                ← V2 Swift package: COREEngine (285/285 tests)
 │   └── Sources/COREEngine/
-│       ├── Models/        Garment.swift, Scoring.swift, Identity.swift
+│       ├── Models/        Garment.swift (incl. WearLog), Scoring.swift, Identity.swift
 │       ├── Engines/       CohesionEngine, ClarityEngine, ScoreProjector,
 │       │                  IdentityResolver, KeyGarmentResolver, MilestoneTracker,
-│       │                  SeasonalEngineV2, OptimizeEngineV2
+│       │                  SeasonalEngineV2, OptimizeEngineV2,
+│       │                  BehaviouralEngine, SimilarityEngine
 │       └── Helpers/       ScoringHelpers.swift (internal)
 ├── ios/                   ← iOS frontend: SwiftData + ViewModels (requires Mac)
 │   ├── Persistence/       6 SwiftData @Model entities
@@ -54,9 +55,10 @@ CORET/
 │   └── ViewModels/        5 @Observable ViewModels (one per tab)
 ├── backend/               ← Python/FastAPI backend (image pipeline + metadata)
 │   ├── models/            Enums + Pydantic schemas
-│   ├── services/          Business logic (color extraction, product search, etc.)
+│   ├── services/          Business logic (color extraction, product search, wardrobe_io, etc.)
 │   ├── routers/           API endpoint handlers
-│   └── tests/             pytest test suite
+│   ├── tests/             pytest test suite
+│   └── v1_5/              Archived services (receipt_parser) for future release
 ├── moodboard/             ← Visual references for UI (HTML + wireframe .md files)
 └── archive/               ← V1 engine (core-v1, 218/218 tests, historical)
 ```
@@ -71,11 +73,11 @@ NOT reference for: prices, brand names, social features, shopping UI, lifestyle 
 
 | Package | Tests | Status |
 |---------|-------|--------|
-| engine/ (V2 — ACTIVE) | 244/244 | ✅ All passing |
-| backend/ (Python/FastAPI) | 24/24 | ✅ All passing |
+| engine/ (V2 — ACTIVE) | 285/285 | ✅ All passing |
+| backend/ (Python/FastAPI) | 50/50 | ✅ All passing |
 | archive/core-v1/ (V1 — ARCHIVED) | 218/218 | ✅ All passing |
 
-**V2 engines:** CohesionEngine (70), ClarityEngine (23), ScoreProjector (22), IdentityResolver (15), KeyGarmentResolver (13), MilestoneTracker (38), SeasonalEngineV2 (26), OptimizeEngineV2 (19), Models (18).
+**V2 engines:** CohesionEngine (70), ClarityEngine (23), ScoreProjector (22), IdentityResolver (15), KeyGarmentResolver (13), MilestoneTracker (38), SeasonalEngineV2 (26), OptimizeEngineV2 (19), BehaviouralEngine (27), SimilarityEngine (18), Models (18).
 
 Build commands:
 ```

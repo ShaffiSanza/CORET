@@ -149,3 +149,21 @@ public struct UserProfile: Identifiable, Codable, Sendable {
         self.createdAt = createdAt
     }
 }
+
+// MARK: - WearLog
+
+public struct WearLog: Identifiable, Codable, Sendable {
+    public let id: UUID
+    public let garmentID: UUID
+    public let date: Date
+
+    public init(
+        id: UUID = UUID(),
+        garmentID: UUID,
+        date: Date = Date()
+    ) {
+        self.id = id
+        self.garmentID = garmentID
+        self.date = date
+    }
+}

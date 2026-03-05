@@ -14,6 +14,7 @@ Hva den gjor:
   6. Har et helsesjekk-endpoint (/api/health)
 """
 
+import hmac
 import time
 from collections import defaultdict
 
@@ -82,7 +83,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
 
         # Sjekk API-nøkkelen i headeren
         api_key = request.headers.get("X-API-Key")
-        if api_key != settings.coret_api_key:
+        if not api_key or not hmac.compare_digest(api_key, settings.coret_api_key):
             raise HTTPException(
                 status_code=401,
                 detail="Ugyldig eller manglende API-nøkkel."
@@ -111,10 +112,10 @@ app.add_middleware(
     allow_origins=settings.allowed_origins.split(","),
     allow_credentials=True,
     allow_methods=["POST", "GET"],  # Kun metodene vi bruker
-    allow_headers=["*"],
+    allow_headers=["Content-Type", "X-API-Key"],
 )
 
-# Monter pipeline-routeren med /api-prefix
+# Monter routere med /api-prefix
 app.include_router(pipeline.router, prefix="/api")
 
 

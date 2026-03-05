@@ -13,7 +13,7 @@ FastAPI APIRouter:
   - Mountes i main.py med et prefix (f.eks. /api)
 """
 
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import Response
 
 from services.color_extraction import extract_colors_from_image
@@ -86,6 +86,10 @@ async def extract_colors(image: UploadFile = File(...)):
     # Les bildet som bytes fra opplastingen
     image_bytes = await image.read()
 
+    # Valider filstørrelse (maks 5 MB)
+    if len(image_bytes) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="Bildet er for stort. Maks 5 MB.")
+
     # Send bytes til color_extraction-servicen
     result = extract_colors_from_image(image_bytes)
 
@@ -127,8 +131,12 @@ async def image_polish(image: UploadFile = File(...)):
     Returnerer polert bilde som PNG ved suksess, eller JSON ved feil."""
 
     image_bytes = await image.read()
-    
-    result = await polish_image(image_bytes) 
+
+    # Valider filstørrelse (maks 10 MB)
+    if len(image_bytes) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="Bildet er for stort. Maks 10 MB.")
+
+    result = await polish_image(image_bytes)
 
     if not result["success"]:
         return ImagePolishResponse(success=False, error=result["error"])
