@@ -28,6 +28,8 @@ Full technical reference for all V1 and V2 engines, data models, IA, UI, and per
 - [§26. V2 MilestoneTracker](#26-v2-milestonetracker)
 - [§27. V2 SeasonalEngineV2](#27-v2-seasonalenginev2)
 - [§28. V2 OptimizeEngineV2](#28-v2-optimizeenginev2)
+- [§29. V2 BehaviouralEngine](#29-v2-behaviouralengine)
+- [§30. V2 SimilarityEngine](#30-v2-similarityengine)
 
 ---
 
@@ -1556,3 +1558,50 @@ Remove each item, recompute clarity. Improvement > 8.0 → flagged as `GarmentFr
 ### Sorting
 
 Gaps sorted: high > medium > low. Within priority: higher clarityDelta first.
+
+---
+
+## 29. V2 BehaviouralEngine
+
+`engine/Sources/COREEngine/Engines/BehaviouralEngine.swift` — 27 tests.
+
+Caseless enum. Pure functions. Analyses actual wear patterns from `WearLog` data to detect behavioural tendencies, drift, and rotation health.
+
+### Functions
+
+**`behaviouralArchetype(items:recentWear:) → Archetype`**
+Determines the user's behavioural archetype from actual wear data. Weights recent wears using exponential decay (30-day half-life). Uses `CohesionEngine.archetypeAffinity` per garment per archetype. Returns `.smartCasual` for empty input.
+
+**`detectDrift(profile:items:wearLog:) → Double`**
+Compares declared archetype (from `UserProfile.primaryArchetype`) vs behavioural archetype. Returns 0.0 (no drift) to 1.0 (complete drift). Computed as `1 - (declaredWeight / maxWeight)`. Returns 0.0 for empty input.
+
+**`predictNextWear(garment:wearLog:) → Date?`**
+Predicts next wear date using exponential smoothing (α=0.3) on wear intervals. Requires ≥2 wear logs for the garment, returns `nil` otherwise.
+
+**`unusedRisk(garment:wearLog:) → Double`**
+Risk that a garment is becoming unused (0 = actively worn, 1 = at risk). Compares days since last wear vs average interval × 2. Never-worn garments return 1.0. Single-wear garments use 60-day threshold.
+
+**`rotationScore(items:wearLog:) → Double`**
+How evenly garments are rotated in the last 90 days (0–100). Uses `ScoringHelpers.normalizedEntropy` over wear counts. High entropy = good rotation. Returns 0 for empty input.
+
+---
+
+## 30. V2 SimilarityEngine
+
+`engine/Sources/COREEngine/Engines/SimilarityEngine.swift` — 18 tests.
+
+Caseless enum. Pure math on pre-computed embedding vectors. No ML in engine — embeddings generated on-device by Core ML.
+
+### Functions
+
+**`cosineSimilarity(_:_:) → Float`**
+Standard cosine similarity between two vectors. Returns 0 for mismatched lengths, empty vectors, or zero-magnitude vectors. Output clamped to [-1, 1].
+
+**`duplicates(items:embeddings:threshold:) → [[Garment]]`**
+Finds groups of near-duplicate garments using union-find for transitive grouping. Default threshold 0.92. Returns only groups of 2+, sorted by group size descending.
+
+**`mostSimilar(to:in:embeddings:limit:) → [(Garment, Float)]`**
+Returns top-N most similar garments to a target, sorted by similarity descending. Default limit 5. Excludes the target garment itself.
+
+**`redundancyScore(items:embeddings:) → Double`**
+Overall wardrobe redundancy score (0–100). 100 = all unique, 0 = all duplicates. Computed as `(1 - avgMaxSimilarity) × 100`. Returns 100 for fewer than 2 items.
