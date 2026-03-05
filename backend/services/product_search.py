@@ -87,3 +87,4 @@ async def search_product(query: str) -> dict:
             "source_url": best.get("link"),
             "success": True,
         }
+    

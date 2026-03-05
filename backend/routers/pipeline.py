@@ -18,6 +18,8 @@ from fastapi.responses import Response
 
 from backend.services.color_extraction import extract_colors_from_image
 from backend.services.metadata_extractor import extract_metadata
+from backend.services.product_search import search_product
+from backend.services.barcode_lookup import lookup_barcode as lookup_barcode_service 
 from backend.models.schemas import (
     ProductSearchRequest, ProductSearchResponse,
     BarcodeLookupRequest, BarcodeLookupResponse,
@@ -39,15 +41,16 @@ async def product_search(request: ProductSearchRequest):
     """Sok etter et plagg og få tilbake et studiobilde.
     Eksempel: {"query": "Nike Air Force 1 white"}"""
 
-    # TODO: Koble til services/product_search.py
-    # DU skal implementere denne! Folg monsteret fra color_extraction.
+    result = await search_product(request.query)
     return ProductSearchResponse(
-        image_url=None,
-        product_title=None,
-        brand=None,
-        source_url=None,
-        success=False,
+        image_url=result["image_url"],
+        product_title=result["product_title"],
+        brand=result["brand"],
+        source_url=result["source_url"],
+        success=result["success"],
     )
+    
+    
 
 
 # ============================================================
@@ -59,15 +62,14 @@ async def barcode_lookup(request: BarcodeLookupRequest):
     """Slå opp et produkt via strekkode (UPC/EAN).
     Eksempel: {"barcode": "0194501087902"}"""
 
-    # TODO: Koble til services/barcode_lookup.py
-    # DU skal implementere denne!
+    result = await lookup_barcode_service(request.barcode)
     return BarcodeLookupResponse(
-        image_url=None,
-        product_title=None,
-        brand=None,
-        category=None,
-        description=None,
-        success=False,
+        image_url=result["image_url"],
+        product_title=result["product_title"],
+        brand=result["brand"],
+        category=result["category"],
+        description=result["description"],
+        success=result["success"],
     )
 
 
@@ -127,5 +129,7 @@ async def image_polish(image: UploadFile = File(...)):
     # TODO: Koble til services/image_polish.py
     # DU skal implementere denne!
     return ImagePolishResponse(success=False, error="Not implemented yet")
+
+
 
 
