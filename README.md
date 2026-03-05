@@ -133,6 +133,4 @@ Full UI-spec: [`docs/ENGINE_SPECS.md §9`](docs/ENGINE_SPECS.md)
 |-----|---------|
 | `docs/ENGINE_SPECS.md` | Alle motorspecs, IA, UI, merkevare, monetisering |
 | `docs/OPPORTUNITIES_UPGRADES.md` | Produkt- og forretningsmuligheter |
-| `CLAUDE.md` | Prosjektregler og konvensjoner (for AI-sesjoner) |
-| `CONTINUE.md` | Sesjonsstatus — sist gjort, neste steg |
 | `moodboard/*/` | HTML-mockups for hver fane (åpne i nettleser) |
