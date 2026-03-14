@@ -52,16 +52,25 @@ CORET/
 ├── ios/                   ← iOS frontend: SwiftData + ViewModels (requires Mac)
 │   ├── Persistence/       6 SwiftData @Model entities
 │   ├── Coordinators/      EngineCoordinator.swift
-│   └── ViewModels/        5 @Observable ViewModels (one per tab)
-├── backend/               ← Python/FastAPI backend (image pipeline + metadata)
-│   ├── models/            Enums + Pydantic schemas
-│   ├── services/          Business logic (color extraction, product search, wardrobe_io, etc.)
-│   ├── routers/           API endpoint handlers
-│   ├── tests/             pytest test suite
+│   └── ViewModels/        4 @Observable ViewModels (one per tab)
+├── backend/               ← Python/FastAPI backend (full wardrobe platform)
+│   ├── models/            Enums, Pydantic schemas (garment, outfit, wear_log, wardrobe_map, clarity)
+│   ├── services/          Business logic:
+│   │                        garment_store, outfit_store, wear_log_store (JSON persistence)
+│   │                        image_polish, image_normalize, image_storage (image pipeline)
+│   │                        color_extraction, metadata_extractor, product_search, barcode_lookup
+│   │                        wardrobe_analysis (combo engine, gap detection, key/weak garments)
+│   │                        clarity_tracker (score history for Evolution)
+│   │                        wardrobe_io (import validation)
+│   ├── routers/           pipeline.py, garments.py, wardrobe.py, outfits.py, wear.py
+│   ├── tests/             pytest test suite (115 tests)
+│   ├── data/              Runtime storage: garments.json, outfits.json, wear_logs.json, images/ (gitignored)
 │   └── v1_5/              Archived services (receipt_parser) for future release
 ├── moodboard/             ← Visual references for UI (HTML + wireframe .md files)
 └── archive/               ← V1 engine (core-v1, 218/218 tests, historical)
 ```
+
+**IA:** 4 tabs: Wardrobe, Studio, Optimize, Evolution. Profile via top-right menu icon (not a tab). Dashboard content distributed into Evolution and Wardrobe.
 
 **Moodboard note — `digico_wardrobe_grid.png`:**
 Reference ONLY for: 2-column grid layout and garment card presentation.
@@ -74,10 +83,12 @@ NOT reference for: prices, brand names, social features, shopping UI, lifestyle 
 | Package | Tests | Status |
 |---------|-------|--------|
 | engine/ (V2 — ACTIVE) | 285/285 | ✅ All passing |
-| backend/ (Python/FastAPI) | 50/50 | ✅ All passing |
+| backend/ (Python/FastAPI) | 115/115 | ✅ All passing |
 | archive/core-v1/ (V1 — ARCHIVED) | 218/218 | ✅ All passing |
 
 **V2 engines:** CohesionEngine (70), ClarityEngine (23), ScoreProjector (22), IdentityResolver (15), KeyGarmentResolver (13), MilestoneTracker (38), SeasonalEngineV2 (26), OptimizeEngineV2 (19), BehaviouralEngine (27), SimilarityEngine (18), Models (18).
+
+**Backend test breakdown:** health (2), color_extraction (10), image_polish (3), image_normalize (10), image_storage (5), product_search (3), barcode_lookup (3), metadata_extractor (4), wardrobe_io (11), garments CRUD (12), wardrobe_analysis (22), outfits (7), wear+clarity (10), stubs (3).
 
 Build commands:
 ```
@@ -95,6 +106,34 @@ SwiftUI and SwiftData require Mac + Xcode. Development machine is Arch Linux. En
 1. Open Xcode, add `ios/` files to iOS target
 2. Import `engine/COREEngine` as local Swift package
 3. Build and wire SwiftUI views to ViewModels
+4. Connect to backend API (25 endpoints ready)
+5. Camera capture → `POST /api/garments/{id}/image` → real garment photos
+6. Studio ViewModel → engine scoring via EngineCoordinator
+
+**Backend API overview (25 endpoints):**
+```
+# Pipeline (processing)
+POST /api/product-search, /api/barcode-lookup, /api/extract-colors
+POST /api/product-metadata, /api/image-polish
+
+# Garment CRUD + Images
+POST/GET /api/garments, GET/PUT/DELETE /api/garments/{id}
+POST /api/garments/{id}/image, GET /api/images/{id}/{variant}
+
+# Wardrobe Map (analysis)
+GET /api/wardrobe/analysis, /api/wardrobe/garment/{id}
+GET /api/wardrobe/gaps, /api/wardrobe/key-garments, /api/wardrobe/weak-garments
+
+# Outfits
+POST/GET /api/outfits, GET/PUT/DELETE /api/outfits/{id}
+
+# Wear Tracking + Clarity History
+POST /api/garments/{id}/wear, GET /api/garments/{id}/wears
+GET /api/clarity/history, POST /api/clarity/snapshot
+
+# Health
+GET /api/health
+```
 
 ---
 

@@ -20,7 +20,7 @@
     --gold-soft: rgba(201,169,110,0.10);
     --green: #7A9A6E;
     --green-soft: rgba(122,154,110,0.10);
-    --r: 14px;
+    --r: 18px;
     --r-sm: 10px;
   }
 
@@ -41,12 +41,31 @@
   .phone {
     width: 375px;
     height: 812px;
-    background: var(--bg);
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 40%), radial-gradient(circle at 80% 90%, rgba(201,169,110,0.05), transparent 50%), #1A1714;
     border-radius: 44px;
     border: 2.5px solid #2a2520;
     overflow: hidden;
     position: relative;
     box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+
+  .phone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 50%);
+  }
+
+  .phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(ellipse at 50% 85%, rgba(201,169,110,0.14), transparent 50%),
+                radial-gradient(ellipse at 30% 70%, rgba(180,140,80,0.08), transparent 45%);
   }
 
   .top-bar {
@@ -184,6 +203,7 @@
     font-size: 14px;
     letter-spacing: 2px;
     color: var(--gold-dim);
+    text-shadow: 0 0 18px rgba(201,169,110,0.2);
   }
 
   .settings-icon {
@@ -238,20 +258,24 @@
     align-items: center;
     gap: 12px;
     padding: 10px 14px;
-    background: rgba(26,23,20,0.55);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background: rgba(35,28,24,0.95);
     border: 1px solid rgba(201,169,110,0.08);
     border-radius: 12px;
     opacity: 0;
     animation: cardFloat 0.5s ease-out forwards;
-    transition: transform 0.3s, border-color 0.3s;
+    transition: all .35s cubic-bezier(.16,1,.3,1);
     cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   }
 
   .float-card:hover {
-    transform: translateX(4px);
+    transform: translateX(4px) translateY(-3px) scale(1.01);
     border-color: rgba(201,169,110,0.15);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45);
+  }
+
+  .float-card:active {
+    transform: scale(.98);
   }
 
   .float-card:nth-child(1) { animation-delay: 0.3s; }
@@ -341,7 +365,7 @@
   ═══════════════════════════════════════ */
   .identity {
     text-align: center;
-    padding: 24px 20px 20px;
+    padding: 28px 20px 24px;
   }
 
   .identity-label {
@@ -356,6 +380,7 @@
     font-family: 'Instrument Serif', serif;
     font-size: 26px;
     color: var(--text);
+    line-height: 1.25;
     margin-bottom: 4px;
   }
 
@@ -503,13 +528,12 @@
      GLASS SECTIONS — Import & Settings
   ═══════════════════════════════════════ */
   .glass {
-    margin: 0 16px 12px;
-    background: rgba(34,31,26,0.5);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(46,42,34,0.6);
+    margin: 0 16px 24px;
+    background: rgba(35,28,24,0.95);
+    border: 1px solid rgba(201,169,110,0.10);
     border-radius: var(--r);
     overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
   }
 
   /* Import */
@@ -531,7 +555,11 @@
   }
 
   .import-row + .import-row {
-    border-top: 1px solid rgba(46,42,34,0.5);
+    border-top: none;
+    background-image: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: top;
   }
 
   .import-icon {
@@ -593,7 +621,11 @@
   .setting-row:hover { background: rgba(255,255,255,0.015); }
 
   .setting-row + .setting-row {
-    border-top: 1px solid rgba(46,42,34,0.4);
+    border-top: none;
+    background-image: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: top;
   }
 
   .setting-icon {
@@ -637,10 +669,14 @@
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 68px;
-    background: rgba(30,26,21,0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border);
+    background: linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: none;
+    background-image: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent), linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
+    background-size: 100% 1px, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: top, center;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -747,7 +783,7 @@
 
       <!-- ═══ IDENTITY ═══ -->
       <div class="identity">
-        <div class="identity-label">Oppdaget profil</div>
+        <div class="identity-label">Your Identity</div>
         <div class="identity-name">Structured · Warm</div>
         <div class="identity-sub">Medlem siden januar 2026</div>
       </div>
@@ -868,14 +904,13 @@
     </div>
 
     <div class="tab-bar">
-      <div class="tab"><span class="tab-i">◻</span><span class="tab-l">Dashboard</span></div>
       <div class="tab"><span class="tab-i">▦</span><span class="tab-l">Wardrobe</span></div>
+      <div class="tab"><span class="tab-i">✦</span><span class="tab-l">Studio</span></div>
       <div class="tab"><span class="tab-i">◎</span><span class="tab-l">Optimize</span></div>
-      <div class="tab"><span class="tab-i">◈</span><span class="tab-l">Journey</span></div>
-      <div class="tab on"><span class="tab-i">○</span><span class="tab-l">Profile</span></div>
+      <div class="tab"><span class="tab-i">◈</span><span class="tab-l">Evolution</span></div>
     </div>
   </div>
-  <div class="phone-label">Profile — Outfit Showcase</div>
+  <div class="phone-label">Profile — Your Identity</div>
 </div>
 
 <script>

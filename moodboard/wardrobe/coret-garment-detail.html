@@ -22,7 +22,7 @@
     --green-soft: rgba(122,154,110,0.10);
     --red: #B4705A;
     --red-soft: rgba(180,90,70,0.10);
-    --r: 14px;
+    --r: 18px;
     --r-sm: 10px;
   }
 
@@ -49,6 +49,15 @@
     overflow: hidden;
     position: relative;
     box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+
+  .phone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 50%);
   }
 
   .top-bar {
@@ -106,18 +115,36 @@
      HERO — Garment showcase
   ═══════════════════════════════════════ */
   .hero {
-    height: 240px;
+    height: 280px;
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 28px 90px rgba(0,0,0,0.65);
+  }
+
+  .hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    box-shadow: inset 0 -20px 40px rgba(0,0,0,0.3);
   }
 
   .hero-ambient {
     position: absolute;
     inset: 0;
     overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 60%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+    z-index: 2;
+    pointer-events: none;
   }
 
   .hero-ambient .blob {
@@ -136,7 +163,8 @@
     font-size: 100px;
     position: relative;
     z-index: 1;
-    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 12px 32px rgba(0,0,0,0.5));
+    transform: translateY(-4px);
   }
 
   /* Key garment badge */
@@ -166,6 +194,15 @@
     z-index: 1;
   }
 
+  .hero img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
   /* ═══ GARMENT INFO ═══ */
   .garment-info {
     padding: 0 20px 16px;
@@ -177,6 +214,7 @@
   .garment-name {
     font-family: 'Instrument Serif', serif;
     font-size: 28px;
+    line-height: 1.25;
     margin-bottom: 6px;
   }
 
@@ -215,14 +253,16 @@
      ROLE CARD — How important is this garment
   ═══════════════════════════════════════ */
   .role-card {
-    margin: 0 16px 14px;
-    background: var(--card);
-    border: 1px solid var(--border);
+    margin: 0 16px 20px;
+    background: rgba(35,28,24,0.85);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(201,169,110,0.10);
     border-radius: var(--r);
-    padding: 18px;
+    padding: 22px;
     display: flex;
     align-items: center;
     gap: 16px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
   }
 
   .role-ring-area {
@@ -302,7 +342,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 20px 10px;
+    padding: 4px 20px 14px;
   }
 
   .sh-label {
@@ -316,7 +356,7 @@
     display: flex;
     gap: 8px;
     overflow-x: auto;
-    padding: 0 16px 16px;
+    padding: 0 16px 22px;
   }
 
   .combos-scroll::-webkit-scrollbar { display: none; }
@@ -324,15 +364,17 @@
   .combo-card {
     width: 130px;
     flex-shrink: 0;
-    background: var(--card);
+    background: rgba(35,28,24,0.85);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: var(--r-sm);
-    padding: 12px;
+    padding: 14px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all .35s cubic-bezier(.16,1,.3,1);
   }
 
-  .combo-card:hover { border-color: var(--border-light); }
+  .combo-card:hover { border-color: var(--border-light); transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .combo-card:active { transform: scale(.98); }
 
   .combo-emojis {
     display: flex;
@@ -384,8 +426,9 @@
      REMOVAL SIMULATION — The killer feature
   ═══════════════════════════════════════ */
   .removal-card {
-    margin: 0 16px 14px;
-    background: var(--card);
+    margin: 0 16px 20px;
+    background: rgba(35,28,24,0.85);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: var(--r);
     overflow: hidden;
@@ -528,11 +571,12 @@
      ARCHETYPE CONTRIBUTION
   ═══════════════════════════════════════ */
   .contrib-card {
-    margin: 0 16px 14px;
-    background: var(--card);
+    margin: 0 16px 20px;
+    background: rgba(35,28,24,0.85);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    padding: 16px;
+    padding: 20px;
   }
 
   .contrib-title {
@@ -587,7 +631,7 @@
   .detail-actions {
     display: flex;
     gap: 8px;
-    padding: 0 16px 16px;
+    padding: 0 16px 22px;
   }
 
   .detail-action {

@@ -694,49 +694,16 @@ Selection: sort descending, tie-break earlier `createdAt`, require ≥ 2 distinc
 
 ## 8. Information Architecture
 
-### Tab Bar (5 tabs)
+### Tab Bar (4 tabs)
 
 | Tab | Icon | Label | Primary Content |
 |-----|------|-------|-----------------|
-| 1 | chart.bar | Dashboard | Cohesion score + component breakdown |
-| 2 | grid.2x2 | Wardrobe | Item grid + add/edit/delete |
+| 1 | grid.2x2 | Wardrobe | Item grid + add/edit/delete |
+| 2 | sparkles | Studio | Outfit builder + compatibility scoring |
 | 3 | arrow.up.right | Optimize | Recommendations + simulation |
-| 4 | leaf | Evolution | Phase narrative + trend |
-| 5 | person.crop.circle | Profile | Archetype, season, settings |
+| 4 | leaf | Evolution | Phase narrative + trend + clarity score |
 
-### Dashboard Screen Layout
-
-```
-Dashboard Screen (top to bottom)
-├── Greeting Line
-│   "Good Morning. Your structure is Coherent."
-│   Small, calm, top of screen. Secondary text color.
-├── Cohesion Score Block
-│   ├── Large centered score (72pt, bold)
-│   ├── Status label below ("Coherent")
-│   └── Thin horizontal progress bar (forest green fill, rounded)
-│       No circular rings. No gamification visuals.
-├── Component Grid (2×2)
-│   ┌─────────────────┬─────────────────┐
-│   │   Alignment     │    Density      │
-│   │      78         │      64         │
-│   │   Aligned       │   Refining      │
-│   ├─────────────────┼─────────────────┤
-│   │   Palette       │    Rotation     │
-│   │      71         │      85         │
-│   │   Coherent      │    Strong       │
-│   └─────────────────┴─────────────────┘
-│   Tap any card → Component Detail Screen (push)
-├── Outfit Preview (Should Have)
-│   Static. Small. Not animated. Not rotating.
-│   Stone card, soft shadow. Shows 2-4 items.
-├── Optimize Preview Card
-│   Primary recommendation + projected impact + CTA
-└── Evolution Phase Card
-    Current phase name + one-line narrative. Tap → Evolution tab.
-```
-
-Design principle: CORET is a system that handles clothes, not a fashion app that has numbers. Outfit is present as evidence of structure, not as hero.
+Profile is accessed via a top-right menu icon (not a tab). Dashboard content is distributed: Clarity ring → Evolution, Optimize preview → Optimize, feed items → Wardrobe.
 
 ### Wardrobe Screen
 
@@ -779,10 +746,21 @@ Evolution Screen
 └── Phase History → Evolution Detail Screen
 ```
 
-### Profile Screen
+### Studio Screen
 
 ```
-Profile Screen
+Studio Screen
+├── Outfit Canvas (slots: upper, lower, shoes, outer?, accessory?)
+├── Compatibility Score (live, updates on drag)
+├── Archetype Match indicator
+├── Suggested Swaps (from outfit_graph engine)
+└── Garment Selector (filterable, pulls from wardrobe)
+```
+
+### Profile Menu (top-right icon)
+
+```
+Profile Menu
 ├── Archetype Section (primary + secondary + edit)
 ├── Season Section (current mode + recalibration suggestion)
 └── Settings Section (About, Pro upgrade)
@@ -803,7 +781,7 @@ Full engine recompute triggered by: item added/deleted/edited (structural fields
 
 | State | Behavior |
 |-------|----------|
-| Empty wardrobe | Dashboard: "System not yet structured." Optimize disabled. |
+| Empty wardrobe | Evolution: "System not yet structured." Optimize disabled. |
 | Single category dominance | Structural imbalance warning |
 | < 3 snapshots | Evolution: "Structural history forming." |
 

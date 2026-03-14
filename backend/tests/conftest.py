@@ -14,10 +14,20 @@ Hva er en TestClient?
   UTEN å starte en ekte server. Alt kjorer i minnet = raskt.
 """
 
+import os
+
 import pytest
 from httpx import AsyncClient, ASGITransport
 
-from main import app
+# Disable API key auth and raise rate limit for tests
+os.environ["CORET_API_KEY"] = ""
+os.environ["RATE_LIMIT_PER_MINUTE"] = "9999"
+
+# Force reload config
+import config  # noqa: E402
+config.settings = config.Settings()
+
+from main import app  # noqa: E402
 
 
 @pytest.fixture

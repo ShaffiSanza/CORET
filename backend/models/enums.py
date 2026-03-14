@@ -64,6 +64,28 @@ class ColorTemp(str, Enum):
     neutral = "neutral"  # Noytral: svart, hvit, grå, beige
 
 
+class Silhouette(str, Enum):
+    """Silhuett — brukes av CohesionEngine for proporsjonsscoring.
+    Speiler Swift-engine sin Silhouette enum."""
+    fitted = "fitted"
+    relaxed = "relaxed"
+    tapered = "tapered"
+    oversized = "oversized"
+    slim = "slim"
+    regular = "regular"
+    wide = "wide"
+    none = "none"
+
+
+class Season(str, Enum):
+    """Sesong — brukes for å filtrere garderobeanalyse."""
+    spring = "spring"
+    summer = "summer"
+    autumn = "autumn"
+    winter = "winter"
+    all_season = "all_season"
+
+
 class ImportSource(str, Enum):
     """Hvordan plagget ble lagt til i CORET.
     Brukes for analyse og sporing av input-metode."""

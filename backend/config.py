@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     model_config = {
         "env_file": ".env",           # Les fra .env-filen
         "env_file_encoding": "utf-8",
+        "extra": "ignore",            # Ignorer ukjente variabler i .env (f.eks. RAILWAY_TOKEN)
     }
 
 

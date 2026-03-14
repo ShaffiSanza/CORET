@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CORET — Dashboard</title>
+<title>CORET — System Pulse</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -23,7 +23,7 @@
     --green-soft: rgba(122,154,110,0.10);
     --red: #B4705A;
     --red-soft: rgba(180,90,70,0.08);
-    --r: 14px;
+    --r: 18px;
     --r-sm: 10px;
   }
 
@@ -44,12 +44,24 @@
   .phone {
     width: 375px;
     height: 812px;
-    background: var(--bg);
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 40%), radial-gradient(circle at 80% 90%, rgba(201,169,110,0.05), transparent 50%), #1A1714;
     border-radius: 44px;
     border: 2.5px solid #2a2520;
     overflow: hidden;
     position: relative;
     box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+
+  .phone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 50%),
+                radial-gradient(ellipse at 50% 0%, rgba(201,169,110,0.14), transparent 55%),
+                radial-gradient(ellipse at 30% 15%, rgba(180,140,80,0.06), transparent 40%),
+                radial-gradient(ellipse at 70% 90%, rgba(201,169,110,0.06), transparent 50%);
   }
 
   .top-bar {
@@ -75,6 +87,7 @@
     font-size: 14px;
     letter-spacing: 2px;
     color: var(--gold-dim);
+    text-shadow: 0 0 18px rgba(201,169,110,0.2);
   }
 
   .dots { color: var(--text-3); cursor: pointer; letter-spacing: 3px; font-size: 14px; }
@@ -103,7 +116,7 @@
     font-size: 26px;
     font-weight: 400;
     color: var(--text);
-    line-height: 1.2;
+    line-height: 1.25;
   }
 
   .greeting-text em {
@@ -113,7 +126,7 @@
 
   /* ═══ SINCE LAST — The feed ═══ */
   .since-last {
-    padding: 16px 16px 6px;
+    padding: 16px 16px 10px;
   }
 
   .since-label {
@@ -127,22 +140,23 @@
   .feed {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 10px;
   }
 
   .feed-item {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    padding: 12px 14px;
-    background: var(--card);
+    padding: 14px 16px;
+    background: rgba(35,28,24,0.95);
     border: 1px solid var(--border);
     border-radius: var(--r-sm);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all .35s cubic-bezier(.16,1,.3,1);
   }
 
-  .feed-item:hover { border-color: var(--border-light); }
+  .feed-item:hover { border-color: var(--border-light); transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .feed-item:active { transform: scale(.98); }
 
   .feed-icon {
     width: 32px;
@@ -192,17 +206,18 @@
 
   /* ═══ PULSE — Wardrobe snapshot ═══ */
   .pulse-section {
-    padding: 14px 16px;
+    padding: 14px 16px 20px;
   }
 
   .pulse-card {
-    background: var(--card);
-    border: 1px solid var(--border);
+    background: linear-gradient(165deg, rgba(35,28,24,0.95) 0%, rgba(40,36,28,0.97) 100%);
+    border: 1px solid rgba(201,169,110,0.12);
     border-radius: var(--r);
-    padding: 18px;
+    padding: 22px;
     display: flex;
     gap: 18px;
     align-items: center;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
   }
 
   /* Clarity ring */
@@ -211,6 +226,20 @@
     position: relative;
     width: 80px;
     height: 80px;
+  }
+
+  .pulse-ring-area::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,169,110,0.15) 0%, rgba(201,169,110,0.04) 50%, transparent 70%);
+    animation: ringGlow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes ringGlow {
+    0% { opacity: 0.6; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1.05); }
   }
 
   .pulse-ring-area svg {
@@ -249,6 +278,7 @@
     font-size: 28px;
     color: var(--text);
     line-height: 1;
+    text-shadow: 0 0 14px rgba(201,169,110,0.15);
   }
 
   .pulse-score-label {
@@ -345,10 +375,10 @@
   }
 
   .momentum-card {
-    background: var(--card);
+    background: rgba(35,28,24,0.95);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    padding: 16px 18px;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -428,6 +458,7 @@
     font-size: 24px;
     color: var(--gold);
     line-height: 1;
+    text-shadow: 0 0 14px rgba(201,169,110,0.15);
   }
 
   .streak-label {
@@ -444,10 +475,10 @@
   }
 
   .nextstep-card {
-    background: var(--card);
+    background: rgba(35,28,24,0.95);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    padding: 16px 18px;
+    padding: 18px 20px;
     display: flex;
     align-items: flex-start;
     gap: 14px;
@@ -527,7 +558,7 @@
   .action-btn {
     flex: 1;
     padding: 12px;
-    background: var(--card);
+    background: rgba(35,28,24,0.95);
     border: 1px solid var(--border);
     border-radius: var(--r-sm);
     text-align: center;
@@ -555,8 +586,14 @@
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 68px;
-    background: #1e1a15;
-    border-top: 1px solid var(--border);
+    background: linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: none;
+    background-image: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent), linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
+    background-size: 100% 1px, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: top, center;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -619,7 +656,7 @@
       <!-- ═══ 1. GREETING ═══ -->
       <div class="greeting-area">
         <div class="greeting-time">Mandag ettermiddag</div>
-        <div class="greeting-text">Garderoben din har hatt en <em>god uke</em></div>
+        <div class="greeting-text">System Pulse: <em>god uke</em></div>
       </div>
 
       <!-- ═══ 2. SINCE LAST — what changed ═══ -->
@@ -752,7 +789,7 @@
         </button>
         <button class="action-btn">
           <span class="action-emoji">◈</span>
-          <span class="action-label">Journey</span>
+          <span class="action-label">Evolution</span>
         </button>
         <button class="action-btn">
           <span class="action-emoji">◎</span>
@@ -764,14 +801,13 @@
 
     <!-- Tab bar -->
     <div class="tab-bar">
-      <div class="tab on"><span class="tab-i">◻</span><span class="tab-l">Dashboard</span></div>
       <div class="tab"><span class="tab-i">▦</span><span class="tab-l">Wardrobe</span></div>
+      <div class="tab"><span class="tab-i">✦</span><span class="tab-l">Studio</span></div>
       <div class="tab"><span class="tab-i">◎</span><span class="tab-l">Optimize</span></div>
-      <div class="tab"><span class="tab-i">◈</span><span class="tab-l">Journey</span></div>
-      <div class="tab"><span class="tab-i">○</span><span class="tab-l">Profile</span></div>
+      <div class="tab"><span class="tab-i">◈</span><span class="tab-l">Evolution</span></div>
     </div>
   </div>
-  <div class="phone-label">Dashboard — Home</div>
+  <div class="phone-label">System Pulse — Home</div>
 </div>
 
 </body>

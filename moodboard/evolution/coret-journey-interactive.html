@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CORET — Journey</title>
+<title>CORET — Evolution</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -23,7 +23,7 @@
     --green: #7A9A6E;
     --green-soft: rgba(122,154,110,0.10);
     --red: #B4705A;
-    --r: 14px;
+    --r: 18px;
     --r-sm: 10px;
   }
 
@@ -44,12 +44,31 @@
   .phone {
     width: 375px;
     height: 812px;
-    background: var(--bg);
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 40%), radial-gradient(circle at 80% 90%, rgba(201,169,110,0.05), transparent 50%), #1A1714;
     border-radius: 44px;
     border: 2.5px solid #2a2520;
     overflow: hidden;
     position: relative;
     box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(255,255,255,0.02);
+  }
+
+  .phone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 50%);
+  }
+
+  .phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(ellipse at 50% 90%, rgba(201,169,110,0.12), transparent 50%),
+                radial-gradient(ellipse at 50% 10%, rgba(140,120,200,0.06), transparent 50%);
   }
 
   /* ═══ AMBIENT GLOW — reacts to what-if ═══ */
@@ -154,6 +173,7 @@
     font-size: 14px;
     letter-spacing: 2px;
     color: var(--gold-dim);
+    text-shadow: 0 0 18px rgba(201,169,110,0.2);
   }
 
   .dots { color: var(--text-3); cursor: pointer; letter-spacing: 3px; font-size: 14px; }
@@ -167,13 +187,14 @@
   }
   .scroll::-webkit-scrollbar { display: none; }
 
-  .page-head { padding: 14px 20px 20px; }
+  .page-head { padding: 14px 20px 6px; }
 
   .page-title {
     font-family: 'Instrument Serif', serif;
     font-size: 30px;
     font-weight: 400;
     color: var(--text);
+    line-height: 1.25;
     margin-bottom: 3px;
   }
 
@@ -181,14 +202,15 @@
 
   /* ═══ CLARITY SCORE ═══ */
   .clarity-card {
-    margin: 0 16px 18px;
-    background: var(--card);
+    margin: 0 16px 24px;
+    background: rgba(35,28,24,0.95);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    padding: 24px 20px;
+    padding: 26px 22px;
     position: relative;
     overflow: hidden;
     transition: border-color 0.8s;
+    box-shadow: 0 28px 90px rgba(0,0,0,0.65);
   }
 
   .clarity-card::before {
@@ -222,6 +244,7 @@
     line-height: 1;
     color: var(--text);
     transition: all 0.6s ease;
+    text-shadow: 0 0 14px rgba(201,169,110,0.15);
   }
 
   .clarity-max {
@@ -305,11 +328,12 @@
 
   /* ═══ IDENTITY ═══ */
   .identity-section {
-    margin: 0 16px 18px;
-    background: var(--card);
-    border: 1px solid var(--border);
+    margin: 0 16px 24px;
+    background: rgba(35,28,24,0.95);
+    border: 1px solid rgba(201,169,110,0.10);
     border-radius: var(--r);
     overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
   }
 
   .identity-visual {
@@ -376,7 +400,11 @@
 
   .identity-body {
     padding: 14px 20px 16px;
-    border-top: 1px solid var(--border);
+    border-top: none;
+    background-image: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: top;
   }
 
   .identity-desc {
@@ -409,7 +437,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 20px 10px;
+    padding: 8px 20px 12px;
   }
 
   .sh-label {
@@ -481,8 +509,12 @@
     border: 1px solid var(--border);
     border-radius: var(--r-sm);
     padding: 14px;
-    transition: all 0.2s;
+    transition: all .35s cubic-bezier(.16,1,.3,1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   }
+
+  .milestone:hover .ms-card { transform: translateY(-3px) scale(1.01); }
+  .milestone:active .ms-card { transform: scale(.98); }
 
   .ms-card.highlight {
     border-color: rgba(201,169,110,0.2);
@@ -526,11 +558,12 @@
 
   /* ═══ SEASONAL ═══ */
   .season-card {
-    margin: 0 16px 18px;
-    background: var(--card);
-    border: 1px solid var(--border);
+    margin: 0 16px 24px;
+    background: rgba(35,28,24,0.95);
+    border: 1px solid rgba(201,169,110,0.10);
     border-radius: var(--r);
-    padding: 18px;
+    padding: 22px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
   }
 
   .season-grid {
@@ -594,14 +627,15 @@
 
   /* ═══ WHAT-IF SIMULATOR ═══ */
   .whatif-card {
-    margin: 0 16px 18px;
-    background: var(--card);
-    border: 1px solid var(--border);
+    margin: 0 16px 24px;
+    background: rgba(35,28,24,0.95);
+    border: 1px solid rgba(201,169,110,0.10);
     border-radius: var(--r);
-    padding: 18px;
+    padding: 22px;
     position: relative;
     overflow: hidden;
     transition: border-color 0.8s;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
   }
 
   .whatif-eyebrow {
@@ -762,8 +796,14 @@
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 68px;
-    background: #1e1a15;
-    border-top: 1px solid var(--border);
+    background: linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: none;
+    background-image: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent), linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
+    background-size: 100% 1px, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: top, center;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -828,10 +868,87 @@
       <span class="dots">•••</span>
     </div>
 
+    <div style="position:absolute;top:54px;right:20px;z-index:20;">
+      <button onclick="toggleEmpty()" style="font-family:'DM Sans',sans-serif;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--card);color:var(--text-3);cursor:pointer;">Week 1 / Full</button>
+    </div>
+
     <div class="scroll">
+
+      <div id="emptyState" style="display:none;">
+        <div class="page-head">
+          <div class="page-title">Evolution</div>
+          <div class="page-sub">Din garderobe utvikler seg</div>
+        </div>
+
+        <!-- Clarity — no data -->
+        <div style="margin:0 16px 24px;background:rgba(35,28,24,0.95);border:1px solid var(--border);border-radius:var(--r);padding:26px 22px;box-shadow:0 28px 90px rgba(0,0,0,0.65);">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;">
+            <div style="display:flex;align-items:baseline;gap:8px;">
+              <span style="font-family:'Instrument Serif',serif;font-size:64px;color:var(--text-4);line-height:1;">—</span>
+              <span style="font-size:18px;color:var(--text-4);font-family:'Instrument Serif',serif;">/100</span>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:4px;">Wardrobe Clarity</div>
+              <div style="font-size:11px;color:var(--text-4);padding:3px 8px;">Scan 5 plagg for din første score</div>
+            </div>
+          </div>
+          <div style="width:100%;height:4px;background:var(--border);border-radius:2px;margin-bottom:14px;"></div>
+          <div style="font-size:12px;color:var(--text-4);text-align:center;">Når du har 5 plagg beregner CORET din Wardrobe Clarity — et mål på garderobens strukturelle styrke.</div>
+        </div>
+
+        <!-- Identity — not discovered -->
+        <div style="margin:0 16px 24px;background:rgba(35,28,24,0.95);border:1.5px dashed rgba(201,169,110,0.12);border-radius:var(--r);overflow:hidden;">
+          <div style="height:72px;display:flex;align-items:center;padding:0 20px;gap:12px;">
+            <div style="display:flex;gap:3px;align-items:center;height:100%;padding:16px 0;">
+              <div style="width:3px;height:10px;border-radius:2px;background:var(--text-4);opacity:0.15;"></div>
+              <div style="width:3px;height:14px;border-radius:2px;background:var(--text-4);opacity:0.1;"></div>
+              <div style="width:3px;height:10px;border-radius:2px;background:var(--text-4);opacity:0.15;"></div>
+            </div>
+            <div>
+              <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-4);margin-bottom:4px;">Oppdaget profil</div>
+              <div style="font-family:'Instrument Serif',serif;font-size:22px;color:var(--text-4);">Ikke oppdaget</div>
+            </div>
+          </div>
+          <div style="padding:14px 20px 16px;background-image:linear-gradient(to right,transparent,rgba(255,255,255,0.06),transparent);background-size:100% 1px;background-repeat:no-repeat;background-position:top;">
+            <div style="font-size:12.5px;line-height:1.55;color:var(--text-4);">Din stilprofil dukker opp etter 10 plagg. CORET analyserer farger, silhuetter og lag-struktur for å finne din signatur.</div>
+          </div>
+        </div>
+
+        <!-- Milestones — just started -->
+        <div style="padding:10px 20px 0;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-3);font-weight:500;">My Style Path</span>
+          <span style="flex:1;height:1px;background:linear-gradient(90deg,rgba(201,169,110,0.15),transparent);"></span>
+        </div>
+        <div style="padding:6px 20px 10px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);">Milepæler</div>
+        <div style="padding:0 16px 18px;position:relative;">
+          <div style="display:flex;gap:14px;padding:10px 0;">
+            <div style="width:24px;display:flex;flex-direction:column;align-items:center;padding-top:14px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--border-light);"></div>
+            </div>
+            <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,0.35);">
+              <div style="font-size:10px;color:var(--text-4);margin-bottom:4px;">Nå</div>
+              <div style="font-family:'Instrument Serif',serif;font-size:15px;color:var(--text);margin-bottom:4px;">Reisen startet</div>
+              <div style="font-size:11.5px;color:var(--text-3);line-height:1.45;">Garderoben din er registrert. Første milepæl låses opp ved 5 plagg..</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seasons — all zero -->
+        <div style="padding:6px 20px 10px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);">Sesongdekning</div>
+        <div style="margin:0 16px 24px;background:rgba(35,28,24,0.95);border:1px solid rgba(201,169,110,0.10);border-radius:var(--r);padding:22px;opacity:0.5;">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;">
+            <div><div style="font-family:'Instrument Serif',serif;font-size:13px;color:var(--text-4);margin-bottom:4px;">—</div><div style="font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-4);">Høst</div></div>
+            <div><div style="font-family:'Instrument Serif',serif;font-size:13px;color:var(--text-4);margin-bottom:4px;">—</div><div style="font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-4);">Vinter</div></div>
+            <div><div style="font-family:'Instrument Serif',serif;font-size:13px;color:var(--text-4);margin-bottom:4px;">—</div><div style="font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-4);">Vår</div></div>
+            <div><div style="font-family:'Instrument Serif',serif;font-size:13px;color:var(--text-4);margin-bottom:4px;">—</div><div style="font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-4);">Sommer</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="populatedState">
       <div class="page-head">
-        <div class="page-title">Your Journey</div>
-        <div class="page-sub">Garderoben din forteller en historie</div>
+        <div class="page-title">Evolution</div>
+        <div class="page-sub">Din garderobe utvikler seg</div>
       </div>
 
       <!-- ═══ CLARITY ═══ -->
@@ -882,6 +999,10 @@
       </div>
 
       <!-- ═══ MILESTONES ═══ -->
+      <div style="padding: 8px 20px 0; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-3);font-weight:500;">My Style Path</span>
+        <span style="flex:1;height:1px;background:linear-gradient(90deg,rgba(201,169,110,0.15),transparent);"></span>
+      </div>
       <div class="section-head">
         <span class="sh-label">Milepæler</span>
       </div>
@@ -991,18 +1112,18 @@
 
         <button class="whatif-cta">Utforsk flere scenarioer →</button>
       </div>
+      </div>
 
     </div>
 
     <div class="tab-bar">
-      <div class="tab"><span class="tab-i">◻</span><span class="tab-l">Dashboard</span></div>
       <div class="tab"><span class="tab-i">▦</span><span class="tab-l">Wardrobe</span></div>
+      <div class="tab"><span class="tab-i">✦</span><span class="tab-l">Studio</span></div>
       <div class="tab"><span class="tab-i">◎</span><span class="tab-l">Optimize</span></div>
-      <div class="tab on"><span class="tab-i">◈</span><span class="tab-l">Journey</span></div>
-      <div class="tab"><span class="tab-i">○</span><span class="tab-l">Profile</span></div>
+      <div class="tab on"><span class="tab-i">◈</span><span class="tab-l">Evolution</span></div>
     </div>
   </div>
-  <div class="phone-label">Journey — Interactive</div>
+  <div class="phone-label">Evolution — Interactive</div>
 </div>
 
 <script>
@@ -1109,6 +1230,18 @@
       summerPct.textContent = '30';
       seasonSummer.classList.add('weak');
       summerFill.style.stroke = '';
+    }
+  }
+
+  function toggleEmpty() {
+    const empty = document.getElementById('emptyState');
+    const populated = document.getElementById('populatedState');
+    if (empty.style.display === 'none') {
+      empty.style.display = 'block';
+      populated.style.display = 'none';
+    } else {
+      empty.style.display = 'none';
+      populated.style.display = 'block';
     }
   }
 </script>

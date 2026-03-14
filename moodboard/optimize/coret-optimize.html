@@ -23,8 +23,9 @@
     --green-soft: rgba(122,154,110,0.10);
     --red: #B4705A;
     --red-soft: rgba(180,90,70,0.10);
-    --r: 14px;
+    --r: 18px;
     --r-sm: 10px;
+    --card-raised: #282420;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -44,12 +45,41 @@
   .phone {
     width: 375px;
     height: 812px;
-    background: var(--bg);
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 40%), radial-gradient(circle at 80% 90%, rgba(201,169,110,0.05), transparent 50%), #1A1714;
     border-radius: 44px;
     border: 2.5px solid #2a2520;
     overflow: hidden;
     position: relative;
     box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+
+  .phone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 50%);
+  }
+
+  .phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(120,140,200,0.08), transparent 60%);
+    transition: background 1s ease;
+  }
+
+  .phone[data-clarity="low"]::after {
+    background: radial-gradient(circle at 80% 20%, rgba(180,90,70,0.12), transparent 60%);
+  }
+  .phone[data-clarity="mid"]::after {
+    background: radial-gradient(circle at 80% 20%, rgba(201,169,110,0.10), transparent 60%);
+  }
+  .phone[data-clarity="high"]::after {
+    background: radial-gradient(circle at 80% 20%, rgba(120,140,200,0.08), transparent 60%);
   }
 
   .top-bar {
@@ -77,6 +107,7 @@
     font-size: 14px;
     letter-spacing: 2px;
     color: var(--gold-dim);
+    text-shadow: 0 0 18px rgba(201,169,110,0.2);
   }
 
   .dots { color: var(--text-3); letter-spacing: 3px; font-size: 14px; cursor: pointer; }
@@ -96,6 +127,7 @@
     font-family: 'Instrument Serif', serif;
     font-size: 28px;
     font-weight: 400;
+    line-height: 1.25;
     margin-bottom: 2px;
   }
 
@@ -108,12 +140,24 @@
      X-RAY PANEL — The hero
   ═══════════════════════════════════════ */
   .xray-container {
-    margin: 14px 16px 18px;
+    margin: 14px 16px 24px;
     border-radius: var(--r);
     overflow: hidden;
     position: relative;
-    height: 260px;
-    border: 1px solid var(--border);
+    height: 290px;
+    background: var(--card-raised);
+    box-shadow: 0 28px 90px rgba(0,0,0,0.65);
+  }
+
+  .xray-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.015) 0%, transparent 100%);
+    z-index: 4;
+    pointer-events: none;
+    border-radius: var(--r) var(--r) 0 0;
   }
 
   /* The network visualization behind the glass */
@@ -121,6 +165,13 @@
     position: absolute;
     inset: 0;
     z-index: 0;
+    animation: systemPulse 4s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  @keyframes systemPulse {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.02); opacity: 1; }
   }
 
   .xray-network canvas {
@@ -218,7 +269,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px 10px;
+    padding: 8px 20px 12px;
   }
 
   .sh-label {
@@ -234,16 +285,17 @@
   }
 
   .gap-card {
-    margin: 0 16px 12px;
-    background: var(--card);
+    margin: 0 16px 14px;
+    background: rgba(35,28,24,0.95);
     border: 1px solid var(--border);
     border-radius: var(--r);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all .35s cubic-bezier(.16,1,.3,1);
   }
 
-  .gap-card:hover { border-color: var(--border-light); }
+  .gap-card:hover { border-color: var(--border-light); transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .gap-card:active { transform: scale(.98); }
 
   .gap-card.expanded {
     border-color: rgba(201,169,110,0.2);
@@ -253,7 +305,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 16px;
+    padding: 18px;
   }
 
   .gap-priority {
@@ -279,6 +331,7 @@
     font-family: 'Instrument Serif', serif;
     font-size: 20px;
     color: var(--text-2);
+    text-shadow: 0 0 14px rgba(201,169,110,0.15);
   }
 
   .gap-priority.high .gap-priority-num { color: var(--red); }
@@ -354,8 +407,12 @@
 
   .gap-expand-inner {
     padding: 0 16px 16px;
-    border-top: 1px solid var(--border);
+    border-top: none;
     padding-top: 14px;
+    background-image: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: top;
   }
 
   .gap-suggestions-label {
@@ -453,11 +510,12 @@
      ARCHETYPE BREAKDOWN
   ═══════════════════════════════════════ */
   .archetype-card {
-    margin: 6px 16px 14px;
-    background: var(--card);
-    border: 1px solid var(--border);
+    margin: 6px 16px 24px;
+    background: rgba(35,28,24,0.95);
+    border: 1px solid rgba(201,169,110,0.10);
     border-radius: var(--r);
-    padding: 16px;
+    padding: 20px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
   }
 
   .arch-row {
@@ -468,7 +526,11 @@
   }
 
   .arch-row + .arch-row {
-    border-top: 1px solid var(--border);
+    border-top: none;
+    background-image: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: top;
   }
 
   .arch-name {
@@ -504,17 +566,19 @@
     width: 28px;
     text-align: right;
     flex-shrink: 0;
+    text-shadow: 0 0 14px rgba(201,169,110,0.15);
   }
 
   /* ═══════════════════════════════════════
      COMBINATION PREVIEW
   ═══════════════════════════════════════ */
   .combo-section {
-    margin: 0 16px 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
+    margin: 0 16px 24px;
+    background: rgba(35,28,24,0.95);
+    border: 1px solid rgba(201,169,110,0.10);
     border-radius: var(--r);
-    padding: 16px;
+    padding: 20px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
   }
 
   .combo-header {
@@ -535,6 +599,7 @@
     font-family: 'Instrument Serif', serif;
     font-size: 20px;
     color: var(--gold);
+    text-shadow: 0 0 14px rgba(201,169,110,0.15);
   }
 
   .combo-grid {
@@ -581,8 +646,14 @@
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 68px;
-    background: #1e1a15;
-    border-top: 1px solid var(--border);
+    background: linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: none;
+    background-image: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent), linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
+    background-size: 100% 1px, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: top, center;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -606,15 +677,32 @@
 
   /* Staggered reveals */
   .xray-container { animation: up 0.5s ease-out; }
-  .gap-card:nth-child(1) { animation: up 0.4s ease-out 0.1s backwards; }
-  .gap-card:nth-child(2) { animation: up 0.4s ease-out 0.15s backwards; }
-  .gap-card:nth-child(3) { animation: up 0.4s ease-out 0.2s backwards; }
-  .archetype-card { animation: up 0.4s ease-out 0.25s backwards; }
-  .combo-section { animation: up 0.4s ease-out 0.3s backwards; }
+  .gap-card { animation: gapReveal 0.8s cubic-bezier(.16,1,.3,1) backwards; }
+  .gap-card:nth-child(1) { animation-delay: 0.1s; }
+  .gap-card:nth-child(2) { animation-delay: 0.2s; }
+  .gap-card:nth-child(3) { animation-delay: 0.3s; }
+  .archetype-card { animation: up 0.4s ease-out 0.35s backwards; }
+  .combo-section { animation: up 0.4s ease-out 0.4s backwards; }
 
   @keyframes up {
     from { opacity:0; transform:translateY(12px); }
     to { opacity:1; transform:translateY(0); }
+  }
+
+  @keyframes gapReveal {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Archetype bars breathing */
+  .arch-bar-fill {
+    animation: barBreathe 6s ease-in-out infinite;
+    transform-origin: left;
+  }
+
+  @keyframes barBreathe {
+    0%, 100% { transform: scaleX(1); }
+    50% { transform: scaleX(1.03); }
   }
 
   .phone-label {
@@ -630,7 +718,7 @@
 <body>
 
 <div>
-  <div class="phone">
+  <div class="phone" data-clarity="mid" id="phone">
     <div class="top-bar">
       <span>9:41</span>
       <span style="font-size:12px;color:var(--text-3);">●●●●  📶  🔋</span>
@@ -655,6 +743,10 @@
         <div class="xray-glass"></div>
         <div class="xray-content">
           <div class="xray-eyebrow">Nettverksanalyse</div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+            <span style="font-family:'Instrument Serif',serif;font-size:48px;color:var(--gold);line-height:1;">78</span>
+            <span style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);">Clarity</span>
+          </div>
           <div class="xray-headline"><em>48</em> kombinasjoner aktive</div>
           <div class="xray-desc">2 strukturelle gap begrenser nettverket. Fyll dem for å nå 80+.</div>
         </div>
@@ -663,6 +755,12 @@
           <div class="legend-item"><div class="legend-dot link"></div> Kobling</div>
           <div class="legend-item"><div class="legend-dot gap"></div> Gap</div>
         </div>
+      </div>
+
+      <!-- ═══ SYSTEM ANALYSIS ═══ -->
+      <div style="padding: 8px 20px 0; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-3);font-weight:500;">System Analysis</span>
+        <span style="flex:1;height:1px;background:linear-gradient(90deg,rgba(201,169,110,0.15),transparent);"></span>
       </div>
 
       <!-- ═══ GAP CARDS ═══ -->
@@ -678,7 +776,7 @@
             <span class="gap-priority-num">1</span>
           </div>
           <div class="gap-info">
-            <div class="gap-title">Mellomlag mangler struktur</div>
+            <div class="gap-title">Mellomlag mangler struktur <span style="font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;background:var(--red-soft);color:var(--red);border-radius:3px;margin-left:6px;font-weight:500;">HIGH</span></div>
             <div class="gap-subtitle">Du har 1 mellomlag (hoodie), men det er <strong>ustrukturert</strong>. En blazer eller overshirt ville dramatisk økt Smart Casual.</div>
             <div class="gap-impact-chip">↗ +13 clarity projisert</div>
           </div>
@@ -720,7 +818,7 @@
             <span class="gap-priority-num">2</span>
           </div>
           <div class="gap-info">
-            <div class="gap-title">Vår/sommer er svakt</div>
+            <div class="gap-title">Vår/sommer er svakt <span style="font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;background:var(--gold-soft);color:var(--gold);border-radius:3px;margin-left:6px;font-weight:500;">MEDIUM</span></div>
             <div class="gap-subtitle">Bare <strong>30% sommerdekning</strong>. Du mangler lette base-plagg og en lett overshirt for varme dager.</div>
             <div class="gap-impact-chip">↗ +6 clarity projisert</div>
           </div>
@@ -753,6 +851,12 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- ═══ STYLE PROFILE ═══ -->
+      <div style="padding: 8px 20px 0; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-3);font-weight:500;">Style Profile</span>
+        <span style="flex:1;height:1px;background:linear-gradient(90deg,rgba(201,169,110,0.15),transparent);"></span>
       </div>
 
       <!-- ═══ ARCHETYPE BREAKDOWN ═══ -->
@@ -811,11 +915,10 @@
     </div>
 
     <div class="tab-bar">
-      <div class="tab"><span class="tab-i">◻</span><span class="tab-l">Dashboard</span></div>
       <div class="tab"><span class="tab-i">▦</span><span class="tab-l">Wardrobe</span></div>
+      <div class="tab"><span class="tab-i">✦</span><span class="tab-l">Studio</span></div>
       <div class="tab on"><span class="tab-i">◎</span><span class="tab-l">Optimize</span></div>
-      <div class="tab"><span class="tab-i">◈</span><span class="tab-l">Journey</span></div>
-      <div class="tab"><span class="tab-i">○</span><span class="tab-l">Profile</span></div>
+      <div class="tab"><span class="tab-i">◈</span><span class="tab-l">Evolution</span></div>
     </div>
   </div>
   <div class="phone-label">Optimize — X-Ray</div>
@@ -994,6 +1097,31 @@
     const card = document.getElementById(id);
     card.classList.toggle('expanded');
   }
+
+  // ═══ REACTIVE CLARITY FIELD ═══
+  // Simulates clarity state changes — in real app, driven by engine
+  function setClarityState(score) {
+    const phone = document.getElementById('phone');
+    if (score < 50) {
+      phone.dataset.clarity = 'low';
+    } else if (score < 80) {
+      phone.dataset.clarity = 'mid';
+    } else {
+      phone.dataset.clarity = 'high';
+    }
+  }
+
+  // Set initial state based on current clarity (78 = mid)
+  setClarityState(78);
+
+  // ═══ COMBO PARALLAX ON SCROLL ═══
+  const scroll = document.querySelector('.scroll');
+  const comboSection = document.querySelector('.combo-section');
+  scroll.addEventListener('scroll', () => {
+    const scrollY = scroll.scrollTop;
+    const offset = scrollY * -0.03;
+    comboSection.style.transform = `translateY(${offset}px)`;
+  }, { passive: true });
 </script>
 
 </body>

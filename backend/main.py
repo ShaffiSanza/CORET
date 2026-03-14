@@ -23,7 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from config import settings
-from routers import pipeline
+from routers import pipeline, garments, wardrobe, outfits, wear
 
 
 # ============================================================
@@ -111,12 +111,16 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins.split(","),
     allow_credentials=True,
-    allow_methods=["POST", "GET"],  # Kun metodene vi bruker
+    allow_methods=["POST", "GET", "PUT", "DELETE"],
     allow_headers=["Content-Type", "X-API-Key"],
 )
 
 # Monter routere med /api-prefix
 app.include_router(pipeline.router, prefix="/api")
+app.include_router(garments.router, prefix="/api")
+app.include_router(wardrobe.router, prefix="/api")
+app.include_router(outfits.router, prefix="/api")
+app.include_router(wear.router, prefix="/api")
 
 
 # Helsesjekk — Railway bruker denne for å sjekke om appen lever.

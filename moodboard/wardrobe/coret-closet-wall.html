@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0">
+<title>CORET — Closet Wall</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1714;
+    --card: #221f1a;
+    --card-raised: #282420;
+    --border: #2e2a22;
+    --border-light: #3a3530;
+    --text: #EAE5DE;
+    --text-2: #B0A99E;
+    --text-3: #6B625C;
+    --text-4: #4a4540;
+    --gold: #C9A96E;
+    --gold-dim: rgba(201,169,110,0.55);
+    --gold-soft: rgba(201,169,110,0.10);
+    --green: #7A9A6E;
+    --amber: #C4944A;
+    --r: 18px;
+    --r-sm: 10px;
+    --rail-color: rgba(201,169,110,0.12);
+    --rail-shadow: rgba(201,169,110,0.06);
+    --hanger-color: rgba(201,169,110,0.25);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0e0c0a;
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .phone {
+    width: 393px; height: 852px;
+    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 40%),
+                radial-gradient(circle at 80% 90%, rgba(201,169,110,0.05), transparent 50%), #1A1714;
+    border-radius: 44px;
+    border: 2.5px solid #2a2520;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+  .scr {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    overflow-y: auto; scrollbar-width: none;
+  }
+  .scr::-webkit-scrollbar { display: none; }
+  .scr::after {
+    content: ''; position: fixed; inset: 0; opacity: 0.012; pointer-events: none; z-index: 100;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .sb { padding: 14px 24px 0; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 600; color: var(--text-2); flex-shrink: 0; }
+  .brand { font-family: 'Instrument Serif', serif; font-size: 14px; letter-spacing: 2px; color: var(--gold-dim); padding: 8px 20px 0; text-shadow: 0 0 18px rgba(201,169,110,0.2); }
+
+  .tab-header { padding: 10px 20px 4px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .tab-title { font-family: 'Instrument Serif', serif; font-size: 30px; font-weight: 400; line-height: 1.25; }
+  .tab-add { width: 38px; height: 38px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
+  .tab-add:hover { background: var(--gold-soft); border-color: rgba(201,169,110,0.25); }
+  .tab-add svg { width: 16px; height: 16px; stroke: var(--gold-dim); fill: none; stroke-width: 1.5; stroke-linecap: round; }
+  .tab-meta { padding: 0 20px 14px; font-size: 12px; color: var(--text-3); letter-spacing: 0.5px; flex-shrink: 0; }
+
+  /* ═══ CLOSET WALL ═══ */
+
+  /* Rail — the hanging bar */
+  .rack {
+    position: relative;
+    margin-bottom: 8px;
+    padding: 0 0 6px;
+  }
+
+  .rack-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 20px 0;
+  }
+
+  .rack-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-4);
+    font-weight: 500;
+  }
+
+  .rack-count {
+    font-size: 10px;
+    color: var(--text-4);
+  }
+
+  /* The physical rail */
+  .rail {
+    position: relative;
+    margin: 10px 16px 0;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--rail-color) 8%,
+      rgba(201,169,110,0.18) 50%,
+      var(--rail-color) 92%,
+      transparent 100%
+    );
+    box-shadow: 0 2px 8px var(--rail-shadow), 0 1px 0 rgba(255,255,255,0.03) inset;
+  }
+
+  /* Rail end caps (wall brackets) */
+  .rail::before, .rail::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    width: 8px;
+    height: 10px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, rgba(201,169,110,0.2), rgba(201,169,110,0.08));
+    border: 1px solid rgba(201,169,110,0.12);
+  }
+  .rail::before { left: -2px; }
+  .rail::after { right: -2px; }
+
+  /* Garments hanging from rail */
+  .hanging-row {
+    display: flex;
+    gap: 4px;
+    padding: 0 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .hanging-row::-webkit-scrollbar { display: none; }
+
+  /* Individual hanging garment */
+  .hang {
+    flex: 0 0 96px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(.16,1,.3,1);
+    scroll-snap-align: start;
+    position: relative;
+    animation: hangDrop 0.5s ease-out backwards;
+  }
+  .hang:nth-child(1) { animation-delay: 0s; }
+  .hang:nth-child(2) { animation-delay: 0.04s; }
+  .hang:nth-child(3) { animation-delay: 0.06s; }
+  .hang:nth-child(4) { animation-delay: 0.08s; }
+  .hang:nth-child(5) { animation-delay: 0.10s; }
+  .hang:nth-child(6) { animation-delay: 0.12s; }
+
+  @keyframes hangDrop {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hang:hover { transform: translateY(-4px); }
+  .hang:active { transform: scale(0.96); }
+
+  /* Hanger hook — connects garment to rail */
+  .hanger {
+    width: 20px;
+    height: 14px;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+  .hanger svg {
+    width: 20px;
+    height: 14px;
+    color: var(--hanger-color);
+  }
+
+  /* Garment body */
+  .hang-body {
+    width: 88px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.04);
+    margin-top: -2px;
+    transition: all 0.35s cubic-bezier(.16,1,.3,1);
+  }
+  .hang:hover .hang-body {
+    border-color: rgba(201,169,110,0.15);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  }
+
+  .hang-visual {
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hang-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 40%, rgba(26,23,20,0.7) 100%),
+                radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.03), transparent 70%);
+  }
+  .hang-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hang-visual svg {
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+    transition: transform 0.35s cubic-bezier(.16,1,.3,1);
+  }
+  .hang:hover .hang-visual svg { transform: translateY(-3px) scale(1.05); }
+
+  .hang-name {
+    padding: 6px 6px 8px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-2);
+    text-align: center;
+    background: rgba(35,28,24,0.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Anchor star */
+  .hang-anchor {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 3;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: rgba(201,169,110,0.15);
+    border: 1px solid rgba(201,169,110,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; color: var(--gold);
+  }
+
+  /* Color gradients */
+  .h-brown .hang-visual { background: linear-gradient(155deg, #2E1F16 0%, #261A14 50%, #1E1510 100%); }
+  .h-brown .hang-visual::before { background: radial-gradient(ellipse at 45% 35%, rgba(160,95,50,0.18) 0%, transparent 55%); }
+
+  .h-navy .hang-visual { background: linear-gradient(155deg, #161C28 0%, #121822 50%, #0E141C 100%); }
+  .h-navy .hang-visual::before { background: radial-gradient(ellipse at 40% 30%, rgba(44,62,100,0.18) 0%, transparent 55%); }
+
+  .h-black .hang-visual { background: linear-gradient(155deg, #1C1C20 0%, #18181C 50%, #141416 100%); }
+  .h-black .hang-visual::before { background: radial-gradient(ellipse at 48% 32%, rgba(120,120,140,0.08) 0%, transparent 50%); }
+
+  .h-olive .hang-visual { background: linear-gradient(155deg, #1C2416 0%, #182014 50%, #141C10 100%); }
+  .h-olive .hang-visual::before { background: radial-gradient(ellipse at 38% 28%, rgba(90,130,55,0.18) 0%, transparent 55%); }
+
+  .h-charcoal .hang-visual { background: linear-gradient(155deg, #1A1C20 0%, #18191D 50%, #141518 100%); }
+  .h-charcoal .hang-visual::before { background: radial-gradient(ellipse at 44% 32%, rgba(80,90,100,0.10) 0%, transparent 55%); }
+
+  .h-white .hang-visual { background: linear-gradient(155deg, #1E2024 0%, #1A1C20 50%, #16181C 100%); }
+  .h-white .hang-visual::before { background: radial-gradient(ellipse at 45% 30%, rgba(210,220,235,0.10) 0%, transparent 55%); }
+
+  .h-beige .hang-visual { background: linear-gradient(155deg, #24201A 0%, #201C16 50%, #1C1812 100%); }
+  .h-beige .hang-visual::before { background: radial-gradient(ellipse at 42% 32%, rgba(196,185,154,0.12) 0%, transparent 55%); }
+
+  .h-burgundy .hang-visual { background: linear-gradient(155deg, #261618 0%, #201214 50%, #1A0E10 100%); }
+  .h-burgundy .hang-visual::before { background: radial-gradient(ellipse at 40% 30%, rgba(140,40,55,0.16) 0%, transparent 55%); }
+
+  .h-rust .hang-visual { background: linear-gradient(155deg, #281A14 0%, #221610 50%, #1C120E 100%); }
+  .h-rust .hang-visual::before { background: radial-gradient(ellipse at 38% 30%, rgba(180,90,50,0.16) 0%, transparent 55%); }
+
+  .h-blue .hang-visual { background: linear-gradient(155deg, #161E2A 0%, #121A24 50%, #0E161E 100%); }
+  .h-blue .hang-visual::before { background: radial-gradient(ellipse at 42% 28%, rgba(100,140,190,0.14) 0%, transparent 55%); }
+
+  /* ═══ SHELF (for folded items + shoes) ═══ */
+  .shelf {
+    position: relative;
+    margin: 4px 16px 0;
+  }
+
+  .shelf-surface {
+    height: 5px;
+    border-radius: 2px 2px 0 0;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(201,169,110,0.10) 5%,
+      rgba(201,169,110,0.14) 50%,
+      rgba(201,169,110,0.10) 95%,
+      transparent 100%
+    );
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.02) inset;
+    margin-bottom: 2px;
+  }
+
+  /* Shelf brackets */
+  .shelf-surface::before, .shelf-surface::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    width: 3px;
+    height: 8px;
+    background: rgba(201,169,110,0.08);
+  }
+  .shelf-surface::before { left: 20px; }
+  .shelf-surface::after { right: 20px; }
+
+  .shelf-row {
+    display: flex;
+    gap: 6px;
+    padding: 6px 2px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .shelf-row::-webkit-scrollbar { display: none; }
+
+  /* Folded garment on shelf */
+  .folded {
+    flex: 0 0 80px;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(.16,1,.3,1);
+    animation: shelfSlide 0.4s ease-out backwards;
+  }
+  .folded:nth-child(1) { animation-delay: 0s; }
+  .folded:nth-child(2) { animation-delay: 0.04s; }
+  .folded:nth-child(3) { animation-delay: 0.06s; }
+  .folded:nth-child(4) { animation-delay: 0.08s; }
+  .folded:nth-child(5) { animation-delay: 0.10s; }
+
+  @keyframes shelfSlide {
+    from { opacity: 0; transform: translateX(8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .folded:hover { transform: translateY(-3px); }
+  .folded:active { transform: scale(0.96); }
+
+  .folded-body {
+    width: 76px;
+    height: 52px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .folded:hover .folded-body {
+    border-color: rgba(201,169,110,0.15);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
+  .folded-body::before { content: ''; position: absolute; inset: 0; pointer-events: none; }
+  .folded-body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.03), transparent 70%);
+  }
+  /* Fold line detail */
+  .fold-line {
+    position: absolute;
+    width: 60%;
+    height: 1px;
+    top: 45%;
+    left: 20%;
+    opacity: 0.15;
+    z-index: 2;
+  }
+
+  .folded-body svg {
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    transition: transform 0.3s cubic-bezier(.16,1,.3,1);
+  }
+  .folded:hover .folded-body svg { transform: scale(1.08); }
+
+  .folded-name {
+    padding: 4px 2px 0;
+    font-size: 9px;
+    color: var(--text-3);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Shoe on shelf */
+  .shoe {
+    flex: 0 0 80px;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(.16,1,.3,1);
+    animation: shelfSlide 0.4s ease-out backwards;
+  }
+  .shoe:hover { transform: translateY(-3px); }
+  .shoe:active { transform: scale(0.96); }
+
+  .shoe-body {
+    width: 76px;
+    height: 44px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .shoe:hover .shoe-body {
+    border-color: rgba(201,169,110,0.15);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
+  .shoe-body::before { content: ''; position: absolute; inset: 0; pointer-events: none; }
+  .shoe-body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.03), transparent 70%);
+  }
+  .shoe-body svg {
+    position: relative; z-index: 1;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    transition: transform 0.3s cubic-bezier(.16,1,.3,1);
+  }
+  .shoe:hover .shoe-body svg { transform: scale(1.08); }
+
+  .shoe-name {
+    padding: 4px 2px 0;
+    font-size: 9px;
+    color: var(--text-3);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Reuse color classes for folded/shoe */
+  .h-brown .folded-body, .h-brown .shoe-body { background: linear-gradient(155deg, #2E1F16 0%, #261A14 50%, #1E1510 100%); }
+  .h-brown .folded-body::before, .h-brown .shoe-body::before { background: radial-gradient(ellipse at 45% 35%, rgba(160,95,50,0.18) 0%, transparent 55%); }
+  .h-brown .fold-line { background: #B8845A; }
+
+  .h-navy .folded-body { background: linear-gradient(155deg, #161C28 0%, #121822 50%, #0E141C 100%); }
+  .h-navy .folded-body::before { background: radial-gradient(ellipse at 40% 30%, rgba(44,62,100,0.18) 0%, transparent 55%); }
+  .h-navy .fold-line { background: #5B7B9A; }
+
+  .h-black .folded-body, .h-black .shoe-body { background: linear-gradient(155deg, #1C1C20 0%, #18181C 50%, #141416 100%); }
+  .h-black .folded-body::before, .h-black .shoe-body::before { background: radial-gradient(ellipse at 48% 32%, rgba(120,120,140,0.08) 0%, transparent 50%); }
+  .h-black .fold-line { background: #686870; }
+
+  .h-olive .folded-body { background: linear-gradient(155deg, #1C2416 0%, #182014 50%, #141C10 100%); }
+  .h-olive .folded-body::before { background: radial-gradient(ellipse at 38% 28%, rgba(90,130,55,0.18) 0%, transparent 55%); }
+  .h-olive .fold-line { background: #6B8B4A; }
+
+  .h-beige .folded-body { background: linear-gradient(155deg, #24201A 0%, #201C16 50%, #1C1812 100%); }
+  .h-beige .folded-body::before { background: radial-gradient(ellipse at 42% 32%, rgba(196,185,154,0.12) 0%, transparent 55%); }
+  .h-beige .fold-line { background: #C4AA82; }
+
+  .h-blue .folded-body { background: linear-gradient(155deg, #161E2A 0%, #121A24 50%, #0E161E 100%); }
+  .h-blue .folded-body::before { background: radial-gradient(ellipse at 42% 28%, rgba(100,140,190,0.14) 0%, transparent 55%); }
+  .h-blue .fold-line { background: #8AAAC8; }
+
+  .h-white .shoe-body { background: linear-gradient(155deg, #1E2024 0%, #1A1C20 50%, #16181C 100%); }
+  .h-white .shoe-body::before { background: radial-gradient(ellipse at 45% 30%, rgba(210,220,235,0.10) 0%, transparent 55%); }
+
+  /* ═══ GAP SLOT ═══ */
+  .hang.gap .hang-body {
+    border: 1.5px dashed rgba(201,169,110,0.15);
+    background: rgba(201,169,110,0.02);
+  }
+  .hang.gap .hang-visual {
+    background: transparent !important;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .hang.gap .hang-visual::before,
+  .hang.gap .hang-visual::after { display: none; }
+  .hang.gap .hanger { opacity: 0.3; }
+  .gap-plus { font-size: 20px; color: var(--gold-dim); opacity: 0.4; font-weight: 300; }
+  .gap-label { font-size: 8px; color: var(--text-4); letter-spacing: 0.5px; text-align: center; line-height: 1.3; }
+  .hang.gap:hover .hang-body { border-color: rgba(201,169,110,0.3); background: rgba(201,169,110,0.04); }
+
+  .send-studio {
+    position: absolute; top: 4px; left: 4px; z-index: 3;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(201,169,110,0.15);
+    border: 1px solid rgba(201,169,110,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; color: var(--gold);
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .hang:hover .send-studio { opacity: 1; }
+  .folded:hover .send-studio { opacity: 1; }
+  .shoe:hover .send-studio { opacity: 1; }
+
+  /* ═══ METRICS BAR ═══ */
+  .metrics {
+    display: flex; margin: 0 16px 10px;
+    background: rgba(35,28,24,0.95);
+    border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .metric { flex: 1; text-align: center; padding: 12px 6px; border-right: 1px solid var(--border); }
+  .metric:last-child { border-right: none; }
+  .metric-val { font-family: 'Instrument Serif', serif; font-size: 20px; color: var(--text); margin-bottom: 2px; text-shadow: 0 0 14px rgba(201,169,110,0.15); }
+  .metric-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+
+  /* ═══ NAV ═══ */
+  .bn {
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 8px 16px 28px;
+    background: linear-gradient(transparent, rgba(26,23,20,0.92) 30%); backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(201,169,110,0.06); flex-shrink: 0;
+  }
+  .ni { display: flex; flex-direction: column; align-items: center; gap: 3px; opacity: 0.25; position: relative; }
+  .ni.a { opacity: 1; }
+  .ni.a::before {
+    content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+    width: 36px; height: 36px;
+    background: radial-gradient(circle, rgba(201,169,110,0.12) 0%, transparent 70%);
+    pointer-events: none; border-radius: 50%;
+  }
+  .ni svg { width: 20px; height: 20px; stroke: var(--text-2); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; position: relative; z-index: 1; }
+  .ni.a svg { stroke: var(--gold); }
+  .nl { font-size: 8.5px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-4); position: relative; z-index: 1; }
+  .ni.a .nl { color: var(--gold-dim); }
+
+  .phone-label {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-4);
+  }
+</style>
+</head>
+<body>
+
+<div>
+<div class="phone"><div class="scr">
+  <div class="sb"><span>9:41</span><span style="font-size:11px; opacity:0.3;">●●●●  📶  🔋</span></div>
+  <div style="padding: 8px 20px 0;"><span class="brand">CORET</span></div>
+
+  <div class="tab-header">
+    <div class="tab-title">Wardrobe</div>
+    <div class="tab-add"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+  </div>
+  <div class="tab-meta">24 plagg · Closet Wall</div>
+
+  <div class="metrics">
+    <div class="metric"><div class="metric-val">78</div><div class="metric-label">Clarity</div></div>
+    <div class="metric"><div class="metric-val">48</div><div class="metric-label">Kombo</div></div>
+    <div class="metric"><div class="metric-val">1.4:1</div><div class="metric-label">Ratio</div></div>
+    <div class="metric"><div class="metric-val">3</div><div class="metric-label">Lag</div></div>
+  </div>
+
+  <!-- ═══ RACK 1: YTTERST (Coats/Jackets — hanging) ═══ -->
+  <div class="rack">
+    <div class="rack-header">
+      <span class="rack-label">Ytterst</span>
+      <span class="rack-count">3</span>
+    </div>
+    <div class="rail"></div>
+    <div class="hanging-row">
+      <!-- Ullfrakk -->
+      <div class="hang h-brown">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual"><div class="send-studio">✦</div><div class="hang-anchor">★</div><svg width="44" height="56" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" stroke="#B8845A" stroke-width="1.3" opacity="0.7"/><line x1="26" y1="7" x2="26" y2="62" stroke="#B8845A" stroke-width="0.6" opacity="0.3"/></svg></div>
+          <div class="hang-name">Ullfrakk</div>
+        </div>
+      </div>
+      <!-- Skinnjakke -->
+      <div class="hang h-black">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual"><div class="send-studio">✦</div><svg width="42" height="52" viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" stroke="#808088" stroke-width="1.3" opacity="0.55"/></svg></div>
+          <div class="hang-name">Skinnjakke</div>
+        </div>
+      </div>
+      <!-- Oliven Bomber -->
+      <div class="hang h-olive">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual"><div class="send-studio">✦</div><svg width="42" height="50" viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" stroke="#7A9B5A" stroke-width="1.3" opacity="0.6"/></svg></div>
+          <div class="hang-name">Oliven Bomber</div>
+        </div>
+      </div>
+      <!-- Gap: structured midlayer -->
+      <div class="hang gap">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual">
+            <div style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);font-weight:500;">MISSING</div>
+            <div style="font-family:'Instrument Serif',serif;font-style:italic;font-size:11px;color:var(--text);">Blazer</div>
+            <div style="display:inline-flex;padding:1px 5px;border-radius:2px;background:rgba(201,169,110,0.15);font-size:7px;color:var(--gold);">High</div>
+            <div style="font-size:7px;color:var(--text-3);">+12 outfits</div>
+          </div>
+          <div class="hang-name" style="color:var(--gold-dim);font-size:9px;">Gap</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ RACK 2: BASE (Shirts/Tees — hanging) ═══ -->
+  <div class="rack">
+    <div class="rack-header">
+      <span class="rack-label">Base</span>
+      <span class="rack-count">6</span>
+    </div>
+    <div class="rail"></div>
+    <div class="hanging-row">
+      <!-- Navy Skjorte -->
+      <div class="hang h-navy">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual"><div class="send-studio">✦</div><div class="hang-anchor">★</div><svg width="34" height="42" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" stroke="#5B7B9A" stroke-width="1.3" opacity="0.6"/><line x1="20" y1="4" x2="20" y2="52" stroke="#5B7B9A" stroke-width="0.5" opacity="0.25"/></svg></div>
+          <div class="hang-name">Navy Skjorte</div>
+        </div>
+      </div>
+      <!-- Hvit T-shirt -->
+      <div class="hang h-white">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual"><div class="send-studio">✦</div><svg width="30" height="36" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" stroke="#C0CCD8" stroke-width="1.3" opacity="0.6"/></svg></div>
+          <div class="hang-name">Hvit T-shirt</div>
+        </div>
+      </div>
+      <!-- Sort T-shirt -->
+      <div class="hang h-black">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual"><div class="send-studio">✦</div><svg width="30" height="36" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" stroke="#707078" stroke-width="1.3" opacity="0.5"/></svg></div>
+          <div class="hang-name">Sort T-shirt</div>
+        </div>
+      </div>
+      <!-- Beige Polo -->
+      <div class="hang h-beige">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual"><div class="send-studio">✦</div><svg width="30" height="36" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" stroke="#C4B89A" stroke-width="1.3" opacity="0.55"/><path d="M13 2L17 6L21 2" stroke="#C4B89A" stroke-width="0.6" opacity="0.3"/></svg></div>
+          <div class="hang-name">Beige Polo</div>
+        </div>
+      </div>
+      <!-- Burgundy Skjorte -->
+      <div class="hang h-burgundy">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual"><div class="send-studio">✦</div><svg width="34" height="42" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" stroke="#B8707A" stroke-width="1.3" opacity="0.55"/><line x1="20" y1="4" x2="20" y2="52" stroke="#B8707A" stroke-width="0.5" opacity="0.2"/></svg></div>
+          <div class="hang-name">Burgundy Skjorte</div>
+        </div>
+      </div>
+      <!-- Rust Henley -->
+      <div class="hang h-rust">
+        <div class="hanger"><svg viewBox="0 0 20 14" fill="none"><path d="M10 0C10 0 10 4 10 5C10 6 7 7 4 7C2 7 1 8 1 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 5C10 6 13 7 16 7C18 7 19 8 19 9V14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="1" r="1" fill="currentColor" opacity="0.5"/></svg></div>
+        <div class="hang-body">
+          <div class="hang-visual"><div class="send-studio">✦</div><svg width="30" height="36" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" stroke="#C8886A" stroke-width="1.3" opacity="0.55"/></svg></div>
+          <div class="hang-name">Rust Henley</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SHELF 1: UNDERKROPP (Pants — folded on shelf) ═══ -->
+  <div class="rack">
+    <div class="rack-header">
+      <span class="rack-label">Underkropp</span>
+      <span class="rack-count">5</span>
+    </div>
+    <div class="shelf">
+      <div class="shelf-surface"></div>
+      <div class="shelf-row">
+        <!-- Beige Chinos -->
+        <div class="folded h-beige">
+          <div class="folded-body"><div class="send-studio">✦</div><div class="fold-line"></div><svg width="24" height="18" viewBox="0 0 28 20" fill="none"><rect x="1" y="1" width="26" height="18" rx="3" stroke="#C4AA82" stroke-width="1.2" opacity="0.5"/><line x1="14" y1="1" x2="14" y2="19" stroke="#C4AA82" stroke-width="0.5" opacity="0.2"/></svg><div class="hang-anchor" style="top:3px;right:3px;width:14px;height:14px;font-size:6px;">★</div></div>
+          <div class="folded-name">Beige Chinos</div>
+        </div>
+        <!-- Navy Chinos -->
+        <div class="folded h-navy">
+          <div class="folded-body"><div class="send-studio">✦</div><div class="fold-line"></div><svg width="24" height="18" viewBox="0 0 28 20" fill="none"><rect x="1" y="1" width="26" height="18" rx="3" stroke="#5B7B9A" stroke-width="1.2" opacity="0.5"/><line x1="14" y1="1" x2="14" y2="19" stroke="#5B7B9A" stroke-width="0.5" opacity="0.2"/></svg></div>
+          <div class="folded-name">Navy Chinos</div>
+        </div>
+        <!-- Svarte Jeans -->
+        <div class="folded h-black">
+          <div class="folded-body"><div class="send-studio">✦</div><div class="fold-line"></div><svg width="24" height="18" viewBox="0 0 28 20" fill="none"><rect x="1" y="1" width="26" height="18" rx="3" stroke="#686870" stroke-width="1.2" opacity="0.45"/></svg></div>
+          <div class="folded-name">Svarte Jeans</div>
+        </div>
+        <!-- Cargo Pants -->
+        <div class="folded h-olive">
+          <div class="folded-body"><div class="send-studio">✦</div><div class="fold-line"></div><svg width="24" height="18" viewBox="0 0 28 20" fill="none"><rect x="1" y="1" width="26" height="18" rx="3" stroke="#6B8B4A" stroke-width="1.2" opacity="0.5"/><rect x="4" y="8" width="4" height="4" rx="1" stroke="#6B8B4A" stroke-width="0.5" opacity="0.25"/><rect x="20" y="8" width="4" height="4" rx="1" stroke="#6B8B4A" stroke-width="0.5" opacity="0.25"/></svg></div>
+          <div class="folded-name">Cargo Pants</div>
+        </div>
+        <!-- Lyse Jeans -->
+        <div class="folded h-blue">
+          <div class="folded-body"><div class="send-studio">✦</div><div class="fold-line"></div><svg width="24" height="18" viewBox="0 0 28 20" fill="none"><rect x="1" y="1" width="26" height="18" rx="3" stroke="#8AAAC8" stroke-width="1.2" opacity="0.5"/><line x1="14" y1="1" x2="14" y2="10" stroke="#8AAAC8" stroke-width="0.5" opacity="0.2"/></svg></div>
+          <div class="folded-name">Lyse Jeans</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SHELF 2: SKO (Shoes — on bottom shelf) ═══ -->
+  <div class="rack">
+    <div class="rack-header">
+      <span class="rack-label">Sko</span>
+      <span class="rack-count">3</span>
+    </div>
+    <div class="shelf">
+      <div class="shelf-surface"></div>
+      <div class="shelf-row">
+        <!-- Brune Boots -->
+        <div class="shoe h-brown">
+          <div class="shoe-body"><div class="send-studio">✦</div><svg width="32" height="14" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" stroke="#8B6B4A" stroke-width="1.3" opacity="0.55"/><path d="M10 8H24" stroke="#8B6B4A" stroke-width="0.5" opacity="0.2"/></svg></div>
+          <div class="shoe-name">Brune Boots</div>
+        </div>
+        <!-- Hvite Sneakers -->
+        <div class="shoe h-white">
+          <div class="shoe-body"><div class="send-studio">✦</div><svg width="32" height="14" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" stroke="#C0CCD8" stroke-width="1.3" opacity="0.55"/></svg></div>
+          <div class="shoe-name">Hvite Sneakers</div>
+        </div>
+        <!-- Svarte Derby -->
+        <div class="shoe h-black">
+          <div class="shoe-body"><div class="send-studio">✦</div><svg width="32" height="14" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" stroke="#606068" stroke-width="1.3" opacity="0.45"/><path d="M6 10C6 10 10 12 17 12C24 12 28 10 28 10" stroke="#606068" stroke-width="0.5" opacity="0.2"/></svg></div>
+          <div class="shoe-name">Svarte Derby</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 20px;"></div>
+
+  <!-- NAV -->
+  <div class="bn">
+    <div class="ni a"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="nl">Wardrobe</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span class="nl">Studio</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="nl">Optimize</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span class="nl">Evolution</span></div>
+  </div>
+</div></div>
+<div class="phone-label">Wardrobe — Closet Wall</div>
+</div>
+
+<script>
+// Garment detail navigation — event delegation
+document.addEventListener('click', function(e) {
+  const hang = e.target.closest('.hang:not(.gap)');
+  const folded = e.target.closest('.folded');
+  const shoe = e.target.closest('.shoe');
+  if (hang || folded || shoe) window.location = 'coret-garment-detail.html';
+});
+</script>
+
+</body>
+</html>
