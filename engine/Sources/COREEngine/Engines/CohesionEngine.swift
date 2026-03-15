@@ -284,7 +284,7 @@ public enum CohesionEngine: Sendable {
     }
 
     /// Scores an outfit on proportion, archetype coherence, and color harmony.
-    static func outfitStrength(outfit: [Garment], profile: UserProfile) -> Double {
+    public static func outfitStrength(outfit: [Garment], profile: UserProfile) -> Double {
         let proportionAvg = outfitProportionAverage(outfit: outfit)
         let archetypeCoherence = outfitArchetypeCoherence(outfit: outfit, profile: profile)
         let colorHarmony = outfitColorHarmony(outfit: outfit)

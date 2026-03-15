@@ -35,6 +35,26 @@ public struct GarmentRole: Identifiable, Sendable {
     }
 }
 
+/// Which other garments appear alongside a target garment in outfits.
+public struct ConnectedGarment: Identifiable, Codable, Sendable {
+    public let id: UUID
+    public let garmentID: UUID
+    public let sharedOutfitCount: Int
+    public let averageOutfitStrength: Double
+
+    public init(
+        id: UUID = UUID(),
+        garmentID: UUID,
+        sharedOutfitCount: Int,
+        averageOutfitStrength: Double
+    ) {
+        self.id = id
+        self.garmentID = garmentID
+        self.sharedOutfitCount = sharedOutfitCount
+        self.averageOutfitStrength = averageOutfitStrength
+    }
+}
+
 /// Resolves per-garment structural role based on outfit combination analysis.
 public enum KeyGarmentResolver: Sendable {
 
@@ -63,6 +83,40 @@ public enum KeyGarmentResolver: Sendable {
             .filter(\.isKeyGarment)
             .sorted { $0.combinationPercentage > $1.combinationPercentage }
             .map(\.garmentID)
+    }
+
+    /// Returns garments most frequently paired with the target in outfits.
+    public static func connectedGarments(for garment: Garment, in items: [Garment], profile: UserProfile, limit: Int = 5) -> [ConnectedGarment] {
+        let outfits = ScoringHelpers.generateOutfits(from: items)
+        let containing = outfits.filter { outfit in
+            outfit.contains { $0.id == garment.id }
+        }
+        guard !containing.isEmpty else { return [] }
+
+        // Count co-occurrences and accumulate strengths per partner garment
+        var counts: [UUID: Int] = [:]
+        var strengthSums: [UUID: Double] = [:]
+
+        for outfit in containing {
+            let strength = CohesionEngine.outfitStrength(outfit: outfit, profile: profile)
+            for item in outfit where item.id != garment.id {
+                counts[item.id, default: 0] += 1
+                strengthSums[item.id, default: 0] += strength
+            }
+        }
+
+        return counts.keys
+            .map { id in
+                let count = counts[id]!
+                return ConnectedGarment(
+                    garmentID: id,
+                    sharedOutfitCount: count,
+                    averageOutfitStrength: strengthSums[id]! / Double(count)
+                )
+            }
+            .sorted { $0.sharedOutfitCount > $1.sharedOutfitCount }
+            .prefix(limit)
+            .map { $0 }
     }
 
     // MARK: - Private

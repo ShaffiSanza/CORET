@@ -82,11 +82,11 @@ NOT reference for: prices, brand names, social features, shopping UI, lifestyle 
 
 | Package | Tests | Status |
 |---------|-------|--------|
-| engine/ (V2 — ACTIVE) | 285/285 | ✅ All passing |
+| engine/ (V2 — ACTIVE) | 347/347 | ✅ All passing |
 | backend/ (Python/FastAPI) | 115/115 | ✅ All passing |
 | archive/core-v1/ (V1 — ARCHIVED) | 218/218 | ✅ All passing |
 
-**V2 engines:** CohesionEngine (70), ClarityEngine (23), ScoreProjector (22), IdentityResolver (15), KeyGarmentResolver (13), MilestoneTracker (38), SeasonalEngineV2 (26), OptimizeEngineV2 (19), BehaviouralEngine (27), SimilarityEngine (18), Models (18).
+**V2 engines:** CohesionEngine (70), ClarityEngine (23), ScoreProjector (22), IdentityResolver (15), KeyGarmentResolver (21), MilestoneTracker (38), SeasonalEngineV2 (26), OptimizeEngineV2 (19), BehaviouralEngine (27), SimilarityEngine (18), DailyOutfitScorer (9), BestOutfitFinder (8), NetworkUnlockCalculator (10), DailyOutfitEngine (13), StyleDirectionEngine (14), Models (18).
 
 **Backend test breakdown:** health (2), color_extraction (10), image_polish (3), image_normalize (10), image_storage (5), product_search (3), barcode_lookup (3), metadata_extractor (4), wardrobe_io (11), garments CRUD (12), wardrobe_analysis (22), outfits (7), wear+clarity (10), stubs (3).
 

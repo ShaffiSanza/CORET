@@ -231,4 +231,99 @@ struct KeyGarmentResolverTests {
             #expect(a.isKeyGarment == b.isKeyGarment)
         }
     }
+
+    // MARK: - Connected Garments
+
+    @Test func connectedGarmentsBasic() {
+        let items = minimalWardrobe()
+        let profile = makeProfile()
+        let target = items[0] // upper
+        let connected = KeyGarmentResolver.connectedGarments(for: target, in: items, profile: profile)
+
+        // In a 1-outfit wardrobe, the upper is connected to lower + shoes
+        #expect(connected.count == 2)
+        let connectedIDs = Set(connected.map(\.garmentID))
+        #expect(connectedIDs.contains(items[1].id)) // lower
+        #expect(connectedIDs.contains(items[2].id)) // shoes
+    }
+
+    @Test func connectedGarmentsSharedCount() {
+        // 2 uppers × 1 lower × 1 shoes = 2 outfits
+        // lower appears with upper1 once, upper2 once
+        let upper1 = makeGarment(category: .upper, baseGroup: .shirt, temperature: 3)
+        let upper2 = makeGarment(category: .upper, baseGroup: .tee, temperature: 3)
+        let lower = makeGarment(category: .lower, silhouette: .regular, baseGroup: .chinos)
+        let shoes = makeGarment(category: .shoes, silhouette: .none, baseGroup: .loafers, temperature: nil)
+
+        let items = [upper1, upper2, lower, shoes]
+        let profile = makeProfile()
+
+        // Connected to lower: lower appears in both outfits, so from lower's perspective
+        // it shares 1 outfit with upper1 and 1 with upper2
+        let connected = KeyGarmentResolver.connectedGarments(for: lower, in: items, profile: profile)
+        #expect(connected.count == 3) // upper1, upper2, shoes
+
+        // shoes shares 2 outfits with lower (both outfits contain both)
+        let shoesConnection = connected.first { $0.garmentID == shoes.id }!
+        #expect(shoesConnection.sharedOutfitCount == 2)
+    }
+
+    @Test func connectedGarmentsSortedByCount() {
+        let upper1 = makeGarment(category: .upper, baseGroup: .shirt, temperature: 3)
+        let upper2 = makeGarment(category: .upper, baseGroup: .tee, temperature: 3)
+        let lower = makeGarment(category: .lower, silhouette: .regular, baseGroup: .chinos)
+        let shoes = makeGarment(category: .shoes, silhouette: .none, baseGroup: .loafers, temperature: nil)
+
+        let items = [upper1, upper2, lower, shoes]
+        let profile = makeProfile()
+        let connected = KeyGarmentResolver.connectedGarments(for: lower, in: items, profile: profile)
+
+        for i in 0..<(connected.count - 1) {
+            #expect(connected[i].sharedOutfitCount >= connected[i + 1].sharedOutfitCount)
+        }
+    }
+
+    @Test func connectedGarmentsRespectsLimit() {
+        let items = minimalWardrobe()
+        let profile = makeProfile()
+        let connected = KeyGarmentResolver.connectedGarments(for: items[0], in: items, profile: profile, limit: 1)
+        #expect(connected.count <= 1)
+    }
+
+    @Test func connectedGarmentsEmptyWardrobe() {
+        let garment = makeGarment()
+        let connected = KeyGarmentResolver.connectedGarments(for: garment, in: [], profile: makeProfile())
+        #expect(connected.isEmpty)
+    }
+
+    @Test func connectedGarmentsNoOutfits() {
+        // Only uppers, no outfits possible
+        let items = [
+            makeGarment(category: .upper, baseGroup: .shirt),
+            makeGarment(category: .upper, baseGroup: .tee),
+        ]
+        let connected = KeyGarmentResolver.connectedGarments(for: items[0], in: items, profile: makeProfile())
+        #expect(connected.isEmpty)
+    }
+
+    @Test func connectedGarmentsAverageStrength() {
+        let items = minimalWardrobe()
+        let profile = makeProfile()
+        let connected = KeyGarmentResolver.connectedGarments(for: items[0], in: items, profile: profile)
+
+        for c in connected {
+            #expect(c.averageOutfitStrength >= 0)
+            #expect(c.averageOutfitStrength <= 1.0)
+        }
+    }
+
+    @Test func connectedGarmentsExcludesSelf() {
+        let items = minimalWardrobe()
+        let profile = makeProfile()
+        let target = items[0]
+        let connected = KeyGarmentResolver.connectedGarments(for: target, in: items, profile: profile)
+
+        let connectedIDs = connected.map(\.garmentID)
+        #expect(!connectedIDs.contains(target.id))
+    }
 }

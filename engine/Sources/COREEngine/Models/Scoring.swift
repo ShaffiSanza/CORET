@@ -172,3 +172,80 @@ public struct ProjectionResult: Identifiable, Codable, Sendable {
         self.breakdownAfter = breakdownAfter
     }
 }
+
+// MARK: - Outfit Scoring Types
+
+public struct OutfitScore: Identifiable, Codable, Sendable {
+    public let id: UUID
+    public let totalStrength: Double
+    public let silhouetteVerdict: String
+    public let colorVerdict: String
+    public let archetypeMatch: Archetype
+    public let suggestion: String?
+    public let createdAt: Date
+
+    public init(
+        id: UUID = UUID(),
+        totalStrength: Double = 0,
+        silhouetteVerdict: String = "Neutral",
+        colorVerdict: String = "Neutral",
+        archetypeMatch: Archetype = .smartCasual,
+        suggestion: String? = nil,
+        createdAt: Date = Date()
+    ) {
+        self.id = id
+        self.totalStrength = totalStrength
+        self.silhouetteVerdict = silhouetteVerdict
+        self.colorVerdict = colorVerdict
+        self.archetypeMatch = archetypeMatch
+        self.suggestion = suggestion
+        self.createdAt = createdAt
+    }
+}
+
+public struct RankedOutfit: Identifiable, Codable, Sendable {
+    public let id: UUID
+    public let garments: [Garment]
+    public let strength: Double
+    public let archetypeMatch: Archetype
+    public let label: String
+    public let createdAt: Date
+
+    public init(
+        id: UUID = UUID(),
+        garments: [Garment] = [],
+        strength: Double = 0,
+        archetypeMatch: Archetype = .smartCasual,
+        label: String = "",
+        createdAt: Date = Date()
+    ) {
+        self.id = id
+        self.garments = garments
+        self.strength = strength
+        self.archetypeMatch = archetypeMatch
+        self.label = label
+        self.createdAt = createdAt
+    }
+}
+
+public struct UnlockResult: Identifiable, Codable, Sendable {
+    public let id: UUID
+    public let newCombinationCount: Int
+    public let topNewOutfits: [RankedOutfit]
+    public let gapsFilled: [String]
+    public let createdAt: Date
+
+    public init(
+        id: UUID = UUID(),
+        newCombinationCount: Int = 0,
+        topNewOutfits: [RankedOutfit] = [],
+        gapsFilled: [String] = [],
+        createdAt: Date = Date()
+    ) {
+        self.id = id
+        self.newCombinationCount = newCombinationCount
+        self.topNewOutfits = topNewOutfits
+        self.gapsFilled = gapsFilled
+        self.createdAt = createdAt
+    }
+}

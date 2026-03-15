@@ -5,6 +5,11 @@ Date: 1 March 2026
 Approved by: GPT ✅ · Claude AI ✅ · Claude Code ✅
 Purpose: Align the full team on feature scope, versioning, and engine implications before UI work begins.
 
+> **Split docs:**
+> - Strategy & positioning → [`../CORET_STRATEGY.md`](../CORET_STRATEGY.md)
+> - Product & implementation → [`../CORET_V1_PRODUCT.md`](../CORET_V1_PRODUCT.md)
+> - This file retains the council-locked feature decisions and roadmap.
+
 ---
 
 ## Strategic Direction
@@ -99,20 +104,6 @@ These break the philosophical foundation. Non-negotiable.
 
 ---
 
-## Immediate Next Step
-
-This document is strategic context. It does NOT change V1 engine scope.
-
-Engine is complete: 180/180 tests, all wireframes covered.
-
-Next action:
-
-1. **Engine → UI Mapping Specification** — define exact visual rules
-2. **Dashboard + Optimize HTML Mockups** — built from mapping rules
-3. **SwiftUI implementation** — when Mac is available
-
----
-
 ## Claude Code — Integration Notes
 
 No engine changes are required from this document. All features listed as V1 are either:
@@ -133,5 +124,5 @@ None of these block V1 launch. All are post-launch iterations.
 
 ---
 
-*Council locked. Filed in `docs/Strategy/`.*
-*Last updated: 1 March 2026*
+*Council locked. Filed in `docs/strategy/`.*
+*Last updated: 15 March 2026*

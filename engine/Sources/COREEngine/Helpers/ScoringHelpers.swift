@@ -1,6 +1,6 @@
 import Foundation
 
-enum ScoringHelpers {
+public enum ScoringHelpers {
 
     /// Scores a value against an ideal range [idealLower, idealUpper].
     /// Returns 0–100. In range → 100. Below → proportional. Above → penalized via overPenaltyDivisor.
@@ -62,7 +62,7 @@ enum ScoringHelpers {
 
     /// Generates all structurally complete outfit combinations.
     /// An outfit = 1 upper + 1 lower + 1 shoes. Accessories not included.
-    static func generateOutfits(from items: [Garment]) -> [[Garment]] {
+    public static func generateOutfits(from items: [Garment]) -> [[Garment]] {
         let uppers = items.filter { $0.category == .upper }
         let lowers = items.filter { $0.category == .lower }
         let shoes = items.filter { $0.category == .shoes }
