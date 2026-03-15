@@ -54,6 +54,26 @@ The user sees **"Clarity 78 · Fokusert"** — one number, one word. The 6 Cohes
 
 **Implementation:** Clarity card has a discrete expand chevron. Tap → slides down sub-score breakdown. Collapsed by default. Same pattern on garment detail (archetype contribution bars hidden until tapped).
 
+### Progressive Value Delivery — Outfit First, Analysis Later
+
+The entire app follows one rule: **show the user something useful immediately, add analysis as data grows.** This applies to all tabs, not just Evolution.
+
+| Garments | What unlocks | Where | Engine |
+|----------|-------------|-------|--------|
+| 1–2 | Garment grid only. "Add 1 more to see your first outfit." | Wardrobe | — |
+| 3 | **First outfit.** "Here's a combination you can make." | Wardrobe hero, Studio | BestOutfitFinder |
+| 5 | **Clarity score appears.** "Your wardrobe has a strong base." | Wardrobe hero, Evolution | ClarityEngine |
+| 7 | **Outfit scoring active.** Studio feedback card lights up. | Studio | DailyOutfitScorer |
+| 10 | **Gap analysis.** "You're missing a neutral mid-layer." Identity profile appears. | Optimize, Evolution | OptimizeEngineV2, IdentityResolver |
+| 15 | **Network visualization.** X-Ray graph has enough nodes to be meaningful. | Optimize | CohesionEngine |
+| 20+ | **Full analysis.** Archetype breakdown, seasonal coverage, what-if simulator, all unlocked. | All tabs | All engines |
+
+**The key insight:** At 3 garments the user already gets value (an outfit). They don't need to add 20 items before the app "works." Every milestone between 3 and 20 reveals something new — creating a natural pull to add more garments.
+
+**Implementation:** ViewModel checks `items.count` at each threshold and conditionally renders sections. No engine changes — engines already handle small inputs gracefully (return 0 or defaults for insufficient data). This is purely presentation logic.
+
+**Not gamification:** There are no "level up" notifications. Sections simply appear when they become meaningful. The user discovers them organically.
+
 ---
 
 ## Wardrobe — Home Screen with Hero Block
