@@ -304,6 +304,47 @@ All three are engine-native. No competitor can copy them without building the st
 
 ---
 
+## Stylist Mode (V3)
+
+Stylists are a distribution channel, not a primary revenue source. But timing is critical — it requires proven retention with individual users first.
+
+### Reality Check
+
+1. **Most stylists work analog.** iPhone photos, WhatsApp, Pinterest boards, spreadsheets. They're not using structured tools. Adoption barrier is high — CORET must prove its value to stylists through their own wardrobe before they'll use it for clients.
+2. **Multi-client is SaaS architecture, not an app feature.** Requires auth, multi-tenant data, client switching UI. That's a backend rewrite, not a feature toggle.
+3. **Clients pay stylists to not think.** The flywheel (stylist → client → app) assumes clients want to self-manage after seeing a report. Many won't. The conversion rate is uncertain.
+4. **The value is distribution, not subscription.** 1 stylist = 30 potential users. That's a growth lever, not a revenue line.
+
+### Correct Sequencing
+
+| Phase | Focus | Why |
+|-------|-------|-----|
+| V1 | Prove retention with individual users | If individuals don't return daily, stylists won't adopt |
+| V1.5–V2 | Shopping guidance, resale pipeline, style direction | Revenue diversification + deeper engagement |
+| V3 | Stylist Mode | Product is proven, infrastructure is ready |
+
+### Features (When Ready)
+
+| Feature | Engine Source | What the stylist gets |
+|---------|-------------|---------------------|
+| Multi-client switching | Separate wardrobe data per client | Switch between client profiles, each with full engine analysis |
+| Shareable Clarity Report | ClarityEngine + IdentityResolver | PDF/image: Clarity score, archetype breakdown, identity profile |
+| Shopping List with Impact | OptimizeEngineV2 + ScoreProjector | Auto-generated from gap analysis with projected impact |
+| Stylist-branded Share Cards | Viral Mechanics cards | DNA Card, Outfit Card with stylist logo/name overlay |
+| Client Progress Tracking | MilestoneTracker + ClarityEngine | "Client went from 42 → 78 Clarity over 3 months" |
+
+### Architecture Note for V1
+
+Don't hardcode 1 wardrobe per app. Use a `user_id` / `wardrobe_id` concept from the start even if V1 only ever has one. This keeps the door open for multi-tenant later without a data migration.
+
+- SwiftData: `WardrobeItemEntity` should have a `wardrobeID: UUID` field (default to a single fixed UUID in V1)
+- Backend: `garment_store` already keys by garment ID — adding a wardrobe_id filter is trivial
+- Engine: already stateless — takes `[Garment]` as input, doesn't care where they came from
+
+No implementation now. Strategic direction only.
+
+---
+
 ## What CORET Will Never Build
 
 - No social feed
