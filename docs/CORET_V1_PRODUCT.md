@@ -325,6 +325,25 @@ Wardrobe hero block → "Best outfit for today (12°C, rain)"
 
 ---
 
+## Body-Aware Scoring (V2)
+
+User enters height and build in Profile menu. `proportionBalanceScore()` adjusts based on body type — different builds have different ideal silhouette pairings.
+
+**Examples:**
+- Compact + muscular: `fitted + tapered` scores higher (elongates silhouette)
+- Tall + slim: `relaxed + wide` scores higher (adds visual weight)
+- Athletic: `fitted + regular` scores higher (follows natural proportions)
+
+**Language rule:** Never negative about body. Always proportion-balance terminology.
+- Never: "Your body doesn't suit this."
+- Always: "This combination gives better proportion balance for your frame."
+
+**Engine:** `proportionBalanceScore()` gains an optional `UserProfile` parameter. If `height` and `build` are present, the silhouette matrix adjusts weights. If nil, falls back to the universal matrix (current V1 behavior).
+
+**Data model:** `UserProfile.height: Int?` and `UserProfile.build: String?` already added in V1 (default nil, unused by engines). No migration needed in V2.
+
+---
+
 ## Feature Decision Tables
 
 *(Preserved from council-locked roadmap — see `strategy/feature_roadmap_v1.md` for full context)*

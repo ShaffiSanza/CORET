@@ -82,7 +82,7 @@ NOT reference for: prices, brand names, social features, shopping UI, lifestyle 
 
 | Package | Tests | Status |
 |---------|-------|--------|
-| engine/ (V2 — ACTIVE) | 347/347 | ✅ All passing |
+| engine/ (V2 — ACTIVE) | 350/350 | ✅ All passing |
 | backend/ (Python/FastAPI) | 115/115 | ✅ All passing |
 | archive/core-v1/ (V1 — ARCHIVED) | 218/218 | ✅ All passing |
 

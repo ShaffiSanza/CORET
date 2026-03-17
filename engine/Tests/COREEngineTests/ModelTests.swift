@@ -145,6 +145,31 @@ struct ModelTests {
         #expect(decoded.primaryArchetype == .street)
     }
 
+    @Test func userProfileBodyFieldsDefaultNil() {
+        let p = makeProfile()
+        #expect(p.height == nil)
+        #expect(p.build == nil)
+    }
+
+    @Test func userProfileBodyFieldsRoundTrip() throws {
+        let original = UserProfile(primaryArchetype: .tailored, height: 178, build: "athletic")
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(UserProfile.self, from: data)
+        #expect(decoded.height == 178)
+        #expect(decoded.build == "athletic")
+    }
+
+    @Test func userProfileBodyFieldsBackwardCompatible() throws {
+        // JSON without height/build should decode fine (nil defaults)
+        let json = """
+        {"id":"00000000-0000-0000-0000-000000000001","primaryArchetype":"street","createdAt":0}
+        """.data(using: .utf8)!
+        let decoded = try JSONDecoder().decode(UserProfile.self, from: json)
+        #expect(decoded.primaryArchetype == .street)
+        #expect(decoded.height == nil)
+        #expect(decoded.build == nil)
+    }
+
     @Test func cohesionBreakdownCodableRoundTrip() throws {
         let original = CohesionBreakdown(
             layerCoverageScore: 80,

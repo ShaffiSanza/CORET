@@ -137,15 +137,21 @@ public struct Garment: Identifiable, Codable, Sendable {
 public struct UserProfile: Identifiable, Codable, Sendable {
     public let id: UUID
     public var primaryArchetype: Archetype
+    public var height: Int?       // cm, V2 body-aware scoring
+    public var build: String?     // e.g. "compact", "tall-slim", "athletic" — V2
     public let createdAt: Date
 
     public init(
         id: UUID = UUID(),
         primaryArchetype: Archetype = .smartCasual,
+        height: Int? = nil,
+        build: String? = nil,
         createdAt: Date = Date()
     ) {
         self.id = id
         self.primaryArchetype = primaryArchetype
+        self.height = height
+        self.build = build
         self.createdAt = createdAt
     }
 }

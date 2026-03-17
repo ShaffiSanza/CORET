@@ -345,6 +345,18 @@ No implementation now. Strategic direction only.
 
 ---
 
+## Data Model Forward-Compatibility
+
+Fields added in V1 for future use (nil defaults, no engine impact):
+
+- `UserProfile.height: Int?` — cm, for V2 body-aware proportionBalanceScore
+- `UserProfile.build: String?` — e.g. "compact", "tall-slim", "athletic", for V2 silhouette matrix adjustment
+- `wardrobeID: UUID` (planned for SwiftData entity) — single fixed value in V1, enables multi-tenant in V3
+
+These cost nothing now and prevent data migrations later.
+
+---
+
 ## What CORET Will Never Build
 
 - No social feed
