@@ -98,6 +98,7 @@ public struct Garment: Identifiable, Codable, Sendable {
     public var isKeyGarment: Bool
     public let dateAdded: Date
     public var source: ImportSource
+    public var brand: String?
 
     public init(
         id: UUID = UUID(),
@@ -113,7 +114,8 @@ public struct Garment: Identifiable, Codable, Sendable {
         isFavorite: Bool = false,
         isKeyGarment: Bool = false,
         dateAdded: Date = Date(),
-        source: ImportSource = .manual
+        source: ImportSource = .manual,
+        brand: String? = nil
     ) {
         self.id = id
         self.image = image
@@ -129,6 +131,7 @@ public struct Garment: Identifiable, Codable, Sendable {
         self.isKeyGarment = isKeyGarment
         self.dateAdded = dateAdded
         self.source = source
+        self.brand = brand
     }
 }
 

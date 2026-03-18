@@ -700,10 +700,10 @@ Selection: sort descending, tie-break earlier `createdAt`, require ≥ 2 distinc
 |-----|------|-------|-----------------|
 | 1 | grid.2x2 | Wardrobe | Item grid + add/edit/delete |
 | 2 | sparkles | Studio | Outfit builder + compatibility scoring |
-| 3 | arrow.up.right | Optimize | Recommendations + simulation |
+| 3 | magnifyingglass | Discover | Outfit discovery feed (swipe) + gap suggestions |
 | 4 | leaf | Evolution | Phase narrative + trend + clarity score |
 
-Profile is accessed via a top-right menu icon (not a tab). Dashboard content is distributed: Clarity ring → Evolution, Optimize preview → Optimize, feed items → Wardrobe.
+Profile is accessed via a top-right menu icon (not a tab). Dashboard content is distributed: Clarity ring → Evolution, feed items → Wardrobe. Optimize functionality absorbed into Discover (gap suggestions as ghost outfits in feed) and Garment Detail (friction analysis).
 
 ### Wardrobe Screen
 
@@ -721,19 +721,25 @@ Wardrobe Grid Screen
     └── Save (triggers engine recompute)
 ```
 
-### Optimize Screen
+### Discover Screen
 
 ```
-Optimize Screen
-├── Weakest Area Indicator
-├── Primary Recommendation Card
-│   ├── Candidate item description
-│   ├── Component impact (e.g., "Density: 52 → 64, +12")
-│   ├── Total impact (e.g., "Total: 74 → 78, +4")
-│   └── Actions: Mark as Acquired, Dismiss
-├── Secondary Recommendations (up to 2, collapsed)
-├── Structural Friction Section (items with improvement > 8)
-└── Tap → Candidate Detail Screen
+Discover Screen (full-screen swipe feed)
+├── Mode Toggle: "Mine plagg" (default) | "Utforsk"
+├── Outfit Card (full screen, swipe up for next)
+│   ├── Dynamic background (blended from garment colors)
+│   ├── Stacked garment silhouettes (4 layers, descending scale)
+│   │   ├── Each garment: like button (left), name + brand label (right)
+│   │   └── Ghost garments: opacity 0.35, dashed border, "Mangler: X" badge
+│   ├── Clarity score + feed-type badge
+│   ├── "Åpne i Studio" + "Neste" actions
+│   └── First card: "Anbefalt i dag" label
+├── Feed Algorithm (Mine plagg):
+│   ├── 70% owned outfits (BestOutfitFinder.findUntriedBest)
+│   ├── 20% rotation tips (BehaviouralEngine.unusedRisk)
+│   └── 10% ghost outfits (OptimizeEngineV2.detectGaps + ScoreProjector)
+└── Feed Algorithm (Utforsk):
+    └── 100% ghost outfits (1-2 garments user doesn't own per outfit)
 ```
 
 ### Evolution Screen

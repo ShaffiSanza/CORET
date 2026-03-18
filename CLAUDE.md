@@ -70,7 +70,7 @@ CORET/
 └── archive/               ← V1 engine (core-v1, 218/218 tests, historical)
 ```
 
-**IA:** 4 tabs: Wardrobe, Studio, Optimize, Evolution. Profile via top-right menu icon (not a tab). Dashboard content distributed into Evolution and Wardrobe.
+**IA:** 4 tabs: Wardrobe, Studio, Discover, Evolution. Profile via top-right menu icon (not a tab). Dashboard content distributed into Evolution and Wardrobe. Optimize replaced by Discover (swipe outfit feed).
 
 **Moodboard note — `digico_wardrobe_grid.png`:**
 Reference ONLY for: 2-column grid layout and garment card presentation.
@@ -82,7 +82,7 @@ NOT reference for: prices, brand names, social features, shopping UI, lifestyle 
 
 | Package | Tests | Status |
 |---------|-------|--------|
-| engine/ (V2 — ACTIVE) | 350/350 | ✅ All passing |
+| engine/ (V2 — ACTIVE) | 353/353 | ✅ All passing |
 | backend/ (Python/FastAPI) | 115/115 | ✅ All passing |
 | archive/core-v1/ (V1 — ARCHIVED) | 218/218 | ✅ All passing |
 

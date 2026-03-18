@@ -25,11 +25,12 @@ What the user can do in V1. Each maps to existing engine output.
 ## 4 Tabs
 
 ```
-▦ Wardrobe  |  ✦ Studio  |  ◎ Optimize  |  ◈ Evolution
+▦ Wardrobe  |  ✦ Studio  |  🔍 Discover  |  ◈ Evolution
 ```
 
 Profile → top-right menu icon (not a tab).
-Dashboard content distributed: Clarity → Evolution, feed → Wardrobe hero block, gaps → Optimize.
+Dashboard content distributed: Clarity → Evolution, feed → Wardrobe hero block, gaps → Discover ghost outfits.
+Optimize replaced by Discover — gap analysis, friction, and recommendations absorbed into Discover feed and Garment Detail.
 
 ---
 
@@ -64,8 +65,8 @@ The entire app follows one rule: **show the user something useful immediately, a
 | 3 | **First outfit.** "Here's a combination you can make." | Wardrobe hero, Studio | BestOutfitFinder |
 | 5 | **Clarity score appears.** "Your wardrobe has a strong base." | Wardrobe hero, Evolution | ClarityEngine |
 | 7 | **Outfit scoring active.** Studio feedback card lights up. | Studio | DailyOutfitScorer |
-| 10 | **Gap analysis.** "You're missing a neutral mid-layer." Identity profile appears. | Optimize, Evolution | OptimizeEngineV2, IdentityResolver |
-| 15 | **Network visualization.** X-Ray graph has enough nodes to be meaningful. | Optimize | CohesionEngine |
+| 10 | **Gap analysis.** Ghost outfits appear in Discover feed. Identity profile appears. | Discover, Evolution | OptimizeEngineV2, IdentityResolver |
+| 15 | **Full Discover feed.** Enough garments for meaningful outfit variety. | Discover | BestOutfitFinder, CohesionEngine |
 | 20+ | **Full analysis.** Archetype breakdown, seasonal coverage, what-if simulator, all unlocked. | All tabs | All engines |
 
 **The key insight:** At 3 garments the user already gets value (an outfit). They don't need to add 20 items before the app "works." Every milestone between 3 and 20 reveals something new — creating a natural pull to add more garments.
@@ -160,18 +161,60 @@ All via EngineCoordinator. No direct engine calls from Views.
 
 ---
 
-## Optimize — Summary First, Network Last
+## Discover — Outfit Discovery Feed
 
-Optimize opens with actionable information, not a visualization.
+Full-screen swipe feed. Tinder-style UX for outfit discovery. Replaces Optimize tab.
 
-**Screen order (top to bottom):**
-1. Summary numbers: Clarity score, combo count, gap count
-2. Gap description: "2 strukturelle gap begrenser nettverket. Fyll dem for å nå 80+."
-3. Gap cards with expandable suggestions and projected impact
-4. Archetype breakdown (style profile)
-5. X-Ray network graph (visual exploration, not hero)
-6. Mini-legend: `● plagg · — kombinasjon · ◌ gap`
-7. Strongest combinations grid
+### Two Modes
+
+| Mode | Content | Badge |
+|------|---------|-------|
+| **Mine plagg** (default) | 70% owned outfits, 20% rotation tips, 10% ghost outfits | "Du eier alt dette" (green) / "Ikke brukt på 14 dager" (gold) / "Mangler 1 plagg" (blue) |
+| **Utforsk** | 100% ghost outfits — each with 1-2 garments user doesn't own | "Mangler: Mørk blazer" with category + color from StyleDirectionEngine |
+
+### Card Anatomy
+
+```
+Full-screen Outfit Card (swipe up for next)
+├── Dynamic background (HSL blend of all garment colors, ambient blobs)
+├── Mode toggle: "Mine plagg" / "Utforsk" (pill, top)
+├── First card: "Anbefalt i dag" label (gold)
+├── Stacked garments (4 layers, descending scale 1.0→0.96→0.92→0.88)
+│   ├── Each garment: ♡ like button (left) + "Name · Brand" label (right, 9px, opacity 0.25)
+│   └── Ghost garments: opacity 0.35, dashed gold border, "Mangler: X" badge below
+├── Outfit name (Instrument Serif italic)
+├── Clarity score + feed-type badge
+├── "Åpne i Studio" + "Neste ↑" buttons
+└── Swipe hint
+```
+
+### Feed Algorithm
+
+**Mine plagg:**
+- First card always: `BestOutfitFinder.findUntriedBest()` → "Anbefalt i dag"
+- 70%: owned outfits ranked by strength
+- 20%: rotation outfits featuring underused garments (`BehaviouralEngine.unusedRisk() >= 0.5`)
+- 10%: ghost outfits from `OptimizeEngineV2.detectGaps()` + `ScoreProjector.project()`
+
+**Utforsk:**
+- All ghost outfits. Each card has 1-2 garments the user doesn't own.
+- Ghost garment category/color from `StyleDirectionEngine.analyzeDirection()`
+- V2: ghost garments replaced with real products from partner APIs
+- V3: full marketplace with price filter
+
+### Like Individual Garments
+
+Each garment in the stack has a heart button. Tap → gold pulse animation (0.3s scale overshoot). Sets `garment.isFavorite = true`. Liked non-owned garments (in Utforsk mode) feed into V2 shopping guidance.
+
+### Where Optimize Content Lives Now
+
+| Old Optimize Feature | New Location |
+|---------------------|-------------|
+| Gap analysis | Discover ghost outfits (10% of Mine plagg feed, 100% of Utforsk) |
+| Primary recommendation | Discover first card ("Anbefalt i dag") |
+| Structural friction | Garment Detail (removal simulation — already built) |
+| Network graph | Evolution tab or Profile (V1.5) |
+| Archetype breakdown | Evolution identity section (already built) |
 
 ---
 

@@ -56,7 +56,7 @@ Every garment either strengthens or weakens the whole. Compatibility is measurab
 |-----|-----------|--------------------------|
 | Wardrobe | Coverage | See what you have, spot what's missing |
 | Studio | Compatibility | Build outfits, see live strength scoring |
-| Optimize | Coverage + Coherence | Gaps to fill, friction to remove |
+| Discover | Coverage + Compatibility | Swipe through outfits, discover gaps as ghost cards |
 | Evolution | Coherence | Identity forming, clarity trending |
 
 ---
@@ -299,8 +299,18 @@ Optimize tab → "These 3 garments weaken your network"
 | Subscription | V1.5+ | All engines | SaaS ($9-12/mo) |
 | Shopping Guidance | V2 | ScoreProjector | Affiliate commission |
 | Resale Pipeline | V2/V3 | OptimizeEngineV2 + ScoreProjector | Transaction fee or referral |
+| Discover Marketplace | V2/V3 | BestOutfitFinder + StyleDirectionEngine | Affiliate per purchase |
 
-All three are engine-native. No competitor can copy them without building the structural analysis layer first.
+All four are engine-native. No competitor can copy them without building the structural analysis layer first.
+
+### 3. Discover Marketplace (V2/V3)
+
+Discover's "Utforsk" mode evolves from category+color suggestions (V1) to real product integration.
+
+- **V1:** Ghost garments show category + color from StyleDirectionEngine. No products, no prices.
+- **V2:** One partner integration (Zalando/H&M API). Ghost garments replaced with real products with price. Price filter (budget/mid/premium). "Denne blazeren fra Zara, 799kr, gir deg 91 clarity."
+- **V3:** Multi-brand catalog. Utforsk becomes full shopping inspiration feed — real products from all price classes styled with user's existing garments. Uendelig feed.
+- **Revenue:** Affiliate/referral per purchase. Discover becomes the primary commerce channel.
 
 ---
 

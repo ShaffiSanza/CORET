@@ -170,6 +170,29 @@ struct ModelTests {
         #expect(decoded.build == nil)
     }
 
+    // MARK: - Garment Brand Field
+
+    @Test func garmentBrandDefaultNil() {
+        let g = makeGarment()
+        #expect(g.brand == nil)
+    }
+
+    @Test func garmentBrandRoundTrip() throws {
+        let original = Garment(category: .upper, baseGroup: .blazer, brand: "Zara")
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(Garment.self, from: data)
+        #expect(decoded.brand == "Zara")
+    }
+
+    @Test func garmentBrandBackwardCompatible() throws {
+        let json = """
+        {"id":"00000000-0000-0000-0000-000000000001","image":"","name":"Test","category":"upper","silhouette":"fitted","baseGroup":"shirt","colorTemperature":"neutral","dominantColor":"#000000","isFavorite":false,"isKeyGarment":false,"dateAdded":0,"source":"manual"}
+        """.data(using: .utf8)!
+        let decoded = try JSONDecoder().decode(Garment.self, from: json)
+        #expect(decoded.brand == nil)
+        #expect(decoded.name == "Test")
+    }
+
     @Test func cohesionBreakdownCodableRoundTrip() throws {
         let original = CohesionBreakdown(
             layerCoverageScore: 80,
