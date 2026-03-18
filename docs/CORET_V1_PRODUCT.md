@@ -111,13 +111,52 @@ Studio is wardrobe simulation, not just outfit suggestion. The user doesn't just
 
 Studio is the only place where the user interacts with the engine in real-time. Every other tab shows computed state. Studio shows live structural simulation.
 
-### Tap-to-Add, Not Drag-and-Drop
+### Swipe Flatlay System
 
-Studio uses tap-to-add as primary interaction. User taps a garment in the picker → it automatically fills the correct slot based on `garment.category` (upper → upper slot, lower → lower slot, shoes → shoes slot). Drag is secondary interaction, tap is primary.
+Studio uses horizontal swipe rows — one per category (outer 140px, upper 90px, lower 150px, shoes 80px) stacked vertically with -14px overlap. User swipes to pick garments. Each swipe recalculates score live.
 
-**Why:** Tap is faster, works one-handed, has no learning curve. Drag requires precision and feels heavy on mobile.
+- **Active item:** scale 1.0, opacity 1.0
+- **Inactive:** scale 0.92, opacity 0.6
+- **During swipe:** other rows dim to opacity 0.45
+- **Snap:** spring(response: 0.4, dampingFraction: 0.85)
+- **Haptic:** UIImpactFeedbackGenerator(style: .light) on snap
+- **Dynamic background:** blends dominantColor from all 4 selected garments via HSL averaging, 1.8s transition
 
-**Implementation:** `garment.category` maps directly to slot type. If the slot is already filled, the new garment replaces it (with a brief swap animation). Tap the filled slot to remove.
+### Studio → Wardrobe Outfit Flow
+
+When user taps "Bruk i dag" in Studio:
+
+1. **Save outfit:** Create SavedOutfitEntity with garment IDs from the 4 selected garments + auto-generated name (from IdentityResolver archetype + weekday, e.g. "Smart Casual · Tirsdag")
+2. **Log wear:** WearLog entry for each garment via EngineCoordinator
+3. **Confirm:** Checkmark fade animation (0.4s)
+4. **Wardrobe sync:** Outfit appears in Wardrobe "Outfits" tab
+
+**Wardrobe Outfits tab displays:**
+- Horizontal scroll with outfit cards (garment silhouettes stacked vertically, dynamic background from dominantColor blending — same visual language as Studio)
+- Outfit name + Clarity score + wear count
+- Tap outfit → loads garments back into Studio swipe rows for replay/editing
+
+**Garment Detail "Inngår i":** Shows all SavedOutfitEntities containing this garment. Tap → opens outfit in Studio.
+
+### Ghost Garments — Explore Mode
+
+Toggle "Utforsk" pill next to Surprise button. When active:
+
+1. `OptimizeEngineV2.detectGaps()` runs
+2. For each gap category: inject a ghost garment as last item in that SwipeRow
+3. **Ghost visual:** Same silhouette shape but opacity 0.35, dashed border (2px, gold-dim), label "Mangler: Blazer" below
+4. **Swipe to ghost:** `ScoreProjector.project()` runs, insight line shows "+13 clarity · +18 kombinasjoner"
+5. **Background:** Ghost garment's assumed color (from gap suggestion colorTemp) included in HSL blend
+6. **CTA changes:** "Bruk i dag" → "Legg til garderobe" → opens AddGarmentSheet pre-filled with gap suggestion's category and baseGroup
+
+**Why this works:** User discovers wardrobe gaps while trying outfits, not in an abstract analysis tab. "There's no good outer option here... oh, a blazer would give 91 clarity." Optimize baked into the Studio experience.
+
+| Mode | Available garments | CTA |
+|------|-------------------|-----|
+| Build (default) | Only owned garments | "Bruk i dag" → save + log wear |
+| Explore | Owned + ghost garments from gaps | "Legg til garderobe" → add garment sheet |
+
+All via EngineCoordinator. No direct engine calls from Views.
 
 ---
 

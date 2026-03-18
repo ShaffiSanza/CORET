@@ -2,16 +2,14 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CORET — Studio</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=375, initial-scale=1.0">
+<title>CORET — Studio Swipe Flatlay</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #1a1714;
     --card: #221f1a;
-    --card-raised: #282420;
     --border: #2e2a22;
-    --border-light: #3a3530;
     --text: #EAE5DE;
     --text-2: #B0A99E;
     --text-3: #6B625C;
@@ -19,7 +17,6 @@
     --gold: #C9A96E;
     --gold-dim: rgba(201,169,110,0.55);
     --gold-soft: rgba(201,169,110,0.10);
-    --gold-glow: rgba(201,169,110,0.04);
     --green: #7A9A6E;
     --green-soft: rgba(122,154,110,0.10);
     --red: #B4705A;
@@ -27,25 +24,19 @@
     --r: 18px;
     --r-sm: 10px;
   }
-
   * { margin:0; padding:0; box-sizing:border-box; }
-
   body {
     font-family: 'DM Sans', sans-serif;
     background: #0e0c0a;
     color: var(--text);
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding: 40px 20px;
+    padding: 40px 20px 60px;
     -webkit-font-smoothing: antialiased;
   }
 
   .phone {
-    width: 375px;
-    height: 812px;
-    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 40%), radial-gradient(circle at 80% 90%, rgba(201,169,110,0.05), transparent 50%), #1A1714;
+    width: 393px; height: 852px;
     border-radius: 44px;
     border: 2.5px solid #2a2520;
     overflow: hidden;
@@ -53,695 +44,416 @@
     box-shadow: 0 40px 100px rgba(0,0,0,0.5);
   }
 
-  .phone::before {
-    content: '';
+  /* ═══ DYNAMIC BACKGROUND ═══ */
+  .dynamic-bg {
     position: absolute;
     inset: 0;
-    pointer-events: none;
+    transition: background 1.8s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 0;
-    background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.04), transparent 50%);
   }
 
-  .phone::after {
-    content: '';
+  .ambient-blob {
     position: absolute;
-    inset: 0;
+    border-radius: 50%;
+    filter: blur(100px);
+    transition: all 1.8s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
-    z-index: 0;
-    background: radial-gradient(circle at 50% 30%, rgba(201,169,110,0.08), transparent 60%);
+  }
+  .blob-a { width: 300px; height: 300px; top: 20%; left: -20%; opacity: 0.3; }
+  .blob-b { width: 260px; height: 260px; bottom: 10%; right: -15%; opacity: 0.25; }
+
+  .scr {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    z-index: 1;
   }
 
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 28px 0;
-    font-size: 15px;
-    font-weight: 600;
-    position: relative;
-    z-index: 5;
+  /* noise */
+  .scr::after {
+    content: ''; position: fixed; inset: 0; opacity: 0.012; pointer-events: none; z-index: 100;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  .brand-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px 0;
-    position: relative;
-    z-index: 5;
-  }
+  .sb { padding: 14px 24px 0; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 600; color: var(--text-2); flex-shrink: 0; }
 
-  .brand {
+  /* ═══ HEADER ═══ */
+  .studio-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 20px 0;
+    flex-shrink: 0;
+  }
+  .studio-title {
     font-family: 'Instrument Serif', serif;
-    font-size: 14px;
-    letter-spacing: 2px;
-    color: var(--gold-dim);
-    text-shadow: 0 0 18px rgba(201,169,110,0.2);
+    font-size: 28px; font-weight: 400;
+  }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .surprise-btn, .explore-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; letter-spacing: 0.8px;
+    padding: 8px 16px; border-radius: 20px;
+    border: 1px solid rgba(201,169,110,0.15);
+    background: rgba(201,169,110,0.06);
+    color: var(--gold);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .surprise-btn:hover, .explore-btn:hover { background: rgba(201,169,110,0.12); border-color: rgba(201,169,110,0.25); }
+  .surprise-btn:active, .explore-btn:active { transform: scale(0.95); }
+  .explore-btn.active {
+    background: rgba(201,169,110,0.18);
+    border-color: var(--gold);
+    color: var(--text);
   }
 
-  .dots { color: var(--text-3); letter-spacing: 3px; font-size: 14px; cursor: pointer; }
-
-  .scroll {
-    height: calc(100% - 108px);
-    overflow-y: auto;
-    padding-bottom: 16px;
+  /* ═══ SCORE FLOAT ═══ */
+  .score-float {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 20px 8px;
+    flex-shrink: 0;
   }
-  .scroll::-webkit-scrollbar { display: none; }
-
-  .page-head {
-    padding: 14px 20px 6px;
-    animation: up 0.4s ease-out backwards;
-  }
-
-  .page-title {
+  .mood-words {
     font-family: 'Instrument Serif', serif;
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 1.25;
-    margin-bottom: 2px;
-  }
-
-  .page-sub {
-    font-size: 12px;
+    font-size: 14px; font-style: italic;
     color: var(--text-3);
+    transition: all 0.6s;
+  }
+  .clarity-float {
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .clarity-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 38px; line-height: 1;
+    color: var(--text);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-shadow: 0 0 20px rgba(201,169,110,0.15);
+  }
+  .clarity-num.flash-green { color: var(--green); text-shadow: 0 0 30px rgba(122,154,110,0.3); }
+  .clarity-num.flash-red { color: var(--red); text-shadow: 0 0 30px rgba(180,90,70,0.3); }
+  .clarity-label {
+    font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-4);
   }
 
-  /* Section divider with gold gradient */
-  .section-divider {
-    padding: 8px 20px 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .section-divider span:first-child {
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-3);
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  .section-divider span:last-child {
+  /* ═══ FLATLAY AREA ═══ */
+  .flatlay {
     flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(201,169,110,0.15), transparent);
-  }
-
-  /* ═══ OUTFIT CANVAS ═══ */
-  .outfit-canvas {
-    margin: 14px 16px 16px;
-    border-radius: var(--r);
-    background: rgba(35,28,24,0.95);
-    box-shadow: 0 28px 90px rgba(0,0,0,0.65);
-    padding: 24px 20px 22px;
-    animation: up 0.4s ease-out 0.1s backwards;
-  }
-
-  .slots-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .slot {
-    flex: 1;
-    height: 130px;
-    border-radius: 14px;
-    display: flex;
-    flex-direction: column;
+    display: flex; flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(.16,1,.3,1);
+    padding: 0 0 0;
+    position: relative;
+    margin-top: -10px;
+  }
+
+  /* ═══ SWIPE ROW ═══ */
+  .swipe-row {
+    width: 100%;
     position: relative;
     overflow: hidden;
+    cursor: grab;
+    transition: opacity 0.4s;
+  }
+  .swipe-row:active { cursor: grabbing; }
+  .swipe-row.dimmed { opacity: 0.45; }
+
+  /* Row heights by category hierarchy */
+  .swipe-row[data-cat="outer"]  { height: 140px; margin-bottom: -14px; z-index: 4; }
+  .swipe-row[data-cat="upper"]  { height: 90px;  margin-bottom: -14px; z-index: 3; }
+  .swipe-row[data-cat="lower"]  { height: 150px; margin-bottom: -14px; z-index: 2; }
+  .swipe-row[data-cat="shoes"]  { height: 80px;  z-index: 1; }
+
+  .swipe-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform;
   }
 
-  .slot.filled {
-    border: 1px solid rgba(201,169,110,0.10);
-    background: var(--card);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  .swipe-item {
+    flex: 0 0 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+  .swipe-item.active { transform: scale(1.0); opacity: 1.0; }
+  .swipe-item.inactive { transform: scale(0.92); opacity: 0.6; }
+
+  /* Garment silhouette — filled, colored, heavy shadow */
+  .garment-sil {
+    filter: drop-shadow(0 25px 40px rgba(0,0,0,0.18));
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .slot.empty {
-    border: 1.5px dashed rgba(201,169,110,0.15);
-    background: transparent;
-  }
-
-  .slot:hover { border-color: var(--border-light); transform: translateY(-2px); }
-  .slot:active { transform: scale(0.96); }
-
-  .slot svg {
-    width: 48px;
-    height: 48px;
-    color: var(--text-2);
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-    transform: translateY(-2px);
-    transition: transform 0.35s cubic-bezier(.16,1,.3,1);
-  }
-  .slot:hover svg { transform: translateY(-5px); }
-
-  .slot-label {
-    font-size: 9px;
-    color: var(--text-3);
-    letter-spacing: 0.3px;
-  }
-
-  .slot.empty svg {
-    width: 22px;
-    height: 22px;
-    color: var(--text-4);
-    filter: none;
-    transform: none;
-  }
-  .slot.empty:hover svg { transform: none; }
-
-  /* Slot color backgrounds (match garment) */
-  .slot[data-garment="navy-skjorte"] { background: linear-gradient(155deg, #161C28 0%, #121822 50%, #0E141C 100%); }
-  .slot[data-garment="sort-jeans"] { background: linear-gradient(155deg, #1C1C20 0%, #18181C 50%, #141416 100%); }
-  .slot[data-garment="hvite-sneakers"] { background: linear-gradient(155deg, #1E2024 0%, #1A1C20 50%, #16181C 100%); }
-  .slot[data-garment="olive-bomber"] { background: linear-gradient(155deg, #1C2416 0%, #182014 50%, #141C10 100%); }
-  .slot[data-garment="beige-chinos"] { background: linear-gradient(155deg, #24201A 0%, #201C16 50%, #1C1812 100%); }
-  .slot[data-garment="brune-boots"] { background: linear-gradient(155deg, #2E1F16 0%, #261A14 50%, #1E1510 100%); }
-  .slot[data-garment="hvit-tee"] { background: linear-gradient(155deg, #1E2024 0%, #1A1C20 50%, #16181C 100%); }
-  .slot[data-garment="grey-hoodie"] { background: linear-gradient(155deg, #222226 0%, #1E1E22 50%, #1A1A1E 100%); }
-
-  .slot.empty .slot-label {
-    color: var(--text-4);
-    font-size: 8px;
-  }
-
-  /* Row 2 (optional slots) is shorter */
-  .slots-row:nth-child(2) .slot { height: 70px; }
-  .slots-row:nth-child(2) .slot.filled { height: 100px; }
-
-  .slot.removing {
-    animation: slotRemove 0.25s ease-out forwards;
-  }
-
-  @keyframes slotRemove {
-    to { opacity: 0; transform: scale(0.9); }
-  }
-
-  .slot.adding {
-    animation: slotAdd 0.3s cubic-bezier(.16,1,.3,1);
-  }
-
-  @keyframes slotAdd {
-    from { opacity: 0; transform: scale(0.85); }
-    to { opacity: 1; transform: scale(1); }
-  }
-
-  .outfit-name {
+  /* ═══ INSIGHT ═══ */
+  .insight {
+    text-align: center;
+    padding: 12px 30px 0;
     font-family: 'Instrument Serif', serif;
     font-style: italic;
-    font-size: 15px;
-    color: var(--text-2);
-    text-align: center;
-  }
-
-  /* ═══ FEEDBACK CARD ═══ */
-  .feedback-card {
-    margin: 10px 16px 16px;
-    background: rgba(35,28,24,0.95);
-    border: 1px solid rgba(201,169,110,0.10);
-    border-radius: var(--r);
-    padding: 20px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03) inset;
-    display: flex;
-    gap: 20px;
-    animation: up 0.4s ease-out 0.2s backwards;
-  }
-
-  .feedback-metric {
-    flex: 1;
-  }
-
-  .feedback-label {
-    font-size: 10px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin-bottom: 6px;
-  }
-
-  .feedback-value {
-    font-family: 'Instrument Serif', serif;
-    font-size: 32px;
-    color: var(--text);
-    line-height: 1;
-    margin-bottom: 8px;
-    text-shadow: 0 0 14px rgba(201,169,110,0.15);
-    transition: all 0.4s ease-out;
-  }
-
-  .feedback-value.gold {
-    color: var(--gold);
-    font-size: 26px;
-  }
-
-  .feedback-bar-track {
-    width: 100%;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .feedback-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--gold);
-    transition: width 0.6s ease-out;
-  }
-
-  /* ═══ SUGGESTION CARD ═══ */
-  .section-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 20px 12px;
-  }
-
-  .sh-label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-3);
-  }
-
-  .suggestion-card {
-    margin: 0 16px 16px;
-    background: rgba(35,28,24,0.95);
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    padding: 16px 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-    cursor: pointer;
-    transition: all .35s cubic-bezier(.16,1,.3,1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    animation: up 0.4s ease-out 0.3s backwards;
-  }
-
-  .suggestion-card:hover { border-color: var(--border-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.28); }
-  .suggestion-card:active { transform: scale(0.98); }
-
-  .suggestion-text {
     font-size: 13px;
-    color: var(--text);
-  }
-
-  .suggestion-text strong { color: var(--text-2); font-weight: 500; }
-
-  .gap-impact-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 3px 8px;
-    background: var(--green-soft);
-    border-radius: 4px;
-    font-size: 10px;
-    color: var(--green);
-    flex-shrink: 0;
-    margin-left: 10px;
-  }
-
-  /* ═══ FILTER TABS ═══ */
-  .filter-tabs {
-    display: flex;
-    gap: 0;
-    padding: 6px 20px 10px;
-    animation: up 0.4s ease-out 0.35s backwards;
-  }
-
-  .vt-tab {
-    padding: 6px 14px;
-    font-size: 14px;
     color: var(--text-3);
+    opacity: 0.7;
+    transition: all 0.6s;
+    min-height: 36px;
+    flex-shrink: 0;
+  }
+
+  /* ═══ GHOST GARMENT ═══ */
+  .swipe-item.ghost { opacity: 0.35; }
+  .swipe-item.ghost.active { opacity: 0.45; }
+  .swipe-item.ghost .garment-sil { filter: drop-shadow(0 25px 40px rgba(0,0,0,0.10)); }
+  .ghost-border {
+    position: absolute;
+    inset: 15%;
+    border: 2px dashed rgba(201,169,110,0.35);
+    border-radius: 16px;
+    pointer-events: none;
+  }
+  .ghost-label {
+    position: absolute;
+    bottom: 4px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    letter-spacing: 0.8px;
+    color: var(--gold-dim);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .ghost-impact {
+    position: absolute;
+    top: 6px; right: 15%;
+    font-size: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--green-soft);
+    color: var(--green);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .swipe-item.ghost.active .ghost-impact { opacity: 1; }
+
+  /* ═══ CTA ═══ */
+  .cta-area {
+    padding: 16px 20px 0;
+    flex-shrink: 0;
+  }
+  .cta-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: none;
+    background: rgba(201,169,110,0.10);
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    border-bottom: 2px solid transparent;
     transition: all 0.2s;
   }
-
-  .vt-tab:hover { color: var(--text-2); }
-
-  .vt-tab.active {
-    color: var(--gold);
-    border-bottom-color: var(--gold);
-  }
-
-  /* ═══ GARMENT SELECTOR ═══ */
-  .garment-selector {
-    display: flex;
-    gap: 10px;
-    padding: 0 16px 16px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    animation: up 0.4s ease-out 0.4s backwards;
-  }
-
-  .garment-selector::-webkit-scrollbar { display: none; }
-
-  .g-card {
-    flex: 0 0 130px;
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all .35s cubic-bezier(.16,1,.3,1);
-    border: 1.5px solid rgba(255,255,255,0.04);
-    background: rgba(35,28,24,0.95);
-  }
-
-  .g-card:hover { border-color: var(--border-light); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
-  .g-card:active { transform: scale(0.96); }
-
-  .g-card.selected {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 1px var(--gold), 0 6px 18px rgba(201,169,110,0.15);
-  }
-
-  .g-visual {
-    height: 110px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px 12px 0 0;
-  }
-  .g-visual::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      linear-gradient(180deg, transparent 50%, rgba(26,23,20,0.8) 100%),
-      radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.03), transparent 70%);
-  }
-
-  .g-visual svg {
-    width: 46px;
-    height: 54px;
-    position: relative;
-    z-index: 1;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-    transform: translateY(-2px);
-    transition: transform 0.35s cubic-bezier(.16,1,.3,1);
-  }
-  .g-card:hover .g-visual svg { transform: translateY(-5px); }
-
-  .g-name {
-    padding: 8px 10px;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text);
-    background: rgba(35,28,24,0.9);
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* Color gradients (matching wardrobe) */
-  .g-navy .g-visual { background: linear-gradient(155deg, #161C28 0%, #121822 50%, #0E141C 100%); color: #7B9AB8; }
-  .g-white .g-visual { background: linear-gradient(155deg, #1E2024 0%, #1A1C20 50%, #16181C 100%); color: #B0BCC8; }
-  .g-black .g-visual { background: linear-gradient(155deg, #1C1C20 0%, #18181C 50%, #141416 100%); color: #9090A0; }
-  .g-beige .g-visual { background: linear-gradient(155deg, #24201A 0%, #201C16 50%, #1C1812 100%); color: #C4B89A; }
-  .g-brown .g-visual { background: linear-gradient(155deg, #2E1F16 0%, #261A14 50%, #1E1510 100%); color: #C4976A; }
-  .g-olive .g-visual { background: linear-gradient(155deg, #1C2416 0%, #182014 50%, #141C10 100%); color: #8AAB6E; }
-  .g-grey .g-visual { background: linear-gradient(155deg, #222226 0%, #1E1E22 50%, #1A1A1E 100%); color: #9A9AA0; }
+  .cta-btn:hover { background: rgba(201,169,110,0.16); }
+  .cta-btn:active { transform: scale(0.98); }
 
   /* ═══ TAB BAR ═══ */
   .tab-bar {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 68px;
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 10px 16px 28px;
     background: linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
     backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding-bottom: 6px;
-    z-index: 10;
+    flex-shrink: 0;
   }
-
-  .tab {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    cursor: pointer;
-    padding: 6px 10px;
-  }
-
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 6px 10px; }
   .tab-i { font-size: 17px; opacity: 0.3; }
   .tab-l { font-size: 8.5px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-4); }
   .tab.on .tab-i { opacity: 1; }
   .tab.on .tab-l { color: var(--gold-dim); }
 
-  @keyframes up {
-    from { opacity:0; transform:translateY(12px); }
-    to { opacity:1; transform:translateY(0); }
+  .phone-label {
+    text-align: center; margin-top: 16px;
+    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-4);
   }
 
-  .phone-label {
-    text-align: center;
-    margin-top: 16px;
-    font-size: 11px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--text-4);
+  /* ═══ SWIPE INDICATORS ═══ */
+  .swipe-dots {
+    display: flex; gap: 4px; justify-content: center;
+    padding: 6px 0 0;
+    position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
   }
+  .swipe-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--text-4); opacity: 0.3;
+    transition: all 0.3s;
+  }
+  .swipe-dot.active { opacity: 1; background: var(--gold); width: 12px; border-radius: 2px; }
 </style>
 </head>
 <body>
 
 <div>
-  <div class="phone">
-    <div class="top-bar">
-      <span>9:41</span>
-      <span style="font-size:12px;color:var(--text-3);">●●●●  📶  🔋</span>
+<div class="phone">
+  <!-- Dynamic background -->
+  <div class="dynamic-bg" id="dynamicBg">
+    <div class="ambient-blob blob-a" id="blobA"></div>
+    <div class="ambient-blob blob-b" id="blobB"></div>
+  </div>
+
+  <div class="scr">
+    <div class="sb"><span>9:41</span><span style="font-size:11px; opacity:0.3;">●●●●  📶  🔋</span></div>
+
+    <!-- Header -->
+    <div class="studio-header">
+      <div class="studio-title">Studio</div>
+      <div class="header-actions">
+        <button class="explore-btn" id="exploreBtn" onclick="toggleExplore()">Utforsk</button>
+        <button class="surprise-btn" onclick="surprise()">Surprise</button>
+      </div>
     </div>
-    <div class="brand-row">
-      <span class="brand">CORET</span>
-      <span class="dots">•••</span>
+
+    <!-- Score float -->
+    <div class="score-float">
+      <div class="mood-words" id="moodWords">Structured · Warm · Layered</div>
+      <div class="clarity-float">
+        <span class="clarity-num" id="clarityNum">84</span>
+        <span class="clarity-label">Clarity</span>
+      </div>
     </div>
 
-    <div style="position:absolute;top:54px;right:20px;z-index:20;display:flex;gap:6px;">
-      <button onclick="toggleEmpty()" style="font-family:'DM Sans',sans-serif;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--card);color:var(--text-3);cursor:pointer;">Empty / Full</button>
-    </div>
+    <!-- Flatlay -->
+    <div class="flatlay">
 
-    <div class="scroll">
-
-      <div id="emptyState" style="display:none;">
-        <div class="page-head">
-          <div class="page-title">Studio</div>
-          <div class="page-sub">Bygg og analyser antrekk</div>
-        </div>
-
-        <div style="margin:14px 16px 16px;border-radius:var(--r);background:rgba(35,28,24,0.95);padding:40px 20px;text-align:center;border:1.5px dashed rgba(201,169,110,0.15);">
-          <div style="font-size:32px;opacity:0.2;margin-bottom:16px;">✦</div>
-          <div style="font-family:'Instrument Serif',serif;font-size:18px;color:var(--text-2);margin-bottom:8px;">Klar til å bygge</div>
-          <div style="font-size:12px;color:var(--text-3);line-height:1.5;max-width:220px;margin:0 auto 16px;">Velg plagg fra Wardrobe og dra dem hit. CORET analyserer kombinasjonen i sanntid.</div>
-
-          <!-- Empty slots preview -->
-          <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px;">
-            <div style="width:70px;height:90px;border-radius:12px;border:1.5px dashed rgba(201,169,110,0.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
-              <div style="font-size:16px;color:var(--text-4);opacity:0.3;">+</div>
-              <div style="font-size:7px;letter-spacing:0.5px;color:var(--text-4);">Overdel</div>
-            </div>
-            <div style="width:70px;height:90px;border-radius:12px;border:1.5px dashed rgba(201,169,110,0.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
-              <div style="font-size:16px;color:var(--text-4);opacity:0.3;">+</div>
-              <div style="font-size:7px;letter-spacing:0.5px;color:var(--text-4);">Underdel</div>
-            </div>
-            <div style="width:70px;height:90px;border-radius:12px;border:1.5px dashed rgba(201,169,110,0.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
-              <div style="font-size:16px;color:var(--text-4);opacity:0.3;">+</div>
-              <div style="font-size:7px;letter-spacing:0.5px;color:var(--text-4);">Sko</div>
-            </div>
+      <!-- OUTER ROW -->
+      <div class="swipe-row" data-cat="outer" id="row-outer">
+        <div class="swipe-track" id="track-outer">
+          <div class="swipe-item active" data-color="#5C3D1E" data-name="Ullfrakk">
+            <svg class="garment-sil" width="120" height="120" viewBox="0 0 52 66" fill="none">
+              <path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#5C3D1E" opacity="0.85"/>
+            </svg>
           </div>
-
-          <div style="font-size:11px;color:var(--gold-dim);display:flex;align-items:center;justify-content:center;gap:6px;">
-            <span>Åpne Wardrobe → velg plagg</span>
-            <span style="font-size:14px;">↓</span>
+          <div class="swipe-item inactive" data-color="#1A1A1E" data-name="Skinnjakke">
+            <svg class="garment-sil" width="110" height="110" viewBox="0 0 48 56" fill="none">
+              <path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" fill="#1A1A1E" opacity="0.85"/>
+            </svg>
           </div>
-        </div>
-
-        <!-- Disabled feedback area -->
-        <div style="margin:10px 16px;background:rgba(35,28,24,0.95);border:1px solid var(--border);border-radius:var(--r);padding:20px;opacity:0.4;">
-          <div style="display:flex;gap:20px;">
-            <div style="flex:1;">
-              <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;">Kompatibilitet</div>
-              <div style="font-family:'Instrument Serif',serif;font-size:32px;color:var(--text-4);">—</div>
-            </div>
-            <div style="flex:1;">
-              <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;">Arketype</div>
-              <div style="font-family:'Instrument Serif',serif;font-size:26px;color:var(--text-4);">—</div>
-            </div>
+          <div class="swipe-item inactive" data-color="#3A4A2A" data-name="Oliven Bomber">
+            <svg class="garment-sil" width="110" height="110" viewBox="0 0 48 56" fill="none">
+              <path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" fill="#3A4A2A" opacity="0.85"/>
+            </svg>
           </div>
+          <!-- Ghost: no outer gap in this wardrobe -->
         </div>
+        <div class="swipe-dots" id="dots-outer"></div>
       </div>
 
-      <div id="populatedState">
-      <div class="page-head">
-        <div class="page-title">Studio</div>
-        <div class="page-sub">Bygg og analyser antrekk</div>
+      <!-- UPPER ROW (base layer) -->
+      <div class="swipe-row" data-cat="upper" id="row-upper">
+        <div class="swipe-track" id="track-upper">
+          <div class="swipe-item active" data-color="#2C3E5A" data-name="Navy Skjorte">
+            <svg class="garment-sil" width="70" height="70" viewBox="0 0 40 52" fill="none">
+              <path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="swipe-item inactive" data-color="#E8E4E0" data-name="Hvit T-shirt">
+            <svg class="garment-sil" width="65" height="65" viewBox="0 0 34 40" fill="none">
+              <path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#E8E4E0" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="swipe-item inactive" data-color="#1C1C22" data-name="Sort T-shirt">
+            <svg class="garment-sil" width="65" height="65" viewBox="0 0 34 40" fill="none">
+              <path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#1C1C22" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="swipe-item inactive" data-color="#C4B89A" data-name="Beige Polo">
+            <svg class="garment-sil" width="65" height="65" viewBox="0 0 34 40" fill="none">
+              <path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#C4B89A" opacity="0.85"/>
+            </svg>
+          </div>
+          <!-- Ghost: Blazer (mid-layer gap) -->
+          <div class="swipe-item inactive ghost" data-color="#2A3040" data-name="Blazer" data-ghost="true" data-impact="+13 clarity" style="display:none;">
+            <div class="ghost-border"></div>
+            <svg class="garment-sil" width="70" height="70" viewBox="0 0 40 52" fill="none">
+              <path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2A3040" opacity="0.5"/>
+            </svg>
+            <span class="ghost-label">Mangler: Blazer</span>
+            <span class="ghost-impact">+13 clarity</span>
+          </div>
+        </div>
+        <div class="swipe-dots" id="dots-upper"></div>
       </div>
 
-      <!-- ═══ OUTFIT SYSTEM ═══ -->
-      <div class="section-divider">
-        <span>Outfit System</span>
-        <span></span>
+      <!-- LOWER ROW -->
+      <div class="swipe-row" data-cat="lower" id="row-lower">
+        <div class="swipe-track" id="track-lower">
+          <div class="swipe-item active" data-color="#C4AA82" data-name="Beige Chinos">
+            <svg class="garment-sil" width="90" height="130" viewBox="0 0 32 48" fill="none">
+              <path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="swipe-item inactive" data-color="#1A1A20" data-name="Svarte Jeans">
+            <svg class="garment-sil" width="90" height="130" viewBox="0 0 32 48" fill="none">
+              <path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#1A1A20" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="swipe-item inactive" data-color="#4A6A2A" data-name="Cargo Pants">
+            <svg class="garment-sil" width="95" height="130" viewBox="0 0 34 48" fill="none">
+              <path d="M3 0H31C33 0 34 2 34 4V20L25 48H20L17 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#4A6A2A" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="swipe-item inactive" data-color="#6A8AB0" data-name="Lyse Jeans">
+            <svg class="garment-sil" width="90" height="130" viewBox="0 0 32 48" fill="none">
+              <path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#6A8AB0" opacity="0.85"/>
+            </svg>
+          </div>
+          <!-- Ghost: Linen trousers (summer gap) -->
+          <div class="swipe-item inactive ghost" data-color="#C8C0A8" data-name="Lin bukse" data-ghost="true" data-impact="+6 clarity" style="display:none;">
+            <div class="ghost-border"></div>
+            <svg class="garment-sil" width="90" height="130" viewBox="0 0 32 48" fill="none">
+              <path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C8C0A8" opacity="0.35"/>
+            </svg>
+            <span class="ghost-label">Mangler: Lin bukse</span>
+            <span class="ghost-impact">+6 clarity</span>
+          </div>
+        </div>
+        <div class="swipe-dots" id="dots-lower"></div>
       </div>
 
-      <!-- ═══ OUTFIT CANVAS ═══ -->
-      <div class="outfit-canvas">
-        <!-- Row 1: Core garments -->
-        <div class="slots-row">
-          <div class="slot filled" id="slot-upper" data-type="upper" data-garment="navy-skjorte" onclick="clearSlot('upper')">
-            <svg viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" stroke="currentColor" stroke-width="1.3" opacity="0.6"/><line x1="20" y1="4" x2="20" y2="52" stroke="currentColor" stroke-width="0.5" opacity="0.25"/></svg>
-            <span class="slot-label">Navy Skjorte</span>
+      <!-- SHOES ROW -->
+      <div class="swipe-row" data-cat="shoes" id="row-shoes">
+        <div class="swipe-track" id="track-shoes">
+          <div class="swipe-item active" data-color="#6B4A2A" data-name="Brune Boots">
+            <svg class="garment-sil" width="80" height="40" viewBox="0 0 34 16" fill="none">
+              <path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#6B4A2A" opacity="0.85"/>
+            </svg>
           </div>
-          <div class="slot filled" id="slot-lower" data-type="lower" data-garment="sort-jeans" onclick="clearSlot('lower')">
-            <svg viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" stroke="currentColor" stroke-width="1.3" opacity="0.5"/></svg>
-            <span class="slot-label">Sorte Jeans</span>
+          <div class="swipe-item inactive" data-color="#D8D4D0" data-name="Hvite Sneakers">
+            <svg class="garment-sil" width="80" height="40" viewBox="0 0 34 16" fill="none">
+              <path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#D8D4D0" opacity="0.85"/>
+            </svg>
           </div>
-          <div class="slot filled" id="slot-shoes" data-type="shoes" data-garment="hvite-sneakers" onclick="clearSlot('shoes')">
-            <svg viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" stroke="currentColor" stroke-width="1.3" opacity="0.55"/></svg>
-            <span class="slot-label">Hvite Sneakers</span>
-          </div>
-        </div>
-        <!-- Row 2: Optional layers -->
-        <div class="slots-row">
-          <div class="slot empty" id="slot-outer" data-type="outer" onclick="promptSlot('outer')">
-            <svg viewBox="0 0 18 18" fill="none"><path d="M9 3V15M3 9H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            <span class="slot-label">Ytterlag</span>
-          </div>
-          <div class="slot empty" id="slot-accessory" data-type="accessory" onclick="promptSlot('accessory')">
-            <svg viewBox="0 0 18 18" fill="none"><path d="M9 3V15M3 9H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            <span class="slot-label">Tilbehør</span>
+          <div class="swipe-item inactive" data-color="#2A2A30" data-name="Svarte Derby">
+            <svg class="garment-sil" width="80" height="40" viewBox="0 0 34 16" fill="none">
+              <path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#2A2A30" opacity="0.85"/>
+            </svg>
           </div>
         </div>
-        <div class="outfit-name">Ny Kombinasjon</div>
-      </div>
-
-      <!-- ═══ SYSTEM FEEDBACK ═══ -->
-      <div class="section-divider">
-        <span>System Feedback</span>
-        <span></span>
-      </div>
-
-      <!-- ═══ FEEDBACK CARD ═══ -->
-      <div class="feedback-card">
-        <div class="feedback-metric">
-          <div class="feedback-label">Kompatibilitet</div>
-          <div class="feedback-value" id="compat-value">84</div>
-          <div class="feedback-bar-track">
-            <div class="feedback-bar-fill" id="compat-bar" style="width:84%;"></div>
-          </div>
-        </div>
-        <div class="feedback-metric">
-          <div class="feedback-label">Arketype</div>
-          <div class="feedback-value gold" id="arch-value">SC</div>
-          <div class="feedback-bar-track">
-            <div class="feedback-bar-fill" id="arch-bar" style="width:87%;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ SUGGESTED SWAP ═══ -->
-      <div class="section-head" style="padding-top:8px;">
-        <span class="sh-label">Foreslatt bytte</span>
-      </div>
-
-      <div class="suggestion-card" id="suggestion">
-        <span class="suggestion-text">Bytt <strong>Hoodie</strong> → <strong>Blazer</strong></span>
-        <span class="gap-impact-chip">+6 clarity</span>
-      </div>
-
-      <!-- ═══ GARMENT SELECTOR ═══ -->
-      <div class="section-divider">
-        <span>Garment Selector</span>
-        <span></span>
-      </div>
-
-      <!-- Filter tabs -->
-      <div class="filter-tabs">
-        <div class="vt-tab active" data-filter="alle" onclick="setFilter(this)">Alle</div>
-        <div class="vt-tab" data-filter="upper" onclick="setFilter(this)">Overdel</div>
-        <div class="vt-tab" data-filter="lower" onclick="setFilter(this)">Underdel</div>
-        <div class="vt-tab" data-filter="shoes" onclick="setFilter(this)">Sko</div>
-      </div>
-
-      <!-- Garment grid -->
-      <div class="garment-selector" id="garmentGrid">
-        <!-- Navy Skjorte -->
-        <div class="g-card g-navy selected" data-id="navy-skjorte" data-type="upper" data-name="Navy Skjorte" onclick="selectGarment(this)">
-          <div class="g-visual">
-            <svg viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" stroke="currentColor" stroke-width="1.2" opacity="0.6"/></svg>
-          </div>
-          <div class="g-name">Navy Skjorte</div>
-        </div>
-        <!-- Hvit T-skjorte -->
-        <div class="g-card g-white" data-id="hvit-tee" data-type="upper" data-name="Hvit T-skjorte" onclick="selectGarment(this)">
-          <div class="g-visual">
-            <svg viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" stroke="currentColor" stroke-width="1.2" opacity="0.6"/></svg>
-          </div>
-          <div class="g-name">Hvit T-skjorte</div>
-        </div>
-        <!-- Sort Jeans -->
-        <div class="g-card g-black selected" data-id="sort-jeans" data-type="lower" data-name="Sorte Jeans" onclick="selectGarment(this)">
-          <div class="g-visual">
-            <svg viewBox="0 0 32 44" fill="none"><path d="M3 0H29C31 0 32 2 32 4V18L23 42H18L16 21L14 42H9L0 18V4C0 2 1 0 3 0Z" stroke="currentColor" stroke-width="1.2" opacity="0.5"/></svg>
-          </div>
-          <div class="g-name">Sorte Jeans</div>
-        </div>
-        <!-- Beige Chinos -->
-        <div class="g-card g-beige" data-id="beige-chinos" data-type="lower" data-name="Beige Chinos" onclick="selectGarment(this)">
-          <div class="g-visual">
-            <svg viewBox="0 0 32 44" fill="none"><path d="M3 0H29C31 0 32 2 32 4V18L23 42H18L16 21L14 42H9L0 18V4C0 2 1 0 3 0Z" stroke="currentColor" stroke-width="1.2" opacity="0.5"/></svg>
-          </div>
-          <div class="g-name">Beige Chinos</div>
-        </div>
-        <!-- Hvite Sneakers -->
-        <div class="g-card g-white selected" data-id="hvite-sneakers" data-type="shoes" data-name="Hvite Sneakers" onclick="selectGarment(this)">
-          <div class="g-visual">
-            <svg viewBox="0 0 30 16" fill="none"><path d="M2 6C2 3 5 1 9 1H12L14 0H16L18 1H21C25 1 28 3 28 6V9C28 12 25 14 21 14H9C5 14 2 12 2 9V6Z" stroke="currentColor" stroke-width="1.2" opacity="0.5"/></svg>
-          </div>
-          <div class="g-name">Hvite Sneakers</div>
-        </div>
-        <!-- Brune Boots -->
-        <div class="g-card g-brown" data-id="brune-boots" data-type="shoes" data-name="Brune Boots" onclick="selectGarment(this)">
-          <div class="g-visual">
-            <svg viewBox="0 0 30 16" fill="none"><path d="M2 6C2 3 5 1 9 1H12L14 0H16L18 1H21C25 1 28 3 28 6V9C28 12 25 14 21 14H9C5 14 2 12 2 9V6Z" stroke="currentColor" stroke-width="1.2" opacity="0.5"/></svg>
-          </div>
-          <div class="g-name">Brune Boots</div>
-        </div>
-        <!-- Olive Bomber -->
-        <div class="g-card g-olive" data-id="olive-bomber" data-type="outer" data-name="Olive Bomber" onclick="selectGarment(this)">
-          <div class="g-visual">
-            <svg viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" stroke="currentColor" stroke-width="1.2" opacity="0.55"/></svg>
-          </div>
-          <div class="g-name">Olive Bomber</div>
-        </div>
-        <!-- Grey Hoodie -->
-        <div class="g-card g-grey" data-id="grey-hoodie" data-type="upper" data-name="Grey Hoodie" onclick="selectGarment(this)">
-          <div class="g-visual">
-            <svg viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" stroke="currentColor" stroke-width="1.2" opacity="0.6"/></svg>
-          </div>
-          <div class="g-name">Grey Hoodie</div>
-        </div>
+        <div class="swipe-dots" id="dots-shoes"></div>
       </div>
 
     </div>
+
+    <!-- Insight -->
+    <div class="insight" id="insight">Sterk tonal dybde mellom frakk og chinos</div>
+
+    <!-- CTA -->
+    <div class="cta-area">
+      <button class="cta-btn" onclick="wearToday()">Bruk i dag</button>
     </div>
 
+    <!-- Tab bar -->
     <div class="tab-bar">
       <div class="tab"><span class="tab-i">▦</span><span class="tab-l">Wardrobe</span></div>
       <div class="tab on"><span class="tab-i">✦</span><span class="tab-l">Studio</span></div>
@@ -749,138 +461,344 @@
       <div class="tab"><span class="tab-i">◈</span><span class="tab-l">Evolution</span></div>
     </div>
   </div>
-  <div class="phone-label">Studio — Outfit Builder</div>
+</div>
+<div class="phone-label">Studio — Swipe Flatlay</div>
 </div>
 
 <script>
-  // ═══ STATE ═══
-  const slots = {
-    upper: { garment: 'navy-skjorte', name: 'Navy Skjorte' },
-    lower: { garment: 'sort-jeans', name: 'Sorte Jeans' },
-    shoes: { garment: 'hvite-sneakers', name: 'Hvite Sneakers' },
-    outer: null,
-    accessory: null
+// ═══ STATE ═══
+let exploreMode = false;
+const rows = {};
+const ROW_IDS = ['outer', 'upper', 'lower', 'shoes'];
+
+// Simulated outfit scores (keyed by combo of selected indices)
+const insights = [
+  'Sterk tonal dybde mellom frakk og chinos',
+  'Kontrast mellom overdel og underdel gir visuell balanse',
+  'Nøytral base holder antrekket rolig',
+  'Lys base gir et luftig uttrykk',
+  'Mork farge-harmoni — enhetlig og strukturert',
+  'Oversize ytterlag over fitted base gir lagdybde',
+  'Varm tone gjennomgaande — harmonisk',
+  'Blanding av varme og kjolige toner skaper spenning',
+];
+
+const moodSets = [
+  'Structured · Warm · Layered',
+  'Refined · Cool · Clean',
+  'Relaxed · Earthy · Textured',
+  'Minimal · Neutral · Sharp',
+  'Bold · Dark · Cohesive',
+  'Balanced · Tonal · Grounded',
+];
+
+// ═══ INIT ═══
+ROW_IDS.forEach(id => {
+  const row = document.getElementById('row-' + id);
+  const track = document.getElementById('track-' + id);
+  const items = track.querySelectorAll('.swipe-item');
+  const dotsEl = document.getElementById('dots-' + id);
+
+  rows[id] = {
+    el: row,
+    track: track,
+    items: Array.from(items),
+    current: 0,
+    count: items.length,
+    dotsEl: dotsEl,
+    dragging: false,
+    startX: 0,
+    currentX: 0,
   };
 
-  const svgs = {
-    upper: '<svg viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" stroke="currentColor" stroke-width="1.3" opacity="0.6"/><line x1="20" y1="4" x2="20" y2="52" stroke="currentColor" stroke-width="0.5" opacity="0.25"/></svg>',
-    lower: '<svg viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" stroke="currentColor" stroke-width="1.3" opacity="0.5"/></svg>',
-    shoes: '<svg viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" stroke="currentColor" stroke-width="1.3" opacity="0.55"/></svg>',
-    outer: '<svg viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" stroke="currentColor" stroke-width="1.3" opacity="0.55"/></svg>'
-  };
-
-  const emptySvg = '<svg viewBox="0 0 18 18" fill="none"><path d="M9 3V15M3 9H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
-  const emptyLabels = { outer: 'Ytterlag', accessory: 'Tilbehør' };
-
-  // Compatibility scores based on filled slot count
-  const compatScores = { 2: 72, 3: 84, 4: 91, 5: 95 };
-  const archScores = { 2: 74, 3: 87, 4: 92, 5: 96 };
-
-  function filledCount() {
-    return Object.values(slots).filter(v => v !== null).length;
+  // Build dots
+  for (let i = 0; i < items.length; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'swipe-dot' + (i === 0 ? ' active' : '');
+    dotsEl.appendChild(dot);
   }
 
-  function updateFeedback() {
-    const count = filledCount();
-    const compat = compatScores[count] || 60;
-    const arch = archScores[count] || 60;
-    document.getElementById('compat-value').textContent = compat;
-    document.getElementById('compat-bar').style.width = compat + '%';
-    document.getElementById('arch-bar').style.width = arch + '%';
+  // Touch/mouse events
+  row.addEventListener('mousedown', e => startDrag(id, e.clientX));
+  row.addEventListener('touchstart', e => startDrag(id, e.touches[0].clientX), { passive: true });
+  row.addEventListener('mousemove', e => moveDrag(id, e.clientX));
+  row.addEventListener('touchmove', e => moveDrag(id, e.touches[0].clientX), { passive: true });
+  row.addEventListener('mouseup', () => endDrag(id));
+  row.addEventListener('mouseleave', () => endDrag(id));
+  row.addEventListener('touchend', () => endDrag(id));
+});
+
+updateAll();
+
+// ═══ DRAG SYSTEM ═══
+function startDrag(id, x) {
+  const r = rows[id];
+  r.dragging = true;
+  r.startX = x;
+  r.currentX = x;
+  r.track.style.transition = 'none';
+
+  // Dim other rows
+  ROW_IDS.forEach(rid => {
+    if (rid !== id) rows[rid].el.classList.add('dimmed');
+  });
+}
+
+function moveDrag(id, x) {
+  const r = rows[id];
+  if (!r.dragging) return;
+  r.currentX = x;
+  const diff = r.currentX - r.startX;
+  const base = -r.current * r.el.offsetWidth;
+  r.track.style.transform = `translateX(${base + diff}px)`;
+}
+
+function endDrag(id) {
+  const r = rows[id];
+  if (!r.dragging) return;
+  r.dragging = false;
+  r.track.style.transition = '';
+
+  const diff = r.currentX - r.startX;
+  const threshold = r.el.offsetWidth * 0.25;
+
+  if (diff < -threshold && r.current < r.count - 1) {
+    r.current++;
+  } else if (diff > threshold && r.current > 0) {
+    r.current--;
   }
 
-  function renderSlot(type) {
-    const el = document.getElementById('slot-' + type);
-    const data = slots[type];
-    if (data) {
-      el.className = 'slot filled adding';
-      el.setAttribute('data-garment', data.garment);
-      el.innerHTML = (svgs[type] || svgs.upper) + '<span class="slot-label">' + data.name + '</span>';
-      el.onclick = function() { clearSlot(type); };
-      setTimeout(() => el.classList.remove('adding'), 300);
-    } else {
-      el.className = 'slot empty';
-      el.removeAttribute('data-garment');
-      el.innerHTML = emptySvg + '<span class="slot-label">' + (emptyLabels[type] || type) + '</span>';
-      el.onclick = function() { promptSlot(type); };
+  snapTo(id, r.current);
+
+  // Un-dim all
+  ROW_IDS.forEach(rid => rows[rid].el.classList.remove('dimmed'));
+}
+
+function snapTo(id, index) {
+  const r = rows[id];
+  r.current = index;
+  r.track.style.transform = `translateX(${-index * r.el.offsetWidth}px)`;
+
+  // Update active/inactive
+  r.items.forEach((item, i) => {
+    item.classList.toggle('active', i === index);
+    item.classList.toggle('inactive', i !== index);
+  });
+
+  // Update dots
+  r.dotsEl.querySelectorAll('.swipe-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === index);
+  });
+
+  updateAll();
+}
+
+// ═══ UPDATE ═══
+function updateAll() {
+  updateBackground();
+  updateScore();
+  updateMood();
+  updateInsight();
+  if (exploreMode) updateCTA();
+}
+
+function getActiveColors() {
+  return ROW_IDS.map(id => {
+    const r = rows[id];
+    return r.items[r.current].dataset.color;
+  });
+}
+
+function hexToHSL(hex) {
+  let r = parseInt(hex.slice(1,3), 16) / 255;
+  let g = parseInt(hex.slice(3,5), 16) / 255;
+  let b = parseInt(hex.slice(5,7), 16) / 255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h, s, l = (max+min)/2;
+  if (max === min) { h = s = 0; }
+  else {
+    const d = max - min;
+    s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+    switch(max) {
+      case r: h = ((g-b)/d + (g<b?6:0))/6; break;
+      case g: h = ((b-r)/d+2)/6; break;
+      case b: h = ((r-g)/d+4)/6; break;
     }
-    syncSelectors();
   }
+  return [h*360, s*100, l*100];
+}
 
-  function clearSlot(type) {
-    if (!slots[type]) return;
-    const el = document.getElementById('slot-' + type);
-    el.classList.add('removing');
-    setTimeout(() => {
-      slots[type] = null;
-      renderSlot(type);
-      updateFeedback();
-    }, 250);
+function updateBackground() {
+  const colors = getActiveColors();
+  let hSum=0, sSum=0, lSum=0;
+  colors.forEach(c => {
+    const [h,s,l] = hexToHSL(c);
+    hSum += h; sSum += s; lSum += l;
+  });
+  const n = colors.length;
+  const avgH = hSum/n, avgS = sSum/n, avgL = lSum/n;
+
+  const bg = document.getElementById('dynamicBg');
+  const darkL = Math.max(avgL * 0.15, 5);
+  const midL = Math.max(avgL * 0.22, 8);
+  bg.style.background = `
+    radial-gradient(circle at 30% 25%, hsl(${avgH}, ${avgS*0.4}%, ${midL}%) 0%, transparent 60%),
+    radial-gradient(circle at 70% 75%, hsl(${avgH+20}, ${avgS*0.3}%, ${darkL}%) 0%, transparent 50%),
+    hsl(${avgH}, ${avgS*0.15}%, ${darkL * 0.7}%)
+  `;
+
+  const blobA = document.getElementById('blobA');
+  const blobB = document.getElementById('blobB');
+  blobA.style.background = `hsl(${avgH}, ${avgS*0.5}%, ${avgL*0.25}%)`;
+  blobB.style.background = `hsl(${avgH+30}, ${avgS*0.4}%, ${avgL*0.2}%)`;
+}
+
+function updateScore() {
+  // Simulated scoring based on color harmony
+  const colors = getActiveColors();
+  const hsls = colors.map(hexToHSL);
+
+  // Simple harmony: lower hue variance = higher score
+  const hues = hsls.map(h => h[0]);
+  const meanH = hues.reduce((a,b)=>a+b,0)/hues.length;
+  const variance = hues.reduce((a,h)=>a+Math.pow(h-meanH,2),0)/hues.length;
+  const harmony = Math.max(60, Math.min(96, 95 - Math.sqrt(variance) * 0.3));
+  const score = Math.round(harmony);
+
+  const el = document.getElementById('clarityNum');
+  const prev = parseInt(el.textContent);
+
+  el.textContent = score;
+  el.style.transform = 'scale(1.12)';
+  setTimeout(() => { el.style.transform = 'scale(1)'; }, 300);
+
+  if (score > prev) {
+    el.classList.add('flash-green');
+    setTimeout(() => el.classList.remove('flash-green'), 600);
+  } else if (score < prev) {
+    el.classList.add('flash-red');
+    setTimeout(() => el.classList.remove('flash-red'), 600);
   }
+}
 
-  function promptSlot(type) {
-    // Visual hint — slot pulses
-    const el = document.getElementById('slot-' + type);
-    el.style.borderColor = 'rgba(201,169,110,0.4)';
-    setTimeout(() => { el.style.borderColor = ''; }, 600);
-  }
+function updateMood() {
+  const idx = (rows.outer.current + rows.upper.current + rows.lower.current + rows.shoes.current) % moodSets.length;
+  document.getElementById('moodWords').textContent = moodSets[idx];
+}
 
-  function selectGarment(cardEl) {
-    const id = cardEl.dataset.id;
-    const type = cardEl.dataset.type;
-    const name = cardEl.dataset.name;
-
-    // If already in a slot, remove it
-    if (slots[type] && slots[type].garment === id) {
-      slots[type] = null;
-      renderSlot(type);
-      updateFeedback();
+function updateInsight() {
+  // Check if any active item is a ghost
+  for (const id of ROW_IDS) {
+    const r = rows[id];
+    const item = r.items[r.current];
+    if (item && item.dataset.ghost === 'true') {
+      const impact = item.dataset.impact || '+? clarity';
+      document.getElementById('insight').textContent = item.dataset.name + ' ville fylle et strukturelt gap — ' + impact + ' · +18 kombinasjoner';
       return;
     }
-
-    // Fill the slot
-    slots[type] = { garment: id, name: name };
-    renderSlot(type);
-    updateFeedback();
   }
+  const idx = (rows.outer.current * 3 + rows.upper.current * 2 + rows.lower.current + rows.shoes.current) % insights.length;
+  document.getElementById('insight').textContent = insights[idx];
+}
 
-  function syncSelectors() {
-    const cards = document.querySelectorAll('.g-card');
-    const filledIds = Object.values(slots).filter(v => v).map(v => v.garment);
-    cards.forEach(card => {
-      if (filledIds.includes(card.dataset.id)) {
-        card.classList.add('selected');
-      } else {
-        card.classList.remove('selected');
-      }
-    });
-  }
+// ═══ SURPRISE ═══
+function surprise() {
+  const delays = [0, 120, 240, 360];
+  ROW_IDS.forEach((id, i) => {
+    setTimeout(() => {
+      const r = rows[id];
+      const newIdx = Math.floor(Math.random() * r.count);
+      snapTo(id, newIdx);
+    }, delays[i]);
+  });
+}
 
-  function toggleEmpty() {
-    const empty = document.getElementById('emptyState');
-    const populated = document.getElementById('populatedState');
-    if (empty.style.display === 'none') {
-      empty.style.display = 'block';
-      populated.style.display = 'none';
-    } else {
-      empty.style.display = 'none';
-      populated.style.display = 'block';
+// ═══ EXPLORE MODE ═══
+function toggleExplore() {
+  exploreMode = !exploreMode;
+  const btn = document.getElementById('exploreBtn');
+  btn.classList.toggle('active', exploreMode);
+
+  // Show/hide ghost items
+  document.querySelectorAll('.swipe-item.ghost').forEach(ghost => {
+    ghost.style.display = exploreMode ? '' : 'none';
+  });
+
+  // Rebuild rows (item count changed)
+  ROW_IDS.forEach(id => {
+    const track = document.getElementById('track-' + id);
+    const items = track.querySelectorAll('.swipe-item' + (exploreMode ? '' : ':not([style*="display: none"])'));
+    const visibleItems = Array.from(track.querySelectorAll('.swipe-item')).filter(el => el.style.display !== 'none');
+    rows[id].items = visibleItems;
+    rows[id].count = visibleItems.length;
+
+    // Rebuild dots
+    const dotsEl = rows[id].dotsEl;
+    dotsEl.innerHTML = '';
+    for (let i = 0; i < visibleItems.length; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'swipe-dot' + (i === rows[id].current ? ' active' : '');
+      dotsEl.appendChild(dot);
     }
-  }
+  });
 
-  // ═══ FILTER TABS ═══
-  function setFilter(tabEl) {
-    document.querySelectorAll('.vt-tab').forEach(t => t.classList.remove('active'));
-    tabEl.classList.add('active');
-    const filter = tabEl.dataset.filter;
-    document.querySelectorAll('.g-card').forEach(card => {
-      if (filter === 'alle' || card.dataset.type === filter) {
-        card.style.display = '';
-      } else {
-        card.style.display = 'none';
-      }
-    });
+  // Update CTA
+  updateCTA();
+  updateAll();
+}
+
+function updateCTA() {
+  const btn = document.querySelector('.cta-btn');
+  const hasGhostActive = ROW_IDS.some(id => {
+    const r = rows[id];
+    const item = r.items[r.current];
+    return item && item.dataset.ghost === 'true';
+  });
+
+  if (hasGhostActive) {
+    btn.textContent = 'Legg til garderobe';
+    btn.onclick = addGhost;
+  } else {
+    btn.textContent = 'Bruk i dag';
+    btn.onclick = wearToday;
   }
+}
+
+function addGhost() {
+  const btn = document.querySelector('.cta-btn');
+  const ghostItems = ROW_IDS.map(id => {
+    const r = rows[id];
+    const item = r.items[r.current];
+    return (item && item.dataset.ghost === 'true') ? item.dataset.name : null;
+  }).filter(Boolean);
+
+  btn.textContent = 'Legger til: ' + ghostItems.join(', ') + '...';
+  btn.style.background = 'rgba(201,169,110,0.15)';
+  setTimeout(() => {
+    btn.textContent = 'Lagt til!';
+    btn.style.background = 'rgba(122,154,110,0.15)';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => {
+      btn.style.background = '';
+      btn.style.color = '';
+      updateCTA();
+    }, 1500);
+  }, 800);
+}
+
+// ═══ WEAR TODAY ═══
+function wearToday() {
+  const btn = document.querySelector('.cta-btn');
+  const names = ROW_IDS.map(id => rows[id].items[rows[id].current].dataset.name);
+  btn.textContent = 'Logget: ' + names.join(' + ');
+  btn.style.background = 'rgba(122,154,110,0.15)';
+  btn.style.color = 'var(--green)';
+  setTimeout(() => {
+    btn.textContent = 'Bruk i dag';
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 2000);
+}
 </script>
 
 </body>
