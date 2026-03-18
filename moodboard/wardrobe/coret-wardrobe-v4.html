@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0">
+<title>CORET — Wardrobe V4</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1714;
+    --card: #221f1a;
+    --border: #2e2a22;
+    --border-light: #3a3530;
+    --text: #EAE5DE;
+    --text-2: #B0A99E;
+    --text-3: #6B625C;
+    --text-4: #4a4540;
+    --gold: #C9A96E;
+    --gold-dim: rgba(201,169,110,0.55);
+    --gold-soft: rgba(201,169,110,0.10);
+    --green: #7A9A6E;
+    --green-soft: rgba(122,154,110,0.10);
+    --amber: #C4944A;
+    --red: #B4705A;
+    --r: 18px;
+    --r-sm: 10px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0e0c0a;
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .phone {
+    width: 393px; height: 852px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 2.5px solid #2a2520;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+
+  /* Ambient blobs */
+  .ambient { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .amb-blob {
+    position: absolute; border-radius: 50%; filter: blur(100px);
+  }
+  .amb-a { width: 320px; height: 320px; top: 5%; left: -25%; background: rgba(60,45,30,0.25); }
+  .amb-b { width: 280px; height: 280px; bottom: 15%; right: -20%; background: rgba(50,40,25,0.20); }
+
+  /* Film grain */
+  .phone::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 100; border-radius: 44px;
+    opacity: 0.015;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .scr {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    overflow-y: auto; scrollbar-width: none;
+    z-index: 1;
+  }
+  .scr::-webkit-scrollbar { display: none; }
+
+  /* ═══ STATUS + HEADER ═══ */
+  .sb { padding: 14px 24px 0; display: flex; justify-content: space-between; font-size: 15px; font-weight: 600; color: var(--text-2); flex-shrink: 0; }
+
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 20px 2px; flex-shrink: 0;
+  }
+  .header-left { display: flex; align-items: baseline; gap: 8px; }
+  .h-title { font-family: 'Instrument Serif', serif; font-size: 30px; font-weight: 400; }
+  .h-count { font-size: 12px; color: var(--text-3); }
+  .header-right { display: flex; gap: 10px; align-items: center; }
+  .h-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--card); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s;
+  }
+  .h-btn:hover { background: var(--gold-soft); border-color: rgba(201,169,110,0.25); }
+  .h-btn svg { width: 15px; height: 15px; stroke: var(--gold-dim); fill: none; stroke-width: 1.5; stroke-linecap: round; }
+
+  /* ═══ CLARITY LINE ═══ */
+  .clarity-line {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 6px 20px 10px; flex-shrink: 0;
+  }
+  .cl-score {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px; color: var(--gold); opacity: 0.7;
+    line-height: 1;
+  }
+  .cl-info { display: flex; flex-direction: column; gap: 1px; }
+  .cl-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-4); }
+  .cl-desc { font-size: 11px; color: var(--text-3); }
+
+  /* ═══ TAB TOGGLE ═══ */
+  .tab-toggle {
+    display: flex; margin: 0 20px 14px; padding: 3px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    border-radius: 10px; flex-shrink: 0;
+  }
+  .tt-btn {
+    flex: 1; padding: 8px 0; text-align: center;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--text-4); background: transparent; border: none;
+    border-radius: 8px; cursor: pointer; transition: all 0.3s;
+  }
+  .tt-btn.active { background: var(--gold-soft); color: var(--gold); }
+
+  /* ═══ VIEWS ═══ */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ═══ HERO OUTFIT ═══ */
+  .hero-outfit {
+    margin: 0 16px 18px;
+    border-radius: var(--r);
+    position: relative; overflow: hidden;
+    cursor: pointer; transition: all 0.35s;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.6);
+    height: 220px;
+  }
+  .hero-outfit:hover { transform: translateY(-3px); box-shadow: 0 50px 140px rgba(0,0,0,0.7); }
+  .hero-outfit:active { transform: scale(0.98); }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    transition: background 1.2s;
+  }
+  .hero-glass {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 30%, rgba(26,23,20,0.85) 100%);
+  }
+
+  .hero-garments {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+  }
+  .hero-garments svg { filter: drop-shadow(0 12px 30px rgba(0,0,0,0.3)); }
+  .hero-g1 { transform: scale(1.0); z-index: 4; }
+  .hero-g2 { transform: scale(0.95); margin-top: -8px; z-index: 3; }
+  .hero-g3 { transform: scale(0.90); margin-top: -6px; z-index: 2; }
+  .hero-g4 { transform: scale(0.85); margin-top: -4px; z-index: 1; }
+
+  .hero-info {
+    position: absolute; bottom: 16px; left: 18px; right: 18px; z-index: 5;
+  }
+  .hero-tag { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 4px; }
+  .hero-name { font-family: 'Instrument Serif', serif; font-size: 18px; font-style: italic; margin-bottom: 3px; }
+  .hero-score { font-size: 11px; color: var(--text-3); }
+  .hero-score span { color: var(--gold); font-family: 'Instrument Serif', serif; font-size: 14px; }
+
+  /* Hero breathing */
+  .hero-outfit { animation: heroBreathe 4s ease-in-out infinite alternate; }
+  @keyframes heroBreathe { from { transform: scale(1); } to { transform: scale(1.008); } }
+  .hero-outfit:hover { animation: none; }
+
+  /* ═══ CATEGORY ROW ═══ */
+  .cat-row { margin-bottom: 16px; }
+  .cat-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px 10px;
+  }
+  .cat-left { display: flex; align-items: center; gap: 8px; }
+  .cat-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); opacity: 0.5; }
+  .cat-name { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-3); font-weight: 500; }
+  .cat-count { font-size: 10px; color: var(--text-4); }
+
+  .cat-scroll {
+    display: flex; gap: 10px;
+    overflow-x: auto; scroll-snap-type: x mandatory;
+    padding: 0 16px 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cat-scroll::-webkit-scrollbar { display: none; }
+
+  /* ═══ GLASS CARD ═══ */
+  .g-card {
+    flex: 0 0 120px;
+    height: 150px;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Glass */
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.08), transparent 60%);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
+  .g-card:hover {
+    transform: translateY(-4px) scale(1.03);
+    border-color: rgba(201,169,110,0.15);
+    box-shadow: 0 35px 90px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .g-card:active { transform: scale(0.92); filter: brightness(0.9); }
+
+  /* Color bleed */
+  .g-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 14px;
+    pointer-events: none;
+    opacity: 0.6;
+    filter: blur(40px);
+    z-index: 0;
+  }
+
+  .g-visual {
+    height: 100px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+  }
+  .g-visual svg {
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4));
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .g-card:hover .g-visual svg { transform: translateY(-4px); }
+
+  .g-info {
+    padding: 6px 10px 8px;
+    position: relative; z-index: 1;
+  }
+  .g-name { font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .g-meta { font-size: 9px; color: var(--text-4); letter-spacing: 0.3px; }
+  .g-meta .hl { color: var(--gold-dim); }
+
+  /* Key garment pulsing dot */
+  .key-dot {
+    position: absolute; top: 8px; right: 8px; z-index: 2;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gold);
+    animation: keyPulse 2s ease-in-out infinite;
+  }
+  @keyframes keyPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201,169,110,0.3); }
+    50% { box-shadow: 0 0 0 6px rgba(201,169,110,0); }
+  }
+
+  /* Favorite halo */
+  .g-card.fav { box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 40px rgba(201,169,110,0.15), inset 0 1px 0 rgba(255,255,255,0.06); }
+
+  /* Color bleed per garment color */
+  .c-brown::before { background: radial-gradient(circle at 50% 50%, rgba(139,85,55,0.3), transparent 70%); }
+  .c-navy::before { background: radial-gradient(circle at 50% 50%, rgba(44,62,90,0.3), transparent 70%); }
+  .c-black::before { background: radial-gradient(circle at 50% 50%, rgba(40,40,50,0.2), transparent 70%); }
+  .c-olive::before { background: radial-gradient(circle at 50% 50%, rgba(58,74,42,0.3), transparent 70%); }
+  .c-white::before { background: radial-gradient(circle at 50% 50%, rgba(200,210,220,0.15), transparent 70%); }
+  .c-beige::before { background: radial-gradient(circle at 50% 50%, rgba(196,168,130,0.25), transparent 70%); }
+  .c-charcoal::before { background: radial-gradient(circle at 50% 50%, rgba(80,80,90,0.2), transparent 70%); }
+  .c-burgundy::before { background: radial-gradient(circle at 50% 50%, rgba(140,50,65,0.25), transparent 70%); }
+  .c-rust::before { background: radial-gradient(circle at 50% 50%, rgba(180,100,60,0.25), transparent 70%); }
+  .c-blue::before { background: radial-gradient(circle at 50% 50%, rgba(100,140,180,0.2), transparent 70%); }
+
+  /* Gap card */
+  .g-card.gap {
+    background: rgba(201,169,110,0.02);
+    backdrop-filter: none;
+    border: 1.5px dashed rgba(201,169,110,0.15);
+    box-shadow: none;
+  }
+  .g-card.gap::before { display: none; }
+  .g-card.gap:hover { border-color: rgba(201,169,110,0.3); background: rgba(201,169,110,0.04); transform: translateY(-2px); }
+  .gap-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 6px; }
+  .gap-type { font-size: 7px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); font-weight: 500; }
+  .gap-item { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 13px; }
+  .gap-impact { font-size: 8px; padding: 2px 7px; border-radius: 3px; background: rgba(201,169,110,0.15); color: var(--gold); }
+
+  /* ═══ OUTFIT VIEW ═══ */
+  .outfit-list { padding: 0 16px; }
+  .o-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+  }
+  .o-card:hover { transform: translateY(-3px); border-color: rgba(201,169,110,0.15); }
+  .o-card:active { transform: scale(0.98); }
+
+  .o-garments { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; width: 40px; }
+  .o-garments svg { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+
+  .o-info { flex: 1; }
+  .o-name { font-family: 'Instrument Serif', serif; font-size: 15px; font-style: italic; margin-bottom: 3px; }
+  .o-meta { font-size: 10px; color: var(--text-3); }
+  .o-meta span { color: var(--gold); font-family: 'Instrument Serif', serif; font-size: 12px; }
+
+  .o-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+  .o-arch { font-size: 9px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-4); }
+  .o-wears { font-size: 10px; color: var(--text-3); }
+
+  .o-card.add-new {
+    background: transparent;
+    backdrop-filter: none;
+    border: 1.5px dashed rgba(201,169,110,0.15);
+    box-shadow: none;
+    justify-content: center;
+    color: var(--gold-dim);
+    font-size: 12px;
+    gap: 8px;
+    padding: 20px;
+  }
+  .o-card.add-new:hover { border-color: rgba(201,169,110,0.3); }
+
+  /* ═══ NAV ═══ */
+  .bn {
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 8px 16px 28px;
+    background: linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(201,169,110,0.06);
+    flex-shrink: 0;
+  }
+  .ni { display: flex; flex-direction: column; align-items: center; gap: 3px; opacity: 0.25; position: relative; }
+  .ni.a { opacity: 1; }
+  .ni.a::before {
+    content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+    width: 36px; height: 36px;
+    background: radial-gradient(circle, rgba(201,169,110,0.12) 0%, transparent 70%);
+    pointer-events: none; border-radius: 50%;
+  }
+  .ni svg { width: 20px; height: 20px; stroke: var(--text-2); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; position: relative; z-index: 1; }
+  .ni.a svg { stroke: var(--gold); }
+  .nl { font-size: 8.5px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-4); position: relative; z-index: 1; }
+  .ni.a .nl { color: var(--gold-dim); }
+
+  .phone-label {
+    text-align: center; margin-top: 16px;
+    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-4);
+  }
+
+  /* stagger */
+  .g-card { animation: cardIn 0.4s ease-out backwards; }
+  .g-card:nth-child(1) { animation-delay: 0s; }
+  .g-card:nth-child(2) { animation-delay: 0.04s; }
+  .g-card:nth-child(3) { animation-delay: 0.06s; }
+  .g-card:nth-child(4) { animation-delay: 0.08s; }
+  .g-card:nth-child(5) { animation-delay: 0.10s; }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div>
+<div class="phone">
+  <div class="ambient">
+    <div class="amb-blob amb-a"></div>
+    <div class="amb-blob amb-b"></div>
+  </div>
+
+  <div class="scr">
+    <div class="sb"><span>9:41</span><span style="font-size:11px; opacity:0.3;">●●●●  📶  🔋</span></div>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="h-title">Garderobe</div>
+        <div class="h-count">24 plagg</div>
+      </div>
+      <div class="header-right">
+        <div class="h-btn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="h-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg></div>
+      </div>
+    </div>
+
+    <!-- Clarity line -->
+    <div class="clarity-line">
+      <span class="cl-score">78</span>
+      <div class="cl-info">
+        <span class="cl-label">Wardrobe Clarity</span>
+        <span class="cl-desc">~48 sterke antrekk mulig</span>
+      </div>
+    </div>
+
+    <!-- Tab toggle -->
+    <div class="tab-toggle">
+      <button class="tt-btn active" onclick="switchTab('plagg')">Plagg</button>
+      <button class="tt-btn" onclick="switchTab('antrekk')">Antrekk</button>
+    </div>
+
+    <!-- ═══ PLAGG VIEW ═══ -->
+    <div class="view active" id="plaggView">
+
+      <!-- Hero Outfit -->
+      <div class="hero-outfit" onclick="window.location='#studio'">
+        <div class="hero-bg" style="background: radial-gradient(circle at 40% 30%, rgba(92,61,30,0.35), transparent 55%), radial-gradient(circle at 60% 70%, rgba(44,62,90,0.25), transparent 50%), linear-gradient(155deg, #1E1814, #181620);"></div>
+        <div class="hero-glass"></div>
+        <div class="hero-garments">
+          <div class="hero-g1"><svg width="70" height="72" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#5C3D1E" opacity="0.8"/></svg></div>
+          <div class="hero-g2"><svg width="50" height="50" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.8"/></svg></div>
+          <div class="hero-g3"><svg width="44" height="58" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.8"/></svg></div>
+          <div class="hero-g4"><svg width="44" height="18" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#6B4A2A" opacity="0.8"/></svg></div>
+        </div>
+        <div class="hero-info">
+          <div class="hero-tag">Dagens sterkeste</div>
+          <div class="hero-name">Vinterstruktur</div>
+          <div class="hero-score">Clarity <span>91</span> · Smart Casual</div>
+        </div>
+      </div>
+
+      <!-- YTTERLAG -->
+      <div class="cat-row">
+        <div class="cat-header">
+          <div class="cat-left"><div class="cat-dot"></div><div class="cat-name">Ytterlag</div></div>
+          <div class="cat-count">3</div>
+        </div>
+        <div class="cat-scroll">
+          <div class="g-card c-brown fav">
+            <div class="key-dot"></div>
+            <div class="g-visual"><svg width="44" height="56" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#8B5537" opacity="0.7"/></svg></div>
+            <div class="g-info"><div class="g-name">Ullfrakk</div><div class="g-meta"><span class="hl">Nøkkel</span> · Relaxed</div></div>
+          </div>
+          <div class="g-card c-black">
+            <div class="g-visual"><svg width="42" height="52" viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" fill="#2A2A30" opacity="0.65"/></svg></div>
+            <div class="g-info"><div class="g-name">Skinnjakke</div><div class="g-meta">Fitted</div></div>
+          </div>
+          <div class="g-card c-olive">
+            <div class="g-visual"><svg width="42" height="50" viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" fill="#4A5A30" opacity="0.65"/></svg></div>
+            <div class="g-info"><div class="g-name">Oliven Bomber</div><div class="g-meta">Relaxed</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MELLOM -->
+      <div class="cat-row">
+        <div class="cat-header">
+          <div class="cat-left"><div class="cat-dot" style="opacity:0.3;"></div><div class="cat-name">Mellom</div></div>
+          <div class="cat-count">1</div>
+        </div>
+        <div class="cat-scroll">
+          <div class="g-card c-charcoal">
+            <div class="g-visual"><svg width="36" height="44" viewBox="0 0 38 46" fill="none"><path d="M10 6C10 2 28 2 28 6L30 10C30 12 36 12 38 16V18C36 20 32 20 30 18V40C30 44 8 44 8 40V18C6 20 2 20 0 18V16C2 12 8 12 8 10L10 6Z" fill="#3A3A42" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Svart Hoodie</div><div class="g-meta">Relaxed</div></div>
+          </div>
+          <!-- Gap -->
+          <div class="g-card gap">
+            <div class="gap-inner">
+              <span class="gap-type">Mangler</span>
+              <span class="gap-item">Blazer</span>
+              <span class="gap-impact">+13 clarity</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BASE -->
+      <div class="cat-row">
+        <div class="cat-header">
+          <div class="cat-left"><div class="cat-dot" style="opacity:0.7;"></div><div class="cat-name">Base</div></div>
+          <div class="cat-count">6</div>
+        </div>
+        <div class="cat-scroll">
+          <div class="g-card c-navy fav">
+            <div class="key-dot"></div>
+            <div class="g-visual"><svg width="34" height="42" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.65"/></svg></div>
+            <div class="g-info"><div class="g-name">Navy Skjorte</div><div class="g-meta"><span class="hl">Nøkkel</span> · Fitted</div></div>
+          </div>
+          <div class="g-card c-white">
+            <div class="g-visual"><svg width="30" height="36" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#D8D4D0" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Hvit T-shirt</div><div class="g-meta">Nøytral</div></div>
+          </div>
+          <div class="g-card c-black">
+            <div class="g-visual"><svg width="30" height="36" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#222228" opacity="0.55"/></svg></div>
+            <div class="g-info"><div class="g-name">Sort T-shirt</div><div class="g-meta">Nøytral</div></div>
+          </div>
+          <div class="g-card c-beige">
+            <div class="g-visual"><svg width="30" height="36" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#C4B89A" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Beige Polo</div><div class="g-meta">Varm</div></div>
+          </div>
+          <div class="g-card c-burgundy">
+            <div class="g-visual"><svg width="34" height="42" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#8C3040" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Burgundy Skjorte</div><div class="g-meta">Aksent</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UNDERKROPP -->
+      <div class="cat-row">
+        <div class="cat-header">
+          <div class="cat-left"><div class="cat-dot" style="opacity:0.6; background: var(--amber);"></div><div class="cat-name">Underkropp</div></div>
+          <div class="cat-count">5</div>
+        </div>
+        <div class="cat-scroll">
+          <div class="g-card c-beige fav">
+            <div class="key-dot"></div>
+            <div class="g-visual"><svg width="28" height="42" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Beige Chinos</div><div class="g-meta"><span class="hl">Nøkkel</span> · Tapered</div></div>
+          </div>
+          <div class="g-card c-navy">
+            <div class="g-visual"><svg width="28" height="42" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#2C3E5A" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Navy Chinos</div><div class="g-meta">Tapered</div></div>
+          </div>
+          <div class="g-card c-black">
+            <div class="g-visual"><svg width="28" height="42" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#1A1A20" opacity="0.55"/></svg></div>
+            <div class="g-info"><div class="g-name">Svarte Jeans</div><div class="g-meta">Slim</div></div>
+          </div>
+          <div class="g-card c-olive">
+            <div class="g-visual"><svg width="30" height="42" viewBox="0 0 34 48" fill="none"><path d="M3 0H31C33 0 34 2 34 4V20L25 48H20L17 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#4A6A2A" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Cargo Pants</div><div class="g-meta">Wide</div></div>
+          </div>
+          <div class="g-card c-blue">
+            <div class="g-visual"><svg width="28" height="42" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#6A8AB0" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Lyse Jeans</div><div class="g-meta">Relaxed</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SKO -->
+      <div class="cat-row">
+        <div class="cat-header">
+          <div class="cat-left"><div class="cat-dot" style="opacity:0.4; background: var(--text-3);"></div><div class="cat-name">Sko</div></div>
+          <div class="cat-count">3</div>
+        </div>
+        <div class="cat-scroll">
+          <div class="g-card c-brown">
+            <div class="g-visual"><svg width="36" height="16" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#6B4A2A" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Brune Boots</div><div class="g-meta">Structured</div></div>
+          </div>
+          <div class="g-card c-white">
+            <div class="g-visual"><svg width="36" height="16" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#D8D4D0" opacity="0.6"/></svg></div>
+            <div class="g-info"><div class="g-name">Hvite Sneakers</div><div class="g-meta">Minimal</div></div>
+          </div>
+          <div class="g-card c-black">
+            <div class="g-visual"><svg width="36" height="16" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#2A2A30" opacity="0.55"/></svg></div>
+            <div class="g-info"><div class="g-name">Svarte Derby</div><div class="g-meta">Structured</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height: 20px;"></div>
+    </div>
+
+    <!-- ═══ ANTREKK VIEW ═══ -->
+    <div class="view" id="antrekkView">
+      <div class="outfit-list">
+
+        <div class="o-card">
+          <div class="o-garments">
+            <svg width="22" height="24" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#5C3D1E" opacity="0.7"/></svg>
+            <svg width="16" height="18" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.7"/></svg>
+            <svg width="14" height="20" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.7"/></svg>
+            <svg width="16" height="6" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#6B4A2A" opacity="0.7"/></svg>
+          </div>
+          <div class="o-info">
+            <div class="o-name">Vinterstruktur</div>
+            <div class="o-meta">Clarity <span>91</span> · 4 plagg</div>
+          </div>
+          <div class="o-right">
+            <div class="o-arch">Smart Casual</div>
+            <div class="o-wears">Brukt 8x</div>
+          </div>
+        </div>
+
+        <div class="o-card">
+          <div class="o-garments">
+            <svg width="16" height="18" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#D8D4D0" opacity="0.7"/></svg>
+            <svg width="14" height="20" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#6A8AB0" opacity="0.7"/></svg>
+            <svg width="16" height="6" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#D8D4D0" opacity="0.7"/></svg>
+          </div>
+          <div class="o-info">
+            <div class="o-name">Sommerlett</div>
+            <div class="o-meta">Clarity <span>76</span> · 3 plagg</div>
+          </div>
+          <div class="o-right">
+            <div class="o-arch">Balanced</div>
+            <div class="o-wears">Brukt 3x</div>
+          </div>
+        </div>
+
+        <div class="o-card">
+          <div class="o-garments">
+            <svg width="20" height="22" viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" fill="#4A5A30" opacity="0.7"/></svg>
+            <svg width="16" height="18" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#222228" opacity="0.6"/></svg>
+            <svg width="14" height="20" viewBox="0 0 34 48" fill="none"><path d="M3 0H31C33 0 34 2 34 4V20L25 48H20L17 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#4A6A2A" opacity="0.6"/></svg>
+            <svg width="16" height="6" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#2A2A30" opacity="0.6"/></svg>
+          </div>
+          <div class="o-info">
+            <div class="o-name">Street Oliven</div>
+            <div class="o-meta">Clarity <span>82</span> · 4 plagg</div>
+          </div>
+          <div class="o-right">
+            <div class="o-arch">Street</div>
+            <div class="o-wears">Brukt 5x</div>
+          </div>
+        </div>
+
+        <div class="o-card">
+          <div class="o-garments">
+            <svg width="22" height="24" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#2A2A30" opacity="0.6"/></svg>
+            <svg width="16" height="18" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#222228" opacity="0.55"/></svg>
+            <svg width="14" height="20" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#1A1A20" opacity="0.55"/></svg>
+            <svg width="16" height="6" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#2A2A30" opacity="0.55"/></svg>
+          </div>
+          <div class="o-info">
+            <div class="o-name">All Black</div>
+            <div class="o-meta">Clarity <span>85</span> · 4 plagg</div>
+          </div>
+          <div class="o-right">
+            <div class="o-arch">Tailored</div>
+            <div class="o-wears">Brukt 12x</div>
+          </div>
+        </div>
+
+        <!-- Add new -->
+        <div class="o-card add-new">
+          <span style="font-size:18px; opacity:0.4;">+</span>
+          <span>Nytt antrekk i Studio</span>
+        </div>
+
+      </div>
+      <div style="height: 20px;"></div>
+    </div>
+
+    <!-- Nav -->
+    <div class="bn">
+      <div class="ni a"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="nl">Wardrobe</span></div>
+      <div class="ni"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span class="nl">Studio</span></div>
+      <div class="ni"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="nl">Optimize</span></div>
+      <div class="ni"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span class="nl">Evolution</span></div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">Wardrobe V4 — Glass Cards</div>
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tt-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  if (tab === 'plagg') {
+    document.querySelectorAll('.tt-btn')[0].classList.add('active');
+    document.getElementById('plaggView').classList.add('active');
+  } else {
+    document.querySelectorAll('.tt-btn')[1].classList.add('active');
+    document.getElementById('antrekkView').classList.add('active');
+  }
+}
+</script>
+
+</body>
+</html>
