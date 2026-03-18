@@ -57,7 +57,7 @@
   /* Film grain */
   .phone::after {
     content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 100; border-radius: 44px;
-    opacity: 0.015;
+    opacity: 0.010;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
@@ -118,20 +118,20 @@
   .tt-btn.active { background: var(--gold-soft); color: var(--gold); }
 
   /* ═══ VIEWS ═══ */
-  .view { display: none; }
-  .view.active { display: block; }
+  .view { display: none; opacity: 0; transform: translateY(6px); }
+  .view.active { display: block; animation: viewIn 0.3s ease-out forwards; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
   /* ═══ HERO OUTFIT ═══ */
   .hero-outfit {
-    margin: 0 16px 18px;
-    border-radius: var(--r);
+    margin: 4px 14px 20px;
+    border-radius: 20px;
     position: relative; overflow: hidden;
-    cursor: pointer; transition: all 0.35s;
-    box-shadow: 0 40px 120px rgba(0,0,0,0.6);
-    height: 220px;
+    cursor: pointer; transition: transform 0.25s ease;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.65);
+    height: 230px;
   }
-  .hero-outfit:hover { transform: translateY(-3px); box-shadow: 0 50px 140px rgba(0,0,0,0.7); }
-  .hero-outfit:active { transform: scale(0.98); }
+  .hero-outfit:active { transform: scale(0.97); }
 
   .hero-bg {
     position: absolute; inset: 0;
@@ -139,8 +139,18 @@
   }
   .hero-glass {
     position: absolute; inset: 0;
-    background: linear-gradient(180deg, transparent 30%, rgba(26,23,20,0.85) 100%);
+    background:
+      linear-gradient(180deg, transparent 30%, rgba(26,23,20,0.88) 100%),
+      radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.3) 100%);
   }
+  .hero-glow {
+    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,169,110,0.08), transparent 70%);
+    pointer-events: none;
+    animation: heroGlow 4s ease-in-out infinite alternate;
+  }
+  @keyframes heroGlow { from { opacity: 0.6; } to { opacity: 1; } }
 
   .hero-garments {
     position: absolute; top: 50%; left: 50%;
@@ -161,10 +171,7 @@
   .hero-score { font-size: 11px; color: var(--text-3); }
   .hero-score span { color: var(--gold); font-family: 'Instrument Serif', serif; font-size: 14px; }
 
-  /* Hero breathing */
-  .hero-outfit { animation: heroBreathe 4s ease-in-out infinite alternate; }
-  @keyframes heroBreathe { from { transform: scale(1); } to { transform: scale(1.008); } }
-  .hero-outfit:hover { animation: none; }
+  /* Hero — static, glow provides life */
 
   /* ═══ CATEGORY ROW ═══ */
   .cat-row { margin-bottom: 16px; }
@@ -197,21 +204,15 @@
     scroll-snap-align: start;
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
-    /* Glass */
+    /* Glass — clean, let color bleed do the work */
     background:
-      linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
-      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.08), transparent 60%);
+      linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
   }
 
-  .g-card:hover {
-    transform: translateY(-4px) scale(1.03);
-    border-color: rgba(201,169,110,0.15);
-    box-shadow: 0 35px 90px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-  .g-card:active { transform: scale(0.92); filter: brightness(0.9); }
+  .g-card:active { transform: scale(0.94); transition: transform 0.15s ease; }
 
   /* Color bleed */
   .g-card::before {
@@ -233,7 +234,7 @@
     filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4));
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .g-card:hover .g-visual svg { transform: translateY(-4px); }
+  /* No hover on mobile — press only */
 
   .g-info {
     padding: 6px 10px 8px;
@@ -410,6 +411,7 @@
       <div class="hero-outfit" onclick="window.location='#studio'">
         <div class="hero-bg" style="background: radial-gradient(circle at 40% 30%, rgba(92,61,30,0.35), transparent 55%), radial-gradient(circle at 60% 70%, rgba(44,62,90,0.25), transparent 50%), linear-gradient(155deg, #1E1814, #181620);"></div>
         <div class="hero-glass"></div>
+        <div class="hero-glow"></div>
         <div class="hero-garments">
           <div class="hero-g1"><svg width="70" height="72" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#5C3D1E" opacity="0.8"/></svg></div>
           <div class="hero-g2"><svg width="50" height="50" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.8"/></svg></div>
