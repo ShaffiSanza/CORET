@@ -190,17 +190,27 @@ Full-screen Outfit Card (swipe up for next)
 
 ### Feed Algorithm
 
-**Mine plagg:**
+**Mine plagg (fixed rhythm, not random):**
+- Cards 1-4: always owned outfits. Ghost never appears before card 5.
+- Pattern from card 5+: owned-owned-owned-rotation-owned-owned-ghost-owned-owned-rotation (repeating)
 - First card always: `BestOutfitFinder.findUntriedBest()` → "Anbefalt i dag"
-- 70%: owned outfits ranked by strength
-- 20%: rotation outfits featuring underused garments (`BehaviouralEngine.unusedRisk() >= 0.5`)
-- 10%: ghost outfits from `OptimizeEngineV2.detectGaps()` + `ScoreProjector.project()`
+- Score label: "Outfit Match" (not "Clarity" — Clarity is a wardrobe metric, not an outfit metric)
 
 **Utforsk:**
 - All ghost outfits. Each card has 1-2 garments the user doesn't own.
+- Every 6th card: bridge card with owned outfit ("Men dette kan du lage nå") to prevent demotivation
 - Ghost garment category/color from `StyleDirectionEngine.analyzeDirection()`
 - V2: ghost garments replaced with real products from partner APIs
-- V3: full marketplace with price filter
+
+**Gestures:**
+- Swipe up: next card
+- Swipe right: save/bookmark outfit (SavedOutfitEntity without wear log)
+- Bookmark icon (top-right): alternative to swipe-right for save
+- No "Neste" button — swipe only. Onboarding hint shown once on first card.
+
+### Like Individual Garments
+
+Each garment in the stack has a heart button. Tap → gold pulse animation (0.3s scale overshoot). Sets `garment.isFavorite = true`. Liked non-owned garments (in Utforsk mode) feed into V2 shopping guidance.
 
 ### Like Individual Garments
 

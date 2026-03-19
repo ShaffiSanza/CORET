@@ -125,18 +125,40 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 .oc-badge.ghost{color:rgba(100,140,200,.4);background:rgba(100,140,200,.05)}
 
 .oc-garments{font-size:11px;color:rgba(255,255,255,.15);margin-bottom:16px;line-height:1.5}
-.oc-actions{display:flex;gap:10px}
-.oc-btn{
-  flex:1;padding:13px;border-radius:14px;text-align:center;
-  font-size:12px;cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);
+/* Single CTA — full width */
+.oc-cta{
+  width:100%;padding:14px;border-radius:14px;text-align:center;
+  font-size:13px;cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);
   font-family:'DM Sans',sans-serif;border:none;
+  background:rgba(201,169,110,.06);border:1px solid rgba(201,169,110,.12);color:rgba(201,169,110,.6);
 }
-.oc-btn:active{transform:scale(.96)}
-.oc-btn-studio{background:rgba(201,169,110,.06);border:1px solid rgba(201,169,110,.12);color:rgba(201,169,110,.6)}
-.oc-btn-skip{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);color:rgba(255,255,255,.15)}
+.oc-cta:active{transform:scale(.96)}
 
+/* Bookmark icon — top right */
+.bookmark-btn{
+  position:absolute;top:54px;right:24px;z-index:3;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;color:rgba(255,255,255,.12);
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.bookmark-btn:active{transform:scale(1.3)}
+.bookmark-btn.saved{color:rgba(201,169,110,.6);text-shadow:0 0 10px rgba(201,169,110,.2)}
+
+/* Swipe hint — only first card */
 .swipe-hint{text-align:center;padding:6px 0 10px;font-size:8px;color:rgba(255,255,255,.06);letter-spacing:1px;animation:sh 2s ease-in-out infinite}
 @keyframes sh{0%,100%{transform:translateY(0);opacity:.06}50%{transform:translateY(-3px);opacity:.12}}
+
+/* Save feedback overlay */
+.save-flash{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(14,12,10,.7);z-index:20;opacity:0;pointer-events:none;
+  transition:opacity .3s;
+}
+.save-flash.visible{opacity:1}
+.save-flash span{font-size:14px;color:rgba(201,169,110,.6);letter-spacing:1px;text-transform:uppercase}
+
+/* Bridge card in utforsk */
+.oc-badge.bridge{color:rgba(122,154,110,.4);background:rgba(122,154,110,.05)}
 
 /* Nav */
 .nav{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;padding:6px 16px 28px;border-top:1px solid rgba(255,255,255,.03);background:linear-gradient(transparent,rgba(14,12,10,.98) 30%);z-index:10}
@@ -192,37 +214,41 @@ const G={
   ]
 };
 
-// Ghost garments (from gap analysis)
 const GHOSTS={
   base:[{svg:`<svg width="110" height="82" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2A3040" opacity=".4"/></svg>`,n:'Mork Blazer',b:null,cat:'Mellomlag',c:[220,30,18]}],
   lower:[{svg:`<svg width="100" height="122" viewBox="0 0 90 130" fill="none"><path d="M8 0H82C86 0 90 4 90 8V50L64 130H50L45 60L40 130H26L0 50V8C0 4 4 0 8 0Z" fill="#C8C0A8" opacity=".35"/></svg>`,n:'Lin Bukse',b:null,cat:'Sommerbukse',c:[40,20,75]}]
 };
 
 const cats=['outer','base','lower','shoes'];
-let idx=0, mode='mine'; // 'mine' or 'utforsk'
+let idx=0, mode='mine', hintShown=false, utforskGhostCount=0;
 
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 
 function generateCombo(forceGhost){
-  if(mode==='utforsk'||forceGhost){
-    // Always include at least 1 ghost
+  if(forceGhost){
     const combo=cats.map(c=>pick(G[c]));
     const ghostCat=Math.random()>0.5?'base':'lower';
-    const ghost=pick(GHOSTS[ghostCat]||GHOSTS.base);
-    ghost.isGhost=true;
+    const ghost={...pick(GHOSTS[ghostCat]||GHOSTS.base),isGhost:true};
     combo[cats.indexOf(ghostCat)]=ghost;
     return combo;
   }
   return cats.map(c=>pick(G[c]));
 }
 
+// (1) FIXED RHYTHM — not random percent
+// Pattern: owned, owned, owned, rotation, owned, owned, ghost, owned, owned, rotation, ...
+const MINE_RHYTHM=['owned','owned','owned','rotation','owned','owned','ghost','owned','owned','rotation'];
+
 function feedType(){
-  // 70% owned, 20% rotation, 10% ghost
-  const r=Math.random();
-  if(mode==='utforsk')return 'ghost';
-  if(r<0.7)return 'owned';
-  if(r<0.9)return 'rotation';
-  return 'ghost';
+  if(mode==='utforsk'){
+    // (6) Every 5th ghost card → bridge (owned) card
+    utforskGhostCount++;
+    if(utforskGhostCount % 6 === 0) return 'bridge';
+    return 'ghost';
+  }
+  // (5) First 4 cards always owned
+  if(idx < 4) return 'owned';
+  return MINE_RHYTHM[(idx - 4) % MINE_RHYTHM.length];
 }
 
 function hslAvg(combo){
@@ -239,9 +265,22 @@ function buildCard(combo,index,type,isFirst){
   const card=document.createElement('div');
   card.className='outfit-card '+(index===0?'active':'entering');
 
-  const badgeClass=hasGhost?'ghost':type==='rotation'?'rotation':'owned';
-  const badgeText=hasGhost?'Mangler 1 plagg':type==='rotation'?'Ikke brukt pa 14 dager':'Du eier alt dette';
+  // (4) Rename to "Outfit Match" instead of "Clarity"
+  let badgeClass, badgeText;
+  if(type==='bridge'){
+    badgeClass='bridge'; badgeText='Men dette kan du lage na';
+  } else if(hasGhost){
+    badgeClass='ghost'; badgeText='Mangler 1 plagg';
+  } else if(type==='rotation'){
+    badgeClass='rotation'; badgeText='Ikke brukt pa 14 dager';
+  } else {
+    badgeClass='owned'; badgeText='Du eier alt dette';
+  }
+
   const recommendedHtml=isFirst?`<div class="oc-recommended">Anbefalt i dag</div>`:'';
+  // (2) Swipe hint only on first card
+  const hintHtml=(!hintShown)?`<div class="swipe-hint">swipe opp for neste</div>`:'';
+  if(!hintShown) hintShown=true;
 
   card.innerHTML=`
     <div class="oc-bg">
@@ -250,7 +289,7 @@ function buildCard(combo,index,type,isFirst){
     </div>
     <div class="oc-header">
       <div class="oc-title">Discover</div>
-      <div class="oc-counter">#${index+1}</div>
+      <span class="bookmark-btn" onclick="event.stopPropagation();bookmarkOutfit(this)">&#9734;</span>
     </div>
     <div class="mode-toggle">
       <button class="mt-btn ${mode==='mine'?'active':''}" onclick="event.stopPropagation();setMode('mine')">Mine plagg</button>
@@ -277,27 +316,49 @@ function buildCard(combo,index,type,isFirst){
       <div class="oc-meta">
         <div class="oc-score-area">
           <span class="oc-score ${sc>=85?'high':'mid'}">${sc}</span>
-          <span class="oc-score-label">clarity</span>
+          <span class="oc-score-label">outfit match</span>
         </div>
         <span class="oc-badge ${badgeClass}">${badgeText}</span>
       </div>
       <div class="oc-garments">${combo.map(g=>g.n).join(' + ')}</div>
-      <div class="oc-actions">
-        <button class="oc-btn oc-btn-studio" onclick="event.stopPropagation()">Apne i Studio</button>
-        <button class="oc-btn oc-btn-skip" onclick="event.stopPropagation();nextCard()">Neste &#8593;</button>
-      </div>
-      <div class="swipe-hint">swipe opp for neste</div>
+      <button class="oc-cta" onclick="event.stopPropagation()">Apne i Studio</button>
+      ${hintHtml}
     </div>
+    <div class="save-flash" id="sf-${index}"><span>Lagret &#10003;</span></div>
   `;
 
-  // Swipe gesture
-  let startY=0,currentY=0,dragging=false;
-  card.addEventListener('touchstart',e=>{startY=e.touches[0].clientY;dragging=true},{passive:true});
-  card.addEventListener('touchmove',e=>{if(!dragging)return;currentY=e.touches[0].clientY;const dy=currentY-startY;if(dy<0)card.style.transform=`translateY(${dy*0.5}px)`},{passive:true});
-  card.addEventListener('touchend',()=>{if(!dragging)return;dragging=false;const dy=currentY-startY;if(dy<-80)nextCard();else{card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)'}});
-  card.addEventListener('mousedown',e=>{startY=e.clientY;dragging=true});
-  card.addEventListener('mousemove',e=>{if(!dragging)return;currentY=e.clientY;const dy=currentY-startY;if(dy<0){card.style.transition='none';card.style.transform=`translateY(${dy*0.5}px)`}});
-  card.addEventListener('mouseup',()=>{if(!dragging)return;dragging=false;const dy=currentY-startY;if(dy<-80)nextCard();else{card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)'}});
+  // (3) Swipe up = next, swipe right = save/bookmark
+  let startX=0,startY=0,currentX=0,currentY=0,dragging=false;
+  card.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;dragging=true},{passive:true});
+  card.addEventListener('touchmove',e=>{
+    if(!dragging)return;
+    currentX=e.touches[0].clientX;currentY=e.touches[0].clientY;
+    const dx=currentX-startX,dy=currentY-startY;
+    if(Math.abs(dy)>Math.abs(dx)&&dy<0) card.style.transform=`translateY(${dy*0.5}px)`;
+    else if(dx>0) card.style.transform=`translateX(${dx*0.4}px) rotate(${dx*0.02}deg)`;
+  },{passive:true});
+  card.addEventListener('touchend',()=>{
+    if(!dragging)return;dragging=false;
+    const dx=currentX-startX,dy=currentY-startY;
+    if(dy<-80&&Math.abs(dy)>Math.abs(dx)){nextCard();return;}
+    if(dx>100){saveOutfit(card,index);return;}
+    card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)';
+  });
+  // Mouse fallback
+  card.addEventListener('mousedown',e=>{startX=e.clientX;startY=e.clientY;dragging=true});
+  card.addEventListener('mousemove',e=>{
+    if(!dragging)return;currentX=e.clientX;currentY=e.clientY;
+    const dx=currentX-startX,dy=currentY-startY;
+    if(Math.abs(dy)>Math.abs(dx)&&dy<0){card.style.transition='none';card.style.transform=`translateY(${dy*0.5}px)`}
+    else if(dx>0){card.style.transition='none';card.style.transform=`translateX(${dx*0.4}px) rotate(${dx*0.02}deg)`}
+  });
+  card.addEventListener('mouseup',()=>{
+    if(!dragging)return;dragging=false;
+    const dx=currentX-startX,dy=currentY-startY;
+    if(dy<-80&&Math.abs(dy)>Math.abs(dx)){nextCard();return;}
+    if(dx>100){saveOutfit(card,index);return;}
+    card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)';
+  });
   card.addEventListener('mouseleave',()=>{if(dragging){dragging=false;card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)'}});
 
   return card;
@@ -307,19 +368,29 @@ function buildCard(combo,index,type,isFirst){
 function toggleLike(el){
   const isLiked=el.classList.toggle('liked');
   el.innerHTML=isLiked?'&#9829;':'&#9825;';
-  if(isLiked){
-    el.style.transform='translateY(-50%) scale(1.4)';
-    setTimeout(()=>{el.style.transform='translateY(-50%)'},300);
-  }
+  if(isLiked){el.style.transform='translateY(-50%) scale(1.4)';setTimeout(()=>{el.style.transform='translateY(-50%)'},300)}
+}
+
+// ═══ BOOKMARK (top-right icon) ═══
+function bookmarkOutfit(el){
+  el.classList.toggle('saved');
+  el.innerHTML=el.classList.contains('saved')?'&#9733;':'&#9734;';
+  if(el.classList.contains('saved')){el.style.transform='scale(1.3)';setTimeout(()=>{el.style.transform=''},300)}
+}
+
+// ═══ SAVE (swipe right) ═══
+function saveOutfit(card,index){
+  const flash=card.querySelector('.save-flash');
+  flash.classList.add('visible');
+  card.style.transition='transform .5s cubic-bezier(.16,1,.3,1)';
+  card.style.transform='translateX(120%) rotate(8deg)';
+  setTimeout(()=>{card.remove();nextCard()},500);
 }
 
 // ═══ MODE ═══
 function setMode(m){
-  mode=m;
-  // Reset feed
-  idx=0;
-  container.innerHTML='';
-  showFirst();
+  mode=m;idx=0;hintShown=false;utforskGhostCount=0;
+  container.innerHTML='';showFirst();
 }
 
 // ═══ NAVIGATION ═══
@@ -327,23 +398,23 @@ const container=document.getElementById('container');
 let currentCard=null;
 
 function showFirst(){
-  const type=idx===0?'owned':feedType();
-  const combo=generateCombo(type==='ghost');
-  currentCard=buildCard(combo,idx,type,idx===0);
+  const type='owned'; // First card always owned
+  const combo=generateCombo(false);
+  currentCard=buildCard(combo,idx,type,true);
   container.appendChild(currentCard);
 }
 
 function nextCard(){
   if(currentCard){
-    currentCard.classList.add('exiting');
-    currentCard.classList.remove('active');
-    const old=currentCard;
-    setTimeout(()=>old.remove(),500);
+    currentCard.classList.add('exiting');currentCard.classList.remove('active');
+    const old=currentCard;setTimeout(()=>old.remove(),500);
   }
   idx++;
   const type=feedType();
-  const combo=generateCombo(type==='ghost');
-  const card=buildCard(combo,idx,type,false);
+  const isGhost=type==='ghost';
+  const isBridge=type==='bridge';
+  const combo=generateCombo(isGhost);
+  const card=buildCard(combo,idx,isBridge?'bridge':type,false);
   card.classList.add('entering');
   container.appendChild(card);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{card.classList.remove('entering');card.classList.add('active')}));
