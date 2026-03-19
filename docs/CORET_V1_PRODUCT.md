@@ -165,42 +165,36 @@ All via EngineCoordinator. No direct engine calls from Views.
 
 Full-screen swipe feed. Tinder-style UX for outfit discovery. Replaces Optimize tab.
 
-### Two Modes
+### V1: Only Owned Garments
 
-| Mode | Content | Badge |
-|------|---------|-------|
-| **Mine plagg** (default) | 70% owned outfits, 20% rotation tips, 10% ghost outfits | "Du eier alt dette" (green) / "Ikke brukt på 14 dager" (gold) / "Mangler 1 plagg" (blue) |
-| **Utforsk** | 100% ghost outfits — each with 1-2 garments user doesn't own | "Mangler: Mørk blazer" with category + color from StyleDirectionEngine |
+Discover in V1 shows **only outfits from garments the user owns**. No ghost garments, no Utforsk toggle, no product suggestions. 100% positive — every outfit is something you can wear today.
+
+Gap analysis lives elsewhere: Garment Detail (removal simulation) and Studio (ghost garments in Explore mode).
 
 ### Card Anatomy
 
 ```
 Full-screen Outfit Card (swipe up for next)
 ├── Dynamic background (HSL blend of all garment colors, ambient blobs)
-├── Mode toggle: "Mine plagg" / "Utforsk" (pill, top)
+├── Bookmark icon (top-right, ☆ → ★ on save)
 ├── First card: "Anbefalt i dag" label (gold)
 ├── Stacked garments (4 layers, descending scale 1.0→0.96→0.92→0.88)
-│   ├── Each garment: ♡ like button (left) + "Name · Brand" label (right, 9px, opacity 0.25)
-│   └── Ghost garments: opacity 0.35, dashed gold border, "Mangler: X" badge below
+│   └── Each garment: ♡ like button (left) + "Name · Brand" label (right, 9px, opacity 0.25)
 ├── Outfit name (Instrument Serif italic)
-├── Clarity score + feed-type badge
-├── "Åpne i Studio" + "Neste ↑" buttons
-└── Swipe hint
+├── Outfit Match score + feed-type badge
+├── "Åpne i Studio" CTA
+└── Swipe hint (first card only)
 ```
 
 ### Feed Algorithm
 
-**Mine plagg (fixed rhythm, not random):**
-- Cards 1-4: always owned outfits. Ghost never appears before card 5.
-- Pattern from card 5+: owned-owned-owned-rotation-owned-owned-ghost-owned-owned-rotation (repeating)
+**Fixed rhythm (not random):**
+- Pattern: owned-owned-owned-rotation (repeating)
+- Rotation = outfit featuring an underused garment (`BehaviouralEngine.unusedRisk() >= 0.5`), badge: "Ikke brukt på X dager"
 - First card always: `BestOutfitFinder.findUntriedBest()` → "Anbefalt i dag"
 - Score label: "Outfit Match" (not "Clarity" — Clarity is a wardrobe metric, not an outfit metric)
 
-**Utforsk:**
-- All ghost outfits. Each card has 1-2 garments the user doesn't own.
-- Every 6th card: bridge card with owned outfit ("Men dette kan du lage nå") to prevent demotivation
-- Ghost garment category/color from `StyleDirectionEngine.analyzeDirection()`
-- V2: ghost garments replaced with real products from partner APIs
+**Max 20 outfits per session.** After card 20: "Du har sett alle forslag. Legg til flere plagg for nye kombinasjoner." This is honest and drives wardrobe growth.
 
 **Gestures:**
 - Swipe up: next card
@@ -210,7 +204,7 @@ Full-screen Outfit Card (swipe up for next)
 
 ### Like Individual Garments
 
-Each garment in the stack has a heart button. Tap → gold pulse animation (0.3s scale overshoot). Sets `garment.isFavorite = true`. Liked non-owned garments (in Utforsk mode) feed into V2 shopping guidance.
+Each garment in the stack has a heart button. Tap → gold pulse animation (0.3s scale overshoot). Sets `garment.isFavorite = true`.
 
 ### Like Individual Garments
 
@@ -220,7 +214,7 @@ Each garment in the stack has a heart button. Tap → gold pulse animation (0.3s
 
 | Old Optimize Feature | New Location |
 |---------------------|-------------|
-| Gap analysis | Discover ghost outfits (10% of Mine plagg feed, 100% of Utforsk) |
+| Gap analysis | Studio ghost garments (Explore mode) + Garment Detail |
 | Primary recommendation | Discover first card ("Anbefalt i dag") |
 | Structural friction | Garment Detail (removal simulation — already built) |
 | Network graph | Evolution tab or Profile (V1.5) |

@@ -305,11 +305,11 @@ All four are engine-native. No competitor can copy them without building the str
 
 ### 3. Discover Marketplace (V2/V3)
 
-Discover's "Utforsk" mode evolves from category+color suggestions (V1) to real product integration.
+V1 Discover is owned-garments only. No ghost cards, no product suggestions. Utforsk mode is V2+.
 
-- **V1:** Ghost garments show category + color from StyleDirectionEngine. No products, no prices.
-- **V2:** One partner integration (Zalando/H&M API). Ghost garments replaced with real products with price. Price filter (budget/mid/premium). "Denne blazeren fra Zara, 799kr, gir deg 91 clarity."
-- **V3:** Multi-brand catalog. Utforsk becomes full shopping inspiration feed — real products from all price classes styled with user's existing garments. Uendelig feed.
+- **V1:** 100% owned outfits. No toggle. Gap analysis lives in Studio (ghost garments) and Garment Detail (friction).
+- **V2:** "Utforsk" toggle added to Discover. Ghost outfits with 1-2 products from one partner (Zalando/H&M API). Price filter (budget/mid/premium). "Denne blazeren fra Zara, 799kr, gir deg 91 clarity."
+- **V3:** Multi-brand catalog. Utforsk becomes full shopping inspiration feed — real products from all price classes styled with user's existing garments.
 - **Revenue:** Affiliate/referral per purchase. Discover becomes the primary commerce channel.
 
 ---

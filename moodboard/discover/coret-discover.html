@@ -37,18 +37,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 .oc-title{font-family:'Instrument Serif',serif;font-size:24px;color:rgba(255,255,255,.7)}
 .oc-counter{font-size:10px;color:rgba(255,255,255,.1)}
 
-/* Toggle */
-.mode-toggle{
-  display:flex;margin:10px 24px 0;padding:3px;
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
-  border-radius:10px;flex-shrink:0;position:relative;z-index:2;
-}
-.mt-btn{
-  flex:1;padding:7px 0;text-align:center;font-size:12px;
-  color:rgba(255,255,255,.2);background:transparent;border:none;
-  border-radius:8px;cursor:pointer;transition:all .3s;font-family:inherit;
-}
-.mt-btn.active{background:rgba(201,169,110,.08);color:rgba(201,169,110,.6)}
+/* Toggle removed in V1 — Utforsk comes in V2 with product partner */
 
 /* Stage */
 .oc-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:2;padding:0 20px}
@@ -80,19 +69,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 }
 .g-label .brand{color:rgba(255,255,255,.12)}
 
-/* Ghost garment styling */
-.oc-item.ghost svg{opacity:.35;filter:drop-shadow(0 10px 30px rgba(0,0,0,.2))}
-.oc-item.ghost::after{
-  content:'';position:absolute;inset:-4px;
-  border:2px dashed rgba(201,169,110,.25);border-radius:12px;
-  pointer-events:none;
-}
-.ghost-badge{
-  position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
-  font-size:8px;letter-spacing:.5px;color:rgba(100,140,200,.5);
-  background:rgba(100,140,200,.06);padding:2px 8px;border-radius:4px;
-  white-space:nowrap;
-}
+/* Ghost garment styling removed in V1 — no ghost cards in Discover */
 
 .oc-name{
   font-family:'Instrument Serif',serif;font-style:italic;
@@ -122,7 +99,6 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 .oc-badge{font-size:10px;padding:4px 10px;border-radius:7px}
 .oc-badge.owned{color:rgba(122,154,110,.4);background:rgba(122,154,110,.05)}
 .oc-badge.rotation{color:rgba(201,169,110,.4);background:rgba(201,169,110,.05)}
-.oc-badge.ghost{color:rgba(100,140,200,.4);background:rgba(100,140,200,.05)}
 
 .oc-garments{font-size:11px;color:rgba(255,255,255,.15);margin-bottom:16px;line-height:1.5}
 /* Single CTA — full width */
@@ -157,8 +133,10 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 .save-flash.visible{opacity:1}
 .save-flash span{font-size:14px;color:rgba(201,169,110,.6);letter-spacing:1px;text-transform:uppercase}
 
-/* Bridge card in utforsk */
-.oc-badge.bridge{color:rgba(122,154,110,.4);background:rgba(122,154,110,.05)}
+/* End of feed card */
+.end-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;padding:40px;text-align:center}
+.end-card h2{font-family:'Instrument Serif',serif;font-size:22px;color:rgba(255,255,255,.4);margin-bottom:12px}
+.end-card p{font-size:13px;color:rgba(255,255,255,.15);line-height:1.5;max-width:260px}
 
 /* Nav */
 .nav{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;padding:6px 16px 28px;border-top:1px solid rgba(255,255,255,.03);background:linear-gradient(transparent,rgba(14,12,10,.98) 30%);z-index:10}
@@ -190,7 +168,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 </div>
 
 <script>
-// ═══ GARMENT DATA ═══
+// ═══ GARMENT DATA (owned only — no ghosts in V1) ═══
 const G={
   outer:[
     {svg:`<svg width="150" height="112" viewBox="0 0 160 120" fill="none"><path d="M40 15C40 8 120 8 120 15L128 40C128 44 152 48 158 55V95C158 102 148 108 138 108H128V112C128 118 40 118 40 112V108H28C18 108 8 102 8 95V55C14 48 32 44 32 40L40 15Z" fill="#4A2028" opacity=".9"/></svg>`,n:'Burgundy Jakke',b:'COS',c:[340,60,20]},
@@ -214,42 +192,16 @@ const G={
   ]
 };
 
-const GHOSTS={
-  base:[{svg:`<svg width="110" height="82" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2A3040" opacity=".4"/></svg>`,n:'Mork Blazer',b:null,cat:'Mellomlag',c:[220,30,18]}],
-  lower:[{svg:`<svg width="100" height="122" viewBox="0 0 90 130" fill="none"><path d="M8 0H82C86 0 90 4 90 8V50L64 130H50L45 60L40 130H26L0 50V8C0 4 4 0 8 0Z" fill="#C8C0A8" opacity=".35"/></svg>`,n:'Lin Bukse',b:null,cat:'Sommerbukse',c:[40,20,75]}]
-};
-
+const MAX_CARDS=20;
 const cats=['outer','base','lower','shoes'];
-let idx=0, mode='mine', hintShown=false, utforskGhostCount=0;
+let idx=0, hintShown=false;
 
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function generateCombo(){return cats.map(c=>pick(G[c]))}
 
-function generateCombo(forceGhost){
-  if(forceGhost){
-    const combo=cats.map(c=>pick(G[c]));
-    const ghostCat=Math.random()>0.5?'base':'lower';
-    const ghost={...pick(GHOSTS[ghostCat]||GHOSTS.base),isGhost:true};
-    combo[cats.indexOf(ghostCat)]=ghost;
-    return combo;
-  }
-  return cats.map(c=>pick(G[c]));
-}
-
-// (1) FIXED RHYTHM — not random percent
-// Pattern: owned, owned, owned, rotation, owned, owned, ghost, owned, owned, rotation, ...
-const MINE_RHYTHM=['owned','owned','owned','rotation','owned','owned','ghost','owned','owned','rotation'];
-
-function feedType(){
-  if(mode==='utforsk'){
-    // (6) Every 5th ghost card → bridge (owned) card
-    utforskGhostCount++;
-    if(utforskGhostCount % 6 === 0) return 'bridge';
-    return 'ghost';
-  }
-  // (5) First 4 cards always owned
-  if(idx < 4) return 'owned';
-  return MINE_RHYTHM[(idx - 4) % MINE_RHYTHM.length];
-}
+// Fixed rhythm: owned-owned-owned-rotation, repeating
+const RHYTHM=['owned','owned','owned','rotation'];
+function feedType(){return RHYTHM[idx % RHYTHM.length]}
 
 function hslAvg(combo){
   let h=0,s=0,l=0;
@@ -260,25 +212,13 @@ function hslAvg(combo){
 function buildCard(combo,index,type,isFirst){
   const sc=68+Math.floor(Math.random()*28);
   const[aH,aS,aL]=hslAvg(combo);
-  const hasGhost=combo.some(g=>g.isGhost);
 
   const card=document.createElement('div');
   card.className='outfit-card '+(index===0?'active':'entering');
 
-  // (4) Rename to "Outfit Match" instead of "Clarity"
-  let badgeClass, badgeText;
-  if(type==='bridge'){
-    badgeClass='bridge'; badgeText='Men dette kan du lage na';
-  } else if(hasGhost){
-    badgeClass='ghost'; badgeText='Mangler 1 plagg';
-  } else if(type==='rotation'){
-    badgeClass='rotation'; badgeText='Ikke brukt pa 14 dager';
-  } else {
-    badgeClass='owned'; badgeText='Du eier alt dette';
-  }
-
+  const badgeClass=type==='rotation'?'rotation':'owned';
+  const badgeText=type==='rotation'?'Ikke brukt pa 14 dager':'Du eier alt dette';
   const recommendedHtml=isFirst?`<div class="oc-recommended">Anbefalt i dag</div>`:'';
-  // (2) Swipe hint only on first card
   const hintHtml=(!hintShown)?`<div class="swipe-hint">swipe opp for neste</div>`:'';
   if(!hintShown) hintShown=true;
 
@@ -291,26 +231,19 @@ function buildCard(combo,index,type,isFirst){
       <div class="oc-title">Discover</div>
       <span class="bookmark-btn" onclick="event.stopPropagation();bookmarkOutfit(this)">&#9734;</span>
     </div>
-    <div class="mode-toggle">
-      <button class="mt-btn ${mode==='mine'?'active':''}" onclick="event.stopPropagation();setMode('mine')">Mine plagg</button>
-      <button class="mt-btn ${mode==='utforsk'?'active':''}" onclick="event.stopPropagation();setMode('utforsk')">Utforsk</button>
-    </div>
     ${recommendedHtml}
     <div class="oc-stage">
       <div class="oc-stack">
-        ${combo.map((g,i)=>{
-          const isGhost=g.isGhost;
-          const brandLabel=g.b?`<span class="brand">${g.b}</span>`:g.cat?`<span class="brand">${g.cat}</span>`:'';
-          const ghostBadge=isGhost?`<div class="ghost-badge">Mangler: ${g.n}</div>`:'';
-          return `<div class="oc-item ${isGhost?'ghost':''}">
+        ${combo.map(g=>{
+          const brandLabel=g.b?`<span class="brand">${g.b}</span>`:'';
+          return `<div class="oc-item">
             <span class="like-btn" onclick="event.stopPropagation();toggleLike(this)">&#9825;</span>
             ${g.svg}
             <span class="g-label">${g.n}${brandLabel?' &middot; ':''}${brandLabel}</span>
-            ${ghostBadge}
           </div>`;
         }).join('')}
       </div>
-      <div class="oc-name">${combo.filter(g=>!g.isGhost).map(g=>g.n.split(' ').pop()).join(' &middot; ')}</div>
+      <div class="oc-name">${combo.map(g=>g.n.split(' ').pop()).join(' &middot; ')}</div>
     </div>
     <div class="oc-bottom">
       <div class="oc-meta">
@@ -327,12 +260,11 @@ function buildCard(combo,index,type,isFirst){
     <div class="save-flash" id="sf-${index}"><span>Lagret &#10003;</span></div>
   `;
 
-  // (3) Swipe up = next, swipe right = save/bookmark
+  // Swipe up = next, swipe right = save
   let startX=0,startY=0,currentX=0,currentY=0,dragging=false;
   card.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;dragging=true},{passive:true});
   card.addEventListener('touchmove',e=>{
-    if(!dragging)return;
-    currentX=e.touches[0].clientX;currentY=e.touches[0].clientY;
+    if(!dragging)return;currentX=e.touches[0].clientX;currentY=e.touches[0].clientY;
     const dx=currentX-startX,dy=currentY-startY;
     if(Math.abs(dy)>Math.abs(dx)&&dy<0) card.style.transform=`translateY(${dy*0.5}px)`;
     else if(dx>0) card.style.transform=`translateX(${dx*0.4}px) rotate(${dx*0.02}deg)`;
@@ -340,11 +272,10 @@ function buildCard(combo,index,type,isFirst){
   card.addEventListener('touchend',()=>{
     if(!dragging)return;dragging=false;
     const dx=currentX-startX,dy=currentY-startY;
-    if(dy<-80&&Math.abs(dy)>Math.abs(dx)){nextCard();return;}
-    if(dx>100){saveOutfit(card,index);return;}
+    if(dy<-80&&Math.abs(dy)>Math.abs(dx)){nextCard();return}
+    if(dx>100){saveOutfit(card,index);return}
     card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)';
   });
-  // Mouse fallback
   card.addEventListener('mousedown',e=>{startX=e.clientX;startY=e.clientY;dragging=true});
   card.addEventListener('mousemove',e=>{
     if(!dragging)return;currentX=e.clientX;currentY=e.clientY;
@@ -355,12 +286,28 @@ function buildCard(combo,index,type,isFirst){
   card.addEventListener('mouseup',()=>{
     if(!dragging)return;dragging=false;
     const dx=currentX-startX,dy=currentY-startY;
-    if(dy<-80&&Math.abs(dy)>Math.abs(dx)){nextCard();return;}
-    if(dx>100){saveOutfit(card,index);return;}
+    if(dy<-80&&Math.abs(dy)>Math.abs(dx)){nextCard();return}
+    if(dx>100){saveOutfit(card,index);return}
     card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)';
   });
   card.addEventListener('mouseleave',()=>{if(dragging){dragging=false;card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)'}});
 
+  return card;
+}
+
+function buildEndCard(){
+  const card=document.createElement('div');
+  card.className='outfit-card active';
+  card.innerHTML=`
+    <div class="oc-bg">
+      <div class="oc-blob oc-b1" style="background:rgba(50,40,30,.12)"></div>
+      <div class="oc-blob oc-b2" style="background:rgba(40,35,25,.08)"></div>
+    </div>
+    <div class="end-card">
+      <h2>Du har sett alle forslag</h2>
+      <p>Legg til flere plagg for nye kombinasjoner. Jo flere plagg, jo flere outfits a oppdage.</p>
+    </div>
+  `;
   return card;
 }
 
@@ -371,7 +318,7 @@ function toggleLike(el){
   if(isLiked){el.style.transform='translateY(-50%) scale(1.4)';setTimeout(()=>{el.style.transform='translateY(-50%)'},300)}
 }
 
-// ═══ BOOKMARK (top-right icon) ═══
+// ═══ BOOKMARK ═══
 function bookmarkOutfit(el){
   el.classList.toggle('saved');
   el.innerHTML=el.classList.contains('saved')?'&#9733;':'&#9734;';
@@ -387,20 +334,13 @@ function saveOutfit(card,index){
   setTimeout(()=>{card.remove();nextCard()},500);
 }
 
-// ═══ MODE ═══
-function setMode(m){
-  mode=m;idx=0;hintShown=false;utforskGhostCount=0;
-  container.innerHTML='';showFirst();
-}
-
 // ═══ NAVIGATION ═══
 const container=document.getElementById('container');
 let currentCard=null;
 
 function showFirst(){
-  const type='owned'; // First card always owned
-  const combo=generateCombo(false);
-  currentCard=buildCard(combo,idx,type,true);
+  const combo=generateCombo();
+  currentCard=buildCard(combo,idx,'owned',true);
   container.appendChild(currentCard);
 }
 
@@ -410,11 +350,16 @@ function nextCard(){
     const old=currentCard;setTimeout(()=>old.remove(),500);
   }
   idx++;
+  // Max 20 cards per session
+  if(idx>=MAX_CARDS){
+    const end=buildEndCard();
+    container.appendChild(end);
+    currentCard=end;
+    return;
+  }
   const type=feedType();
-  const isGhost=type==='ghost';
-  const isBridge=type==='bridge';
-  const combo=generateCombo(isGhost);
-  const card=buildCard(combo,idx,isBridge?'bridge':type,false);
+  const combo=generateCombo();
+  const card=buildCard(combo,idx,type,false);
   card.classList.add('entering');
   container.appendChild(card);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{card.classList.remove('entering');card.classList.add('active')}));
