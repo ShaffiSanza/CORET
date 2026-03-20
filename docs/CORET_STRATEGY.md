@@ -355,6 +355,38 @@ No implementation now. Strategic direction only.
 
 ---
 
+## Visual System — Design Decisions
+
+### One Visual Style Per Feed
+
+Never mix image styles in the same scrollable feed. Discover shows one consistent visual treatment for all outfits. Breaking the visual rhythm breaks the swipe-trance.
+
+- V1/V2: SVG silhouettes as prototype. Production uses real images (studio product images or user photos with bg remove)
+- V3 Utforsk: retailer product images displayed in CORET's layout — brands adapt to CORET, not the other way around
+- Ghost garments: same visual style as owned garments, but opacity 0.4 + subtle dashed outline. One label ("Mangler: Blazer"). No badge overload.
+
+### Never Mix Inspiration and Commerce
+
+Product details (price, buy link, retailer logo) are NEVER shown in the Discover feed. They appear only in a modal after the user taps a ghost garment.
+
+**Why:** Product in feed → brain says "ad" → user builds resistance. Product after tap → brain says "discovery" → user feels in control.
+
+```
+Discover feed (clean, inspirational)
+    ↓
+User taps ghost garment (curious)
+    ↓
+Modal opens: product image, price, "Kjøp" link
+    ↓
+User chose to see this — it wasn't pushed on them
+```
+
+### Brands Adapt to CORET
+
+In V3, retailer products are displayed using CORET's visual treatment — not the retailer's product page. CORET controls layout, typography, color grading. The product image is the only element from the retailer. This is what makes CORET a platform, not a marketplace widget.
+
+---
+
 ## Data Model Forward-Compatibility
 
 Fields added in V1 for future use (nil defaults, no engine impact):

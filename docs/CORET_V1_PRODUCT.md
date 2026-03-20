@@ -359,6 +359,48 @@ The #1 reason wardrobe apps fail: input takes too long. CORET target: **3 second
 
 ---
 
+## Garment Image Priority
+
+Always use the best available image. Ranked fallback system:
+
+| Priority | Method | Image Quality | V1? |
+|----------|--------|--------------|-----|
+| 1 | **Text search** "merke + type" → `product_search` | Studio product image | V1 primary |
+| 2 | **Own photo** → camera → `image_polish` (bg remove) | User photo, bg removed | V1 fallback |
+| 3 | **Barcode scan** → `barcode_lookup` | Studio product image | V1.5 |
+| 4 | **Image search** → ML match against catalog | Studio product image | V2 |
+| 5 | **Email receipts** → auto-import from order confirmations | Studio product image | V2 |
+| 6 | **SVG silhouette** with dominantColor | Generated shape | Last resort |
+
+**V1 onboarding flow:**
+```
+"Søk etter plagget" → user types "Zara navy blazer"
+    ↓
+product_search returns studio image + brand + title
+    ↓
+User confirms with one tap → garment saved with studio image
+    ↓
+Not found? → "Ta bilde selv" → camera → bg remove
+```
+
+**Studio images are used everywhere:** Wardrobe grid, Discover feed, Studio, Garment Detail. If `product_search` finds a match later for a garment that has a user photo, the studio image replaces it automatically.
+
+**Why text search is primary over camera:** Most people remember "H&M black tee" or "Zara navy blazer." Text search gives studio-quality images in 5 seconds. Camera requires good lighting, flat surface, and produces variable quality.
+
+---
+
+## Accessories — V1.5
+
+Not in V1. Focus is upper + lower + shoes. `Category.accessory` exists in the data model but is not used in outfit generation.
+
+**V1.5 plan:**
+- Accessories added to wardrobe like any garment
+- NOT included in combinatorial outfit generation (avoids explosion: 27 outfits → 432)
+- Instead: shown as "styling suggestions" per outfit — "Add: watch, ring, scarf"
+- BehaviouralEngine tracks which accessories pair with which outfits → learns patterns
+
+---
+
 ## Style Direction (V1)
 
 User chooses a target archetype they want to move toward: Tailored, Smart Casual, or Street. CORET shows current match percentage and a concrete gap list to reach the target.
