@@ -25,12 +25,16 @@ What the user can do in V1. Each maps to existing engine output.
 ## 4 Tabs
 
 ```
-▦ Wardrobe  |  ✦ Studio  |  🔍 Discover  |  ◈ Evolution
+▦ Wardrobe  |  ✦ Studio  |  🔍 Discover
 ```
 
 Profile → top-right menu icon (not a tab).
-Dashboard content distributed: Clarity → Evolution, feed → Wardrobe hero block, gaps → Discover ghost outfits.
-Optimize replaced by Discover — gap analysis, friction, and recommendations absorbed into Discover feed and Garment Detail.
+3 tabs only. Evolution removed — too analytical for daily use. Content redistributed:
+- Clarity score → Wardrobe hero block
+- Identity profile → Profile menu
+- Milestones → toast notifications on achievement
+- Seasonal coverage → Profile menu
+- What-if simulator → Studio ghost garments
 
 ---
 
@@ -42,10 +46,9 @@ Each tab has exactly one focal point. Everything else is secondary and either co
 
 | Tab | Hero Element | Everything else |
 |-----|-------------|----------------|
-| Wardrobe | Garment grid | Hero block is compact summary above the grid |
+| Wardrobe | Garment grid | Hero block (Clarity + outfit + gap) is compact above the grid |
 | Studio | Outfit canvas | Feedback is a slim stripe, not a separate card |
-| Optimize | Primary recommendation | Gap list and network graph are below the fold |
-| Evolution | Clarity score | Identity, milestones, seasons build around it |
+| Discover | Today's outfit | Swipe feed with owned outfits and rotation tips |
 
 ### Sub-Scores Are Hidden by Default
 
@@ -219,26 +222,6 @@ Each garment in the stack has a heart button. Tap → gold pulse animation (0.3s
 | Structural friction | Garment Detail (removal simulation — already built) |
 | Network graph | Evolution tab or Profile (V1.5) |
 | Archetype breakdown | Evolution identity section (already built) |
-
----
-
-## Evolution — Progressive Disclosure
-
-Evolution tab is progressive, not gated. Content reveals itself gradually based on data density — not time-based unlocks or paywalls. Empty states are motivating, not empty.
-
-| Data threshold | What appears | Engine source |
-|---------------|-------------|---------------|
-| < 5 garments | Onboarding prompts: "Scan 5 plagg for din første score" | items.count |
-| 5+ garments | Clarity score + progress bar | ClarityEngine.compute() |
-| 10+ garments | Identity profile ("Structured · Warm") | IdentityResolver.resolve() |
-| 3+ weeks | Milestone timeline | MilestoneTracker.milestones() |
-| 2+ months (3+ snapshots) | Trend indicators (improving/stable/declining) | ClarityEngine trend from snapshots |
-| 2+ what-if candidates | What-If Simulator | ScoreProjector.project() |
-| 4 seasons covered | Seasonal coverage rings | SeasonalEngineV2 |
-
-**Design principle:** Every empty state tells the user what's coming and how to get there. "Din stilprofil dukker opp etter 10 plagg" — not a blank card. The tab feels alive from day one.
-
-**Not gamification:** Progressive disclosure is structural — more data enables more analysis. No artificial gates.
 
 ---
 

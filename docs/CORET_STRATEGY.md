@@ -54,10 +54,9 @@ Every garment either strengthens or weakens the whole. Compatibility is measurab
 
 | Tab | Primary C | What the user experiences |
 |-----|-----------|--------------------------|
-| Wardrobe | Coverage | See what you have, spot what's missing |
+| Wardrobe | Coverage + Coherence | See what you have, Clarity score, identity in Profile |
 | Studio | Compatibility | Build outfits, see live strength scoring |
-| Discover | Coverage + Compatibility | Swipe through outfits, discover gaps as ghost cards |
-| Evolution | Coherence | Identity forming, clarity trending |
+| Discover | Compatibility | Swipe through outfits you can wear today |
 
 ---
 

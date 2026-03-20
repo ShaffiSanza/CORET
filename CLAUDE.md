@@ -70,7 +70,7 @@ CORET/
 └── archive/               ← V1 engine (core-v1, 218/218 tests, historical)
 ```
 
-**IA:** 4 tabs: Wardrobe, Studio, Discover, Evolution. Profile via top-right menu icon (not a tab). Dashboard content distributed into Evolution and Wardrobe. Optimize replaced by Discover (swipe outfit feed).
+**IA:** 3 tabs: Wardrobe, Studio, Discover. Profile via top-right menu icon (not a tab). Dashboard content distributed into Wardrobe hero block. Evolution removed — Clarity in Wardrobe, Identity in Profile, Milestones as notifications.
 
 **Moodboard note — `digico_wardrobe_grid.png`:**
 Reference ONLY for: 2-column grid layout and garment card presentation.

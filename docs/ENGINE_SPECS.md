@@ -694,16 +694,15 @@ Selection: sort descending, tie-break earlier `createdAt`, require ≥ 2 distinc
 
 ## 8. Information Architecture
 
-### Tab Bar (4 tabs)
+### Tab Bar (3 tabs)
 
 | Tab | Icon | Label | Primary Content |
 |-----|------|-------|-----------------|
-| 1 | grid.2x2 | Wardrobe | Item grid + add/edit/delete |
+| 1 | grid.2x2 | Wardrobe | Item grid + hero block (Clarity, best outfit, gap) |
 | 2 | sparkles | Studio | Outfit builder + compatibility scoring |
-| 3 | magnifyingglass | Discover | Outfit discovery feed (swipe) + gap suggestions |
-| 4 | leaf | Evolution | Phase narrative + trend + clarity score |
+| 3 | magnifyingglass | Discover | Outfit discovery feed (swipe) |
 
-Profile is accessed via a top-right menu icon (not a tab). Dashboard content is distributed: Clarity ring → Evolution, feed items → Wardrobe. Optimize functionality absorbed into Discover (gap suggestions as ghost outfits in feed) and Garment Detail (friction analysis).
+Profile is accessed via a top-right menu icon (not a tab). Evolution tab removed — content redistributed: Clarity score → Wardrobe hero block, Identity profile → Profile menu, Milestones → toast notifications, Seasonal coverage → Profile menu, What-if → Studio ghost garments.
 
 ### Wardrobe Screen
 
@@ -740,16 +739,6 @@ Discover Screen (full-screen swipe feed)
 │   └── 10% ghost outfits (OptimizeEngineV2.detectGaps + ScoreProjector)
 └── Feed Algorithm (Utforsk):
     └── 100% ghost outfits (1-2 garments user doesn't own per outfit)
-```
-
-### Evolution Screen
-
-```
-Evolution Screen
-├── Current Phase Display (large label + narrative)
-├── Trend Indicator (improving / stable / declining)
-├── Volatility Indicator
-└── Phase History → Evolution Detail Screen
 ```
 
 ### Studio Screen
