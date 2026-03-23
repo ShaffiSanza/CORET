@@ -54,6 +54,7 @@ class BarcodeLookupRequest(BaseModel):
         ...,
         min_length=8,
         max_length=14,
+        pattern=r"^\d{8,14}$",
         description="UPC/EAN strekkode (8-14 siffer)"
     )
 
@@ -96,9 +97,9 @@ class ProductMetadataRequest(BaseModel):
     """Innkommende metadata-request.
     Tar produkttittel (og valgfritt merke/beskrivelse) og
     forsoker å gjette CORET-kategori og plaggtype."""
-    product_title: str
-    brand: Optional[str] = None
-    description: Optional[str] = None
+    product_title: str = Field(..., max_length=500)
+    brand: Optional[str] = Field(None, max_length=500)
+    description: Optional[str] = Field(None, max_length=500)
 
 
 class ProductMetadataResponse(BaseModel):

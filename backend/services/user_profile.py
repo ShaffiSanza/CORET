@@ -16,6 +16,9 @@ DEFAULT_PROFILE = {
     "archetype": "smartCasual",
 }
 
+VALID_STYLE_CONTEXTS = {"menswear", "womenswear", "unisex", "fluid"}
+VALID_ARCHETYPES = {"smartCasual", "street", "tailored"}
+
 
 def get_profile() -> dict:
     """Get user profile. Returns default if not set."""
@@ -25,10 +28,18 @@ def get_profile() -> dict:
 
 
 def update_profile(updates: dict) -> dict:
-    """Update user profile fields. Only overwrites provided fields."""
+    """Update user profile fields. Only overwrites provided fields.
+    Returns error dict if values are invalid."""
+    # Filter to known keys
+    filtered = {k: v for k, v in updates.items() if v is not None and k in DEFAULT_PROFILE}
+
+    # Value validation
+    if "style_context" in filtered and filtered["style_context"] not in VALID_STYLE_CONTEXTS:
+        return {"error": f"Invalid style_context. Must be one of: {sorted(VALID_STYLE_CONTEXTS)}"}
+    if "archetype" in filtered and filtered["archetype"] not in VALID_ARCHETYPES:
+        return {"error": f"Invalid archetype. Must be one of: {sorted(VALID_ARCHETYPES)}"}
+
     profile = get_profile()
-    for key, val in updates.items():
-        if val is not None and key in DEFAULT_PROFILE:
-            profile[key] = val
+    profile.update(filtered)
     PROFILE_FILE.write_text(json.dumps(profile, indent=2))
     return profile

@@ -244,7 +244,7 @@ async def fetch_products(
                     return all_products
 
             # Pagination via Link header
-            next_url = _parse_next_link(response.headers.get("link", ""))
+            next_url = _parse_next_link(response.headers.get("link", ""), domain)
             if not next_url:
                 break
             url = next_url
@@ -294,15 +294,32 @@ async def _request_with_retry(
     return None
 
 
-def _parse_next_link(link_header: str) -> str | None:
+def _parse_next_link(link_header: str, domain: str = "") -> str | None:
     """Parse Link header for next page URL.
     Format: <https://...?page_info=X>; rel="next"
+    Validates URL belongs to expected Shopify domain to prevent SSRF.
     """
     if not link_header:
         return None
     for part in link_header.split(","):
         part = part.strip()
         if 'rel="next"' in part:
-            url = part.split(";")[0].strip().strip("<>")
-            return url
+            next_url = part.split(";")[0].strip().strip("<>")
+            # SSRF protection: verify URL belongs to expected domain
+            if domain and not next_url.startswith(f"https://{domain}/"):
+                return None
+            return next_url
     return None
+
+
+class ShopifyClient:
+    """Wrapper that validates pagination URLs against expected domain."""
+
+    def __init__(self, domain: str):
+        self.domain = domain
+
+    def parse_next_link(self, link_header: str) -> str | None:
+        next_url = _parse_next_link(link_header)
+        if next_url and not next_url.startswith(f"https://{self.domain}/"):
+            return None
+        return next_url

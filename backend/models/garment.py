@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from uuid import uuid4
 
-from .enums import Category, BaseGroup, ColorTemp, ImportSource, Season
+from .enums import Category, BaseGroup, ColorTemp, ImportSource, Season, Silhouette
 
 
 class GarmentCreate(BaseModel):
@@ -27,8 +27,8 @@ class GarmentCreate(BaseModel):
         None, pattern=r"^#[0-9A-Fa-f]{6}$",
         description="Hex color code, e.g. '#2C3E50'"
     )
-    silhouette: Optional[str] = None
-    seasons: Optional[list[str]] = None
+    silhouette: Optional[Silhouette] = None
+    seasons: Optional[list[Season]] = Field(None, max_length=5)
     import_source: ImportSource = ImportSource.manual
 
 
@@ -41,8 +41,8 @@ class GarmentUpdate(BaseModel):
     dominant_color: Optional[str] = Field(
         None, pattern=r"^#[0-9A-Fa-f]{6}$"
     )
-    silhouette: Optional[str] = None
-    seasons: Optional[list[str]] = None
+    silhouette: Optional[Silhouette] = None
+    seasons: Optional[list[Season]] = Field(None, max_length=5)
 
 
 class GarmentResponse(BaseModel):

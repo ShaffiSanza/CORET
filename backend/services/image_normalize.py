@@ -15,6 +15,8 @@ Output: Normalized PNG bytes + size variants
 from io import BytesIO
 from PIL import Image
 
+Image.MAX_IMAGE_PIXELS = 25_000_000  # ~5000x5000 max
+
 
 TARGET_SIZE = 1024
 UI_SIZES = [512, 256]  # App display + preview/thumbnail

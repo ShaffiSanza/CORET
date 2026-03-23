@@ -83,8 +83,23 @@ async def extract_colors(image: UploadFile = File(...)):
     """Last opp et bilde og få tilbake dominerende farge og fargetemperatur.
     Bruker multipart/form-data (fileopplasting, ikke JSON)."""
 
+    # Validate content type
+    ALLOWED_TYPES = {"image/png", "image/jpeg", "image/webp"}
+    if image.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail=f"Invalid image type: {image.content_type}. Allowed: png, jpeg, webp")
+
     # Les bildet som bytes fra opplastingen
     image_bytes = await image.read()
+
+    # Validate magic bytes
+    MAGIC_BYTES = {
+        b"\x89PNG": "image/png",
+        b"\xff\xd8\xff": "image/jpeg",
+        b"RIFF": "image/webp",  # WebP starts with RIFF
+    }
+    valid_magic = any(image_bytes.startswith(magic) for magic in MAGIC_BYTES)
+    if not valid_magic:
+        raise HTTPException(status_code=400, detail="File content does not match a valid image format")
 
     # Valider filstørrelse (maks 5 MB)
     if len(image_bytes) > 5 * 1024 * 1024:
@@ -130,7 +145,22 @@ async def image_polish(image: UploadFile = File(...)):
     """Forbedre et bilde via Photoroom API (Pro-funksjon).
     Returnerer polert bilde som PNG ved suksess, eller JSON ved feil."""
 
+    # Validate content type
+    ALLOWED_TYPES = {"image/png", "image/jpeg", "image/webp"}
+    if image.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail=f"Invalid image type: {image.content_type}. Allowed: png, jpeg, webp")
+
     image_bytes = await image.read()
+
+    # Validate magic bytes
+    MAGIC_BYTES = {
+        b"\x89PNG": "image/png",
+        b"\xff\xd8\xff": "image/jpeg",
+        b"RIFF": "image/webp",  # WebP starts with RIFF
+    }
+    valid_magic = any(image_bytes.startswith(magic) for magic in MAGIC_BYTES)
+    if not valid_magic:
+        raise HTTPException(status_code=400, detail="File content does not match a valid image format")
 
     # Valider filstørrelse (maks 10 MB)
     if len(image_bytes) > 10 * 1024 * 1024:

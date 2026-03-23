@@ -10,7 +10,9 @@ Snapshots are created when:
 Mirrors engine MilestoneTracker's ClaritySnapshot concept.
 """
 
+import fcntl
 import json
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
@@ -21,6 +23,19 @@ from services.garment_store import list_garments
 
 STORE_PATH = Path(__file__).parent.parent / "data" / "clarity_history.json"
 DELTA_THRESHOLD = 5  # minimum score change to auto-record
+
+
+@contextmanager
+def _file_lock(path: Path):
+    """Acquire an exclusive file lock for read-modify-write operations."""
+    lock_path = path.with_suffix(".lock")
+    lock_file = open(lock_path, "w")
+    try:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        yield
+    finally:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+        lock_file.close()
 
 
 def _ensure_store() -> None:
@@ -36,10 +51,9 @@ def _read_all() -> list[dict]:
 
 def _write_all(snapshots: list[dict]) -> None:
     _ensure_store()
-    STORE_PATH.write_text(
-        json.dumps(snapshots, indent=2, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    tmp = STORE_PATH.with_suffix(".tmp")
+    tmp.write_text(json.dumps(snapshots, indent=2, default=str))
+    tmp.rename(STORE_PATH)
 
 
 def record_snapshot() -> ClaritySnapshotResponse:
@@ -47,17 +61,18 @@ def record_snapshot() -> ClaritySnapshotResponse:
     garments = [g.model_dump() for g in list_garments()]
     analysis = analyze_wardrobe(garments)
 
-    snapshots = _read_all()
-    entry = {
-        "id": str(uuid4()),
-        "score": analysis["clarity_estimate"],
-        "total_garments": analysis["total_garments"],
-        "total_combinations": analysis["total_combinations"],
-        "gap_count": analysis["gap_count"],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    snapshots.append(entry)
-    _write_all(snapshots)
+    with _file_lock(STORE_PATH):
+        snapshots = _read_all()
+        entry = {
+            "id": str(uuid4()),
+            "score": analysis["clarity_estimate"],
+            "total_garments": analysis["total_garments"],
+            "total_combinations": analysis["total_combinations"],
+            "gap_count": analysis["gap_count"],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        snapshots.append(entry)
+        _write_all(snapshots)
     return ClaritySnapshotResponse(**entry)
 
 
@@ -67,22 +82,23 @@ def maybe_record_snapshot() -> ClaritySnapshotResponse | None:
     analysis = analyze_wardrobe(garments)
     current_score = analysis["clarity_estimate"]
 
-    snapshots = _read_all()
-    if snapshots:
-        last_score = snapshots[-1]["score"]
-        if abs(current_score - last_score) < DELTA_THRESHOLD:
-            return None
+    with _file_lock(STORE_PATH):
+        snapshots = _read_all()
+        if snapshots:
+            last_score = snapshots[-1]["score"]
+            if abs(current_score - last_score) < DELTA_THRESHOLD:
+                return None
 
-    entry = {
-        "id": str(uuid4()),
-        "score": current_score,
-        "total_garments": analysis["total_garments"],
-        "total_combinations": analysis["total_combinations"],
-        "gap_count": analysis["gap_count"],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    snapshots.append(entry)
-    _write_all(snapshots)
+        entry = {
+            "id": str(uuid4()),
+            "score": current_score,
+            "total_garments": analysis["total_garments"],
+            "total_combinations": analysis["total_combinations"],
+            "gap_count": analysis["gap_count"],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        snapshots.append(entry)
+        _write_all(snapshots)
     return ClaritySnapshotResponse(**entry)
 
 

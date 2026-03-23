@@ -74,7 +74,7 @@ async def test_get_garment(client):
 
 @pytest.mark.asyncio
 async def test_get_garment_not_found(client):
-    response = await client.get("/api/garments/nonexistent")
+    response = await client.get("/api/garments/00000000-0000-0000-0000-000000000000")
     assert response.status_code == 404
 
 
@@ -91,7 +91,7 @@ async def test_update_garment(client):
 
 @pytest.mark.asyncio
 async def test_update_garment_not_found(client):
-    response = await client.put("/api/garments/nonexistent", json={"name": "X"})
+    response = await client.put("/api/garments/00000000-0000-0000-0000-000000000000", json={"name": "X"})
     assert response.status_code == 404
 
 
@@ -111,7 +111,7 @@ async def test_delete_garment(client):
 
 @pytest.mark.asyncio
 async def test_delete_garment_not_found(client):
-    response = await client.delete("/api/garments/nonexistent")
+    response = await client.delete("/api/garments/00000000-0000-0000-0000-000000000000")
     assert response.status_code == 404
 
 

@@ -15,6 +15,7 @@ Endpoints:
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
+from models.enums import Season
 
 from services.garment_store import list_garments, get_garment, create_garment
 from services.wardrobe_analysis import analyze_wardrobe
@@ -35,7 +36,7 @@ def _get_analysis(season: str | None = None) -> dict:
 
 
 @router.get("/wardrobe/analysis", response_model=WardrobeAnalysis)
-async def full_analysis(season: Optional[str] = Query(None, description="Filter by season")):
+async def full_analysis(season: Optional[Season] = Query(None, description="Filter by season")):
     """Full wardrobe network analysis — combos, key/weak garments, gaps."""
     return _get_analysis(season=season)
 

@@ -15,6 +15,7 @@ Hva den gjor:
 """
 
 import hmac
+import logging
 import time
 from collections import defaultdict
 
@@ -24,6 +25,12 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from config import settings
 from routers import pipeline, garments, wardrobe, outfits, wear, discover, brands, profile, auth
+
+logger = logging.getLogger(__name__)
+
+# Startup warning if API key is not configured
+if not settings.coret_api_key:
+    logger.warning("coret_api_key is EMPTY — API key auth is disabled. Set CORET_API_KEY in production.")
 
 
 # ============================================================
@@ -38,17 +45,32 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # Dict som lagrer {ip: [timestamp, timestamp, ...]}
         self.requests: dict[str, list[float]] = defaultdict(list)
 
+    # Window size in seconds for rate limiting
+    window = 60
+
     async def dispatch(self, request: Request, call_next):
         # Health-endpoint er unntatt fra rate limiting
         if request.url.path == "/api/health":
             return await call_next(request)
 
-        client_ip = request.client.host if request.client else "unknown"
+        # Get real client IP (behind reverse proxy)
+        client_ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (
+            request.client.host if request.client else "unknown"
+        )
         now = time.time()
+
+        # Evict old IPs if dict gets too large
+        if len(self.requests) > 10000:
+            # Keep only IPs with recent activity
+            cutoff = now - self.window
+            self.requests = defaultdict(list, {
+                ip: times for ip, times in self.requests.items()
+                if times and times[-1] > cutoff
+            })
 
         # Fjern requests eldre enn 60 sekunder
         self.requests[client_ip] = [
-            t for t in self.requests[client_ip] if now - t < 60
+            t for t in self.requests[client_ip] if now - t < self.window
         ]
 
         # Sjekk om IP-en har brukt opp kvoten
@@ -70,7 +92,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 # ============================================================
 class APIKeyMiddleware(BaseHTTPMiddleware):
     # Endpoints som IKKE krever API-nøkkel
-    PUBLIC_PATHS = {"/api/health", "/docs", "/openapi.json", "/redoc"}
+    PUBLIC_PATHS = {"/api/health", "/docs", "/openapi.json", "/redoc",
+                    "/api/auth/shopify", "/api/auth/shopify/callback"}
 
     async def dispatch(self, request: Request, call_next):
         # Hopp over auth hvis ingen API-nøkkel er konfigurert (development)
@@ -110,11 +133,15 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
-# Opprett FastAPI-appen
+# Opprett FastAPI-appen (docs disabled in production)
+docs_url = None if settings.environment == "production" else "/docs"
+redoc_url = None if settings.environment == "production" else "/redoc"
 app = FastAPI(
     title="CORET Backend",
     description="Bilde-pipeline og metadata-tjenester for CORET wardrobe OS",
     version="0.1.0",
+    docs_url=docs_url,
+    redoc_url=redoc_url,
 )
 
 # Legg til sikkerhetslag (rekkefølge betyr noe — ytterste først)

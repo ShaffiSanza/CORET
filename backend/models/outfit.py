@@ -23,7 +23,7 @@ class OutfitCreate(BaseModel):
 class OutfitUpdate(BaseModel):
     """Request body for updating an outfit."""
     label: Optional[str] = None
-    garment_ids: Optional[list[str]] = None
+    garment_ids: Optional[list[str]] = Field(None, min_length=1, max_length=10)
     score: Optional[float] = Field(None, ge=0.0, le=1.0)
 
 

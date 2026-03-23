@@ -14,10 +14,16 @@ Cache is refreshed on brand sync (POST /api/brands/{id}/sync).
 """
 
 import json
+import logging
 import os
+import re
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
+
+_SHOPIFY_DOMAIN_RE = re.compile(r"^[a-z0-9][a-z0-9\-]*\.myshopify\.com$")
 
 from services.shopify_client import fetch_products, map_product_type
 
@@ -73,6 +79,9 @@ def register_brand(name: str, shopify_domain: str, access_token: str,
                    archetype: str = "smartCasual",
                    cover_image_url: str | None = None) -> dict:
     """Register a new brand partner."""
+    if not _SHOPIFY_DOMAIN_RE.match(shopify_domain.lower()):
+        return {"error": "Invalid Shopify domain. Must be *.myshopify.com"}
+
     brands = _load_brands()
 
     # Don't duplicate
@@ -249,16 +258,17 @@ async def sync_brand_products(brand_id: str) -> dict:
                 limit=500,
             )
     except AuthError as e:
-        logger.warning("Auth failed for brand %s (%s): %s", brand_id, auth_type, str(e))
+        logger.warning("Auth failed for brand %s (%s): %s", brand_id, auth_type, e)
         # Set brand status to auth_failed
         brands = _load_brands()
         for b in brands:
             if b["id"] == brand_id:
                 b["status"] = "auth_failed"
         _save_brands(brands)
-        return {"success": False, "error": "auth_failed", "message": str(e)}
+        return {"success": False, "error": "auth_failed", "message": "Authentication failed for this brand"}
     except ConfigError as e:
-        return {"success": False, "error": "config_error", "message": str(e)}
+        logger.error("Config error during brand sync %s: %s", brand_id, e)
+        return {"success": False, "error": "config_error", "message": "Server configuration error"}
 
     # Filter to only CORET-mappable products (has category)
     mappable = [p for p in products if p.get("category")]

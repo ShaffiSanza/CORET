@@ -60,15 +60,16 @@ def validate_shop(shop: str) -> str | None:
 
 def check_shop_rate(shop: str) -> bool:
     """Check if shop is within rate limit. Returns True if allowed."""
-    now = time.time()
-    hour_ago = now - 3600
-    timestamps = _shop_rate.get(shop, [])
-    timestamps = [t for t in timestamps if t > hour_ago]
-    _shop_rate[shop] = timestamps
-    if len(timestamps) >= SHOP_RATE_LIMIT:
-        return False
-    _shop_rate[shop].append(now)
-    return True
+    with _state_lock:
+        now = time.time()
+        hour_ago = now - 3600
+        timestamps = _shop_rate.get(shop, [])
+        timestamps = [t for t in timestamps if t > hour_ago]
+        _shop_rate[shop] = timestamps
+        if len(timestamps) >= SHOP_RATE_LIMIT:
+            return False
+        _shop_rate[shop].append(now)
+        return True
 
 
 # ═══ STATE GENERATION ═══
@@ -203,10 +204,12 @@ async def verify_shop_binding(shop: str, token: str) -> bool:
 def generate_preview_token(brand_id: str) -> str:
     """Generate a signed preview token (HMAC, 24h TTL).
     Simple HMAC-based — no JWT dependency needed."""
+    if not settings.shopify_api_secret:
+        raise ValueError("shopify_api_secret must be configured for preview tokens")
+    secret = settings.shopify_api_secret
     expires = int(time.time()) + 86400  # 24 hours
     payload = f"{brand_id}:{expires}"
-    secret = settings.shopify_api_secret or "coret-preview-secret"
-    signature = hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()[:32]
+    signature = hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()
     return f"{payload}:{signature}"
 
 
@@ -223,9 +226,11 @@ def validate_preview_token(token: str, brand_id: str) -> bool:
         if time.time() > expires:
             return False
         # Verify signature
+        if not settings.shopify_api_secret:
+            return False
         payload = f"{token_brand_id}:{expires_str}"
-        secret = settings.shopify_api_secret or "coret-preview-secret"
-        expected = hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()[:32]
+        secret = settings.shopify_api_secret
+        expected = hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()
         return hmac.compare_digest(signature, expected)
     except (ValueError, IndexError):
         return False

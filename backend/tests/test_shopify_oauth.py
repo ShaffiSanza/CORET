@@ -10,6 +10,7 @@ import httpx
 
 import services.ghost_catalog as ghost_catalog
 import services.shopify_oauth as shopify_oauth
+from config import settings
 from services.shopify_oauth import (
     validate_shop,
     create_state,
@@ -91,15 +92,20 @@ def test_rate_limit_per_shop():
 
 # ═══ PREVIEW TOKEN ═══
 
-def test_preview_token_valid():
+@pytest.fixture(autouse=False)
+def with_api_secret(monkeypatch):
+    """Set shopify_api_secret for preview token tests."""
+    monkeypatch.setattr(settings, "shopify_api_secret", "test-secret-key")
+
+def test_preview_token_valid(with_api_secret):
     token = generate_preview_token("brand-123")
     assert validate_preview_token(token, "brand-123") is True
 
-def test_preview_token_wrong_brand_rejected():
+def test_preview_token_wrong_brand_rejected(with_api_secret):
     token = generate_preview_token("brand-123")
     assert validate_preview_token(token, "brand-456") is False
 
-def test_preview_token_expired():
+def test_preview_token_expired(with_api_secret):
     # Create token, then manually test with expired time
     token = generate_preview_token("brand-123")
     parts = token.split(":")
@@ -107,10 +113,15 @@ def test_preview_token_expired():
     expired_token = f"{parts[0]}:{int(time.time()) - 1}:{parts[2]}"
     assert validate_preview_token(expired_token, "brand-123") is False
 
-def test_preview_token_tampered():
+def test_preview_token_tampered(with_api_secret):
     token = generate_preview_token("brand-123")
     tampered = token[:-1] + ("a" if token[-1] != "a" else "b")
     assert validate_preview_token(tampered, "brand-123") is False
+
+def test_preview_token_raises_without_secret():
+    """generate_preview_token should raise when shopify_api_secret is empty."""
+    with pytest.raises(ValueError, match="shopify_api_secret must be configured"):
+        generate_preview_token("brand-123")
 
 
 # ═══ OAUTH ENDPOINTS ═══
@@ -153,7 +164,7 @@ async def test_preview_requires_token(client):
     assert r.status_code == 422  # missing required param
 
 @pytest.mark.asyncio
-async def test_preview_rejects_wrong_brand_token(client):
+async def test_preview_rejects_wrong_brand_token(client, with_api_secret):
     """Preview token scoped to wrong brand should be rejected."""
     token = generate_preview_token("other-brand-id")
     r = await client.get(f"/api/brands/real-brand-id/preview?preview_token={token}")

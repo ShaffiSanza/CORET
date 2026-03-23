@@ -135,16 +135,16 @@ async def test_brand_name_too_long(client):
 # ═══ WEBHOOK HMAC ═══
 
 @pytest.mark.asyncio
-async def test_webhook_accepts_without_secret(client):
-    """Without configured secret, webhook should still accept."""
+async def test_webhook_rejects_without_secret(client):
+    """Without configured secret, webhook should return 503."""
     r = await client.post("/api/brands/webhook",
                           headers={"X-Shopify-Topic": "products/update"},
                           content=b'{}')
-    assert r.status_code == 200
+    assert r.status_code == 503
 
 
 @pytest.mark.asyncio
-async def test_webhook_logs_missing_topic(client):
-    """Webhook without X-Shopify-Topic should still work (V1) but is logged."""
+async def test_webhook_rejects_missing_topic_without_secret(client):
+    """Webhook without secret should return 503 regardless of topic."""
     r = await client.post("/api/brands/webhook", content=b'{}')
-    assert r.status_code == 200
+    assert r.status_code == 503

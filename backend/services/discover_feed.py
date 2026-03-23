@@ -512,6 +512,9 @@ def _load_actions() -> list[dict]:
 
 
 def _save_actions(actions: list[dict]):
+    # Cap at 10000 entries to prevent unbounded growth
+    if len(actions) > 10000:
+        actions = actions[-10000:]
     ACTIONS_FILE.write_text(json.dumps(actions, indent=2))
 
 
@@ -561,7 +564,11 @@ def _load_seen() -> set[str]:
 
 
 def _save_seen(seen: set[str]):
-    SEEN_FILE.write_text(json.dumps(sorted(seen), indent=2))
+    # Cap at 10000 entries to prevent unbounded growth
+    seen_list = sorted(seen)
+    if len(seen_list) > 10000:
+        seen_list = seen_list[-10000:]
+    SEEN_FILE.write_text(json.dumps(seen_list, indent=2))
 
 
 def _combo_key(garment_ids: list[str]) -> str:

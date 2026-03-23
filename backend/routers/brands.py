@@ -12,6 +12,7 @@ GET    /api/brands/{id}/products     — Get cached products
 POST   /api/brands/webhook           — Shopify product webhook
 """
 
+import base64
 import hashlib
 import hmac
 
@@ -156,19 +157,23 @@ async def shopify_webhook(request: Request):
         log_missing_webhook_topic(client_ip)
         # Still accept in V1 for testing, but log it
 
-    # HMAC validation if secret is configured
-    if settings.shopify_webhook_secret:
-        raw_body = await request.body()
-        hmac_header = request.headers.get("X-Shopify-Hmac-SHA256", "")
-        computed = hmac.new(
+    # HMAC validation — reject if secret is not configured
+    if not settings.shopify_webhook_secret:
+        raise HTTPException(status_code=503, detail="Webhook verification not configured")
+
+    raw_body = await request.body()
+    hmac_header = request.headers.get("X-Shopify-Hmac-SHA256", "")
+    computed = base64.b64encode(
+        hmac.new(
             settings.shopify_webhook_secret.encode("utf-8"),
             raw_body,
             hashlib.sha256
-        ).hexdigest()
+        ).digest()
+    ).decode()
 
-        if not hmac.compare_digest(computed, hmac_header):
-            log_failed_webhook_hmac(client_ip)
-            raise HTTPException(status_code=401, detail="Invalid webhook signature")
+    if not hmac.compare_digest(computed, hmac_header):
+        log_failed_webhook_hmac(client_ip)
+        raise HTTPException(status_code=401, detail="Invalid webhook signature")
 
     return {"status": "received", "topic": topic}
 

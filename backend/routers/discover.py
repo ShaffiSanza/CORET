@@ -12,8 +12,10 @@ POST /api/discover/action        — Log swipe action (like/pass/hook)
 GET  /api/discover/stats         — Get action stats
 """
 
+from typing import Literal
+
 from fastapi import APIRouter, Query, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from models.discover import (
     DiscoverFeedResponse,
@@ -72,9 +74,9 @@ async def get_discover_feed(
 
 
 class BookmarkRequest(BaseModel):
-    card_id: str
+    card_id: str = Field(..., max_length=100)
     garment_ids: list[str]
-    strength: float = 0.0
+    strength: float = Field(0.0, ge=0.0, le=1.0)
 
 
 @router.post("/discover/bookmark")
@@ -102,10 +104,10 @@ async def get_bookmarks():
 
 
 class ActionRequest(BaseModel):
-    card_id: str
-    action: str  # "like", "pass", "hook"
+    card_id: str = Field(..., max_length=100)
+    action: Literal["like", "pass", "hook"]
     garment_ids: list[str] = []  # required for hook (auto-bookmark)
-    strength: float = 0.0
+    strength: float = Field(0.0, ge=0.0, le=1.0)
     timestamp: str | None = None  # ISO 8601, defaults to now
 
 

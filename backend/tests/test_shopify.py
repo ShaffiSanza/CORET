@@ -282,10 +282,10 @@ def test_ghost_garments_with_cached_products():
 # ═══ WEBHOOK ═══
 
 @pytest.mark.asyncio
-async def test_webhook_returns_200(client):
+async def test_webhook_rejects_without_secret(client):
+    """Webhook should return 503 when no secret is configured."""
     r = await client.post("/api/brands/webhook")
-    assert r.status_code == 200
-    assert r.json()["status"] == "received"
+    assert r.status_code == 503
 
 
 # ═══ DISCOVER FEED WITH LIVE GHOSTS ═══

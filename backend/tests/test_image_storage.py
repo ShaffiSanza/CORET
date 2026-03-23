@@ -24,55 +24,71 @@ def use_tmp_storage(tmp_path):
     yield
 
 
+VALID_UUID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+VALID_UUID_2 = "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+VALID_UUID_3 = "c3d4e5f6-a7b8-9012-cdef-123456789012"
+VALID_UUID_4 = "d4e5f6a7-b8c9-0123-defa-234567890123"
+
+
 def test_save_and_retrieve():
     """Save images and verify all 3 variants exist on disk."""
     norm = normalize_image(_make_test_image())
     assert norm["success"]
 
-    result = storage.save_garment_images("test-123", norm)
+    result = storage.save_garment_images(VALID_UUID, norm)
     assert result["success"]
-    assert result["full"] == "/api/images/test-123/full.png"
-    assert result["display"] == "/api/images/test-123/display.png"
-    assert result["preview"] == "/api/images/test-123/preview.png"
+    assert result["full"] == f"/api/images/{VALID_UUID}/full.png"
+    assert result["display"] == f"/api/images/{VALID_UUID}/display.png"
+    assert result["preview"] == f"/api/images/{VALID_UUID}/preview.png"
 
     # Verify files exist
-    assert storage.get_image_path("test-123", "full") is not None
-    assert storage.get_image_path("test-123", "display") is not None
-    assert storage.get_image_path("test-123", "preview") is not None
+    assert storage.get_image_path(VALID_UUID, "full") is not None
+    assert storage.get_image_path(VALID_UUID, "display") is not None
+    assert storage.get_image_path(VALID_UUID, "preview") is not None
 
 
 def test_get_nonexistent():
     """Getting a nonexistent image returns None."""
-    assert storage.get_image_path("no-such-id", "full") is None
+    assert storage.get_image_path(VALID_UUID_2, "full") is None
 
 
 def test_delete_images():
     """Delete removes all variants."""
     norm = normalize_image(_make_test_image())
-    storage.save_garment_images("del-test", norm)
+    storage.save_garment_images(VALID_UUID_3, norm)
 
-    assert storage.delete_garment_images("del-test") is True
-    assert storage.get_image_path("del-test", "full") is None
-    assert storage.get_image_path("del-test", "display") is None
+    assert storage.delete_garment_images(VALID_UUID_3) is True
+    assert storage.get_image_path(VALID_UUID_3, "full") is None
+    assert storage.get_image_path(VALID_UUID_3, "display") is None
 
 
 def test_delete_nonexistent():
-    assert storage.delete_garment_images("nope") is False
+    assert storage.delete_garment_images(VALID_UUID_4) is False
 
 
 def test_saved_image_sizes():
     """Verify saved files have correct dimensions."""
     norm = normalize_image(_make_test_image())
-    storage.save_garment_images("size-test", norm)
+    storage.save_garment_images(VALID_UUID, norm)
 
-    full_path = storage.get_image_path("size-test", "full")
+    full_path = storage.get_image_path(VALID_UUID, "full")
     img = Image.open(full_path)
     assert img.size == (1024, 1024)
 
-    display_path = storage.get_image_path("size-test", "display")
+    display_path = storage.get_image_path(VALID_UUID, "display")
     img = Image.open(display_path)
     assert img.size == (512, 512)
 
-    preview_path = storage.get_image_path("size-test", "preview")
+    preview_path = storage.get_image_path(VALID_UUID, "preview")
     img = Image.open(preview_path)
     assert img.size == (256, 256)
+
+
+def test_invalid_garment_id_rejected():
+    """Non-UUID garment IDs should be rejected."""
+    with pytest.raises(ValueError, match="Invalid garment ID format"):
+        storage.save_garment_images("../evil", {})
+    with pytest.raises(ValueError, match="Invalid garment ID format"):
+        storage.get_image_path("not-a-uuid", "full")
+    with pytest.raises(ValueError, match="Invalid garment ID format"):
+        storage.delete_garment_images("../../etc/passwd")

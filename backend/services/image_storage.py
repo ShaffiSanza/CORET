@@ -10,9 +10,25 @@ In production, this would write to cloud storage (S3/GCS).
 For V1, writes to local data/images/ directory.
 """
 
+import logging
+import re
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
 IMAGES_DIR = Path(__file__).parent.parent / "data" / "images"
+
+_UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+
+
+def _safe_garment_path(garment_id: str) -> Path:
+    """Validate garment_id is a UUID and resolve path stays within IMAGES_DIR."""
+    if not _UUID_RE.match(garment_id):
+        raise ValueError(f"Invalid garment ID format: {garment_id}")
+    target = (IMAGES_DIR / garment_id).resolve()
+    if not str(target).startswith(str(IMAGES_DIR.resolve())):
+        raise ValueError("Path traversal detected")
+    return target
 
 
 def _ensure_dir() -> None:
@@ -36,7 +52,7 @@ def save_garment_images(garment_id: str, norm_result: dict) -> dict:
         }
     """
     _ensure_dir()
-    garment_dir = IMAGES_DIR / garment_id
+    garment_dir = _safe_garment_path(garment_id)
     garment_dir.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -58,12 +74,13 @@ def save_garment_images(garment_id: str, norm_result: dict) -> dict:
             "success": True,
         }
     except Exception as e:
+        logger.error(f"Image processing failed: {e}")
         return {
             "full": None,
             "display": None,
             "preview": None,
             "success": False,
-            "error": str(e),
+            "error": "Image processing failed",
         }
 
 
@@ -78,13 +95,16 @@ def get_image_path(garment_id: str, variant: str) -> Path | None:
     Returns:
         Path to file, or None if not found
     """
-    path = IMAGES_DIR / garment_id / f"{variant}.png"
+    garment_dir = _safe_garment_path(garment_id)
+    path = (garment_dir / f"{variant}.png").resolve()
+    if not str(path).startswith(str(IMAGES_DIR.resolve())):
+        raise ValueError("Path traversal detected")
     return path if path.exists() else None
 
 
 def delete_garment_images(garment_id: str) -> bool:
     """Delete all stored images for a garment."""
-    garment_dir = IMAGES_DIR / garment_id
+    garment_dir = _safe_garment_path(garment_id)
     if not garment_dir.exists():
         return False
     for f in garment_dir.iterdir():

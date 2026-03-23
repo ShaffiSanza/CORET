@@ -29,7 +29,7 @@ class ShopifyProduct(BaseModel):
 class BrandRegister(BaseModel):
     """Request to register a brand partner."""
     name: str = Field(..., min_length=1, max_length=100)
-    shopify_domain: str = Field(..., min_length=1, max_length=253)
+    shopify_domain: str = Field(..., min_length=1, max_length=253, pattern=r"^[a-z0-9][a-z0-9\-]*\.myshopify\.com$")
     access_token: str = Field(..., min_length=1, max_length=200)
     archetype: str = Field("smartCasual", max_length=50)
     cover_image_url: str | None = Field(None, max_length=2048)
