@@ -33,13 +33,29 @@ Last updated: 2026-03-23
 - [x] Architecture map fullstendig oppdatert og verifisert
 - [x] Seed script: backend/scripts/seed_test_store.py (18 test-plagg via Admin API)
 
+### Session 3 (23. mars) — Profile Perfeksjonering + Security Audit
+- [x] Profile moodboard fullstendig omskrevet: 6 seksjoner (context, identity, season, fits, imports, settings)
+- [x] Profile light+dark side-by-side moodboard (matcher design system)
+- [x] Profile wireframe oppdatert: 3 tabs + meny-navigasjon, alle seksjoner dokumentert
+- [x] Full security audit: 31 funn (5 CRITICAL, 7 HIGH, 11 MEDIUM, 8 LOW)
+- [x] Alle 31 funn fikset og verifisert (248/248 tester passerer)
+  - Path traversal: UUID-validering + resolve() i image_storage
+  - Webhook HMAC: base64 + reject ved manglende secret
+  - Hardkodet fallback-secret fjernet
+  - SSRF: shopify_domain validering (*.myshopify.com)
+  - Image upload: content-type + magic bytes validering
+  - File locking: fcntl + atomic writes i alle JSON stores
+  - Input validation: enum-typer, Pydantic constraints overalt
+  - Rate limiter: memory eviction, X-Forwarded-For support
+  - Error sanitering: generic meldinger til klient
+
 ## Build Status
 ```
 engine (V2): 387/387 passing (17 suites + Fashion Intelligence)
-backend: 246/246 passing (49 endpoints)
+backend: 248/248 passing (45 endpoints, security hardened)
 archive/core-v1 (V1): 218/218 passing (archived)
 ios/: NOT compilable on Linux — requires Mac + Xcode
-Total: 633 tester, 0 feil
+Total: 853 tester, 0 feil
 ```
 
 ## In Progress
@@ -50,9 +66,10 @@ Nothing interrupted.
 CORET — resuming. Read CLAUDE.md, then CONTINUE.md.
 
 Engine: 387/387 tests (17 engines + Fashion Intelligence).
-Backend: 246/246 tests (49 endpoints).
+Backend: 248/248 tests (45 endpoints, fully security hardened).
 Shopify LIVE: bdsxrs-cz.myshopify.com, 18 products synced.
-Missing piece field on DiscoverCard — ready for SwiftUI.
+Profile moodboard: light+dark, 6 sections, design system aligned.
+Security: 31 vulns fixed (path traversal, HMAC, SSRF, file locking, input validation).
 
 Remaining Arch Linux work:
 - Oppdater Nilah-pitch med "siste plagget"-posisjonering

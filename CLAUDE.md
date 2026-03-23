@@ -91,7 +91,7 @@ NOT reference for: prices, brand names, social features, shopping UI, lifestyle 
 | Package | Tests | Status |
 |---------|-------|--------|
 | engine/ (V2 — ACTIVE) | 387/387 | ✅ All passing |
-| backend/ (Python/FastAPI) | 247/247 | ✅ All passing |
+| backend/ (Python/FastAPI) | 248/248 | ✅ All passing |
 | archive/core-v1/ (V1 — ARCHIVED) | 218/218 | ✅ All passing |
 
 **V2 engines:** CohesionEngine (70), ClarityEngine (23), ScoreProjector (22), IdentityResolver (15), KeyGarmentResolver (21), MilestoneTracker (38), SeasonalEngineV2 (26), OptimizeEngineV2 (19), BehaviouralEngine (27), SimilarityEngine (18), DailyOutfitScorer (9), BestOutfitFinder (8), NetworkUnlockCalculator (10), DailyOutfitEngine (13), StyleDirectionEngine (14), Models (18).
