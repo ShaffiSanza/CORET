@@ -22,106 +22,114 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 .outfit-card.entering{transform:translateY(100%);opacity:0}
 .outfit-card.active{transform:translateY(0);opacity:1}
 
-/* Dynamic bg */
+/* Dynamic bg — cinematisk */
 .oc-bg{position:absolute;inset:0;pointer-events:none;z-index:0;transition:all 1s ease}
-.oc-blob{position:absolute;border-radius:50%;filter:blur(120px)}
-.oc-b1{width:400px;height:400px;top:-15%;left:-30%;animation:obf 10s ease-in-out infinite alternate}
-.oc-b2{width:300px;height:300px;bottom:5%;right:-25%;animation:obf 8s ease-in-out infinite alternate-reverse}
-@keyframes obf{0%{transform:scale(1);opacity:.15}100%{transform:scale(1.15);opacity:.25}}
+.oc-blob{position:absolute;border-radius:50%;filter:blur(140px)}
+.oc-b1{width:450px;height:450px;top:-20%;left:-35%;animation:obf 12s ease-in-out infinite alternate}
+.oc-b2{width:350px;height:350px;bottom:0%;right:-30%;animation:obf 9s ease-in-out infinite alternate-reverse}
+.oc-b3{width:200px;height:200px;top:40%;left:20%;animation:obf 11s ease-in-out infinite alternate}
+@keyframes obf{0%{transform:scale(1);opacity:.10}100%{transform:scale(1.2);opacity:.20}}
 
-/* Header */
-.oc-header{
-  position:relative;z-index:2;padding:54px 24px 0;
-  display:flex;justify-content:space-between;align-items:center;flex-shrink:0;
+/* Score watermark */
+.score-watermark{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Instrument Serif',serif;font-size:220px;font-weight:400;
+  color:rgba(255,255,255,.035);z-index:1;pointer-events:none;
+  line-height:1;letter-spacing:-8px;
 }
-.oc-title{font-family:'Instrument Serif',serif;font-size:24px;color:rgba(255,255,255,.7)}
-.oc-counter{font-size:10px;color:rgba(255,255,255,.1)}
 
-/* Toggle removed in V1 — Utforsk comes in V2 with product partner */
+/* Toggle — 70/30 + Full */
+.oc-toggle{
+  position:relative;z-index:3;display:flex;justify-content:center;padding:58px 0 0;gap:0;flex-shrink:0;
+}
+.oc-toggle-btn{
+  padding:6px 18px;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;
+  cursor:pointer;transition:all .3s;border:none;background:none;font-family:'DM Sans',sans-serif;
+}
+.oc-toggle-btn.active-gold{color:rgba(201,169,110,.7);border-bottom:1.5px solid rgba(201,169,110,.3)}
+.oc-toggle-btn.active-sage{color:rgba(122,154,110,.7);border-bottom:1.5px solid rgba(122,154,110,.3)}
+.oc-toggle-btn.inactive{color:rgba(255,255,255,.12);border-bottom:1.5px solid transparent}
+
+/* Scroll dots — left side */
+.scroll-dots{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:5;
+  display:flex;flex-direction:column;gap:6px;
+}
+.scroll-dot{
+  width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.08);
+  transition:all .4s cubic-bezier(.16,1,.3,1);
+}
+.scroll-dot.active{background:rgba(201,169,110,.5);height:14px;border-radius:2px}
 
 /* Stage */
-.oc-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:2;padding:0 20px}
+.oc-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:2;padding:0 50px 0 30px}
 .oc-stack{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
 
-/* Garment item with label + like */
-.oc-item{transition:all .4s cubic-bezier(.16,1,.3,1);position:relative;display:flex;align-items:center;gap:0}
-.oc-item svg{filter:drop-shadow(0 20px 50px rgba(0,0,0,.45)) drop-shadow(0 6px 14px rgba(0,0,0,.25))}
+/* Garment item */
+.oc-item{transition:all .4s cubic-bezier(.16,1,.3,1);position:relative;display:flex;align-items:center;justify-content:center}
+.oc-item svg{filter:drop-shadow(0 20px 50px rgba(0,0,0,.5)) drop-shadow(0 6px 14px rgba(0,0,0,.3))}
+/* Stack order: outer(1) → upper(2) → lower(3) → shoes(4) */
 .oc-item:nth-child(1){z-index:4}
 .oc-item:nth-child(2){z-index:3;margin-top:-8px;transform:scale(.96)}
 .oc-item:nth-child(3){z-index:2;margin-top:-6px;transform:scale(.92)}
 .oc-item:nth-child(4){z-index:1;margin-top:-4px;transform:scale(.88)}
 
-/* Like button — left of garment */
-.like-btn{
-  position:absolute;left:-32px;top:50%;transform:translateY(-50%);
-  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:13px;color:rgba(255,255,255,.12);
+/* Right-side actions — TikTok style */
+.oc-actions{
+  position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:6;
+  display:flex;flex-direction:column;align-items:center;gap:18px;
+}
+.action-btn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.action-btn:active{transform:scale(1.2)}
+.action-circle{
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;backdrop-filter:blur(8px);
   transition:all .3s cubic-bezier(.34,1.56,.64,1);
 }
-.like-btn:active{transform:translateY(-50%) scale(1.3)}
-.like-btn.liked{color:rgba(201,169,110,.7);text-shadow:0 0 12px rgba(201,169,110,.3)}
+.action-circle.lg{width:46px;height:46px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06)}
+.action-circle.sm{width:38px;height:38px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.04)}
+.action-label{font-size:7px;letter-spacing:.5px;color:rgba(255,255,255,.12);text-transform:uppercase}
+.action-circle svg{stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 
-/* Garment label — right of garment */
-.g-label{
-  position:absolute;right:-10px;top:50%;transform:translateY(-50%) translateX(100%);
-  font-size:9px;color:rgba(255,255,255,.2);white-space:nowrap;
-  padding-left:8px;
+/* Like action */
+.action-btn.like .action-circle{color:rgba(255,255,255,.2)}
+.action-btn.like.liked .action-circle{color:rgba(201,169,110,.7);background:rgba(201,169,110,.08);border-color:rgba(201,169,110,.15);box-shadow:0 0 20px rgba(201,169,110,.1)}
+
+/* Hook/bookmark action */
+.action-btn.hook .action-circle{color:rgba(255,255,255,.2)}
+.action-btn.hook.saved .action-circle{color:rgba(201,169,110,.6);background:rgba(201,169,110,.08);border-color:rgba(201,169,110,.12)}
+
+/* Pass action */
+.action-btn.pass .action-circle{color:rgba(255,255,255,.12)}
+
+/* Bottom info panel */
+.oc-bottom{
+  position:relative;z-index:3;padding:0 24px 16px;flex-shrink:0;
+  background:linear-gradient(transparent,rgba(14,12,10,.85) 40%,rgba(14,12,10,.95));
+  padding-top:40px;margin-top:-20px;
 }
-.g-label .brand{color:rgba(255,255,255,.12)}
-
-/* Ghost garment styling removed in V1 — no ghost cards in Discover */
-
-.oc-name{
+.oc-brand-line{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.1);margin-bottom:6px}
+.oc-outfit-name{
   font-family:'Instrument Serif',serif;font-style:italic;
-  font-size:18px;color:rgba(255,255,255,.35);
-  margin-top:24px;text-align:center;letter-spacing:.3px;
+  font-size:22px;color:rgba(255,255,255,.45);margin-bottom:10px;line-height:1.2;
 }
-
-/* Recommended label */
-.oc-recommended{
-  font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
-  color:rgba(201,169,110,.5);background:rgba(201,169,110,.06);
-  padding:4px 12px;border-radius:6px;margin-bottom:10px;
-  position:relative;z-index:2;flex-shrink:0;text-align:center;
-  align-self:center;
+.oc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.oc-tag{
+  font-size:9px;padding:4px 10px;border-radius:20px;
+  background:rgba(255,255,255,.04);color:rgba(255,255,255,.2);
+  border:1px solid rgba(255,255,255,.04);
 }
+.oc-tag.owned-tag{color:rgba(122,154,110,.35);background:rgba(122,154,110,.04);border-color:rgba(122,154,110,.06)}
+.oc-tag.rotation-tag{color:rgba(201,169,110,.35);background:rgba(201,169,110,.04);border-color:rgba(201,169,110,.06)}
 
-/* Bottom */
-.oc-bottom{position:relative;z-index:2;padding:0 24px 20px;flex-shrink:0}
-.oc-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.oc-score-area{display:flex;align-items:baseline;gap:6px}
-.oc-score{font-family:'Instrument Serif',serif;font-size:34px;line-height:1}
-.oc-score.high{color:rgba(122,154,110,.6)}
-.oc-score.mid{color:rgba(201,169,110,.5)}
-.oc-score-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.1)}
-
-/* Badges */
-.oc-badge{font-size:10px;padding:4px 10px;border-radius:7px}
-.oc-badge.owned{color:rgba(122,154,110,.4);background:rgba(122,154,110,.05)}
-.oc-badge.rotation{color:rgba(201,169,110,.4);background:rgba(201,169,110,.05)}
-
-.oc-garments{font-size:11px;color:rgba(255,255,255,.15);margin-bottom:16px;line-height:1.5}
-/* Single CTA — full width */
-.oc-cta{
-  width:100%;padding:14px;border-radius:14px;text-align:center;
-  font-size:13px;cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);
-  font-family:'DM Sans',sans-serif;border:none;
-  background:rgba(201,169,110,.06);border:1px solid rgba(201,169,110,.12);color:rgba(201,169,110,.6);
+/* Swipe hint */
+.swipe-hint{
+  text-align:center;padding:8px 0 6px;font-size:8px;color:rgba(255,255,255,.06);
+  letter-spacing:1px;animation:sh 2s ease-in-out infinite;
 }
-.oc-cta:active{transform:scale(.96)}
-
-/* Bookmark icon — top right */
-.bookmark-btn{
-  position:absolute;top:54px;right:24px;z-index:3;
-  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:16px;color:rgba(255,255,255,.12);
-  transition:all .3s cubic-bezier(.34,1.56,.64,1);
-}
-.bookmark-btn:active{transform:scale(1.3)}
-.bookmark-btn.saved{color:rgba(201,169,110,.6);text-shadow:0 0 10px rgba(201,169,110,.2)}
-
-/* Swipe hint — only first card */
-.swipe-hint{text-align:center;padding:6px 0 10px;font-size:8px;color:rgba(255,255,255,.06);letter-spacing:1px;animation:sh 2s ease-in-out infinite}
 @keyframes sh{0%,100%{transform:translateY(0);opacity:.06}50%{transform:translateY(-3px);opacity:.12}}
 
 /* Save feedback overlay */
@@ -170,30 +178,31 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 // ═══ GARMENT DATA (owned only — no ghosts in V1) ═══
 const G={
   outer:[
-    {svg:`<svg width="150" height="112" viewBox="0 0 160 120" fill="none"><path d="M40 15C40 8 120 8 120 15L128 40C128 44 152 48 158 55V95C158 102 148 108 138 108H128V112C128 118 40 118 40 112V108H28C18 108 8 102 8 95V55C14 48 32 44 32 40L40 15Z" fill="#4A2028" opacity=".9"/></svg>`,n:'Burgundy Jakke',b:'COS',c:[340,60,20]},
-    {svg:`<svg width="150" height="112" viewBox="0 0 160 120" fill="none"><path d="M40 15C40 8 120 8 120 15L128 40C128 44 152 48 158 55V95C158 102 148 108 138 108H128V112C128 118 40 118 40 112V108H28C18 108 8 102 8 95V55C14 48 32 44 32 40L40 15Z" fill="#1E2A3A" opacity=".9"/></svg>`,n:'Navy Frakk',b:'Massimo Dutti',c:[215,50,18]},
-    {svg:`<svg width="150" height="112" viewBox="0 0 160 120" fill="none"><path d="M40 15C40 8 120 8 120 15L128 40C128 44 152 48 158 55V95C158 102 148 108 138 108H128V112C128 118 40 118 40 112V108H28C18 108 8 102 8 95V55C14 48 32 44 32 40L40 15Z" fill="#2A3520" opacity=".9"/></svg>`,n:'Oliven Bomber',b:'Arket',c:[100,40,16]}
+    {svg:`<svg width="150" height="112" viewBox="0 0 160 120" fill="none"><path d="M40 15C40 8 120 8 120 15L128 40C128 44 152 48 158 55V95C158 102 148 108 138 108H128V112C128 118 40 118 40 112V108H28C18 108 8 102 8 95V55C14 48 32 44 32 40L40 15Z" fill="#4A2028" opacity=".9"/></svg>`,n:'Burgundy Jakke',b:'COS',c:[340,60,20],cat:'outer'},
+    {svg:`<svg width="150" height="112" viewBox="0 0 160 120" fill="none"><path d="M40 15C40 8 120 8 120 15L128 40C128 44 152 48 158 55V95C158 102 148 108 138 108H128V112C128 118 40 118 40 112V108H28C18 108 8 102 8 95V55C14 48 32 44 32 40L40 15Z" fill="#1E2A3A" opacity=".9"/></svg>`,n:'Navy Frakk',b:'Massimo Dutti',c:[215,50,18],cat:'outer'},
+    {svg:`<svg width="150" height="112" viewBox="0 0 160 120" fill="none"><path d="M40 15C40 8 120 8 120 15L128 40C128 44 152 48 158 55V95C158 102 148 108 138 108H128V112C128 118 40 118 40 112V108H28C18 108 8 102 8 95V55C14 48 32 44 32 40L40 15Z" fill="#2A3520" opacity=".9"/></svg>`,n:'Oliven Bomber',b:'Arket',c:[100,40,16],cat:'outer'}
   ],
   base:[
-    {svg:`<svg width="110" height="76" viewBox="0 0 100 70" fill="none"><path d="M28 8C28 4 72 4 72 8L76 18C76 20 94 22 100 28V58C100 64 92 68 84 68H16C8 68 0 64 0 58V28C6 22 24 20 24 18L28 8Z" fill="#1A1A1E" opacity=".9"/></svg>`,n:'Sort Tee',b:'H&M',c:[240,10,10]},
-    {svg:`<svg width="110" height="76" viewBox="0 0 100 70" fill="none"><path d="M28 8C28 4 72 4 72 8L76 18C76 20 94 22 100 28V58C100 64 92 68 84 68H16C8 68 0 64 0 58V28C6 22 24 20 24 18L28 8Z" fill="#E0DAD0" opacity=".9"/></svg>`,n:'Hvit Tee',b:'Uniqlo',c:[35,15,85]},
-    {svg:`<svg width="110" height="82" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#1E2A3A" opacity=".9"/></svg>`,n:'Navy Skjorte',b:'Zara',c:[215,40,20]}
+    {svg:`<svg width="110" height="76" viewBox="0 0 100 70" fill="none"><path d="M28 8C28 4 72 4 72 8L76 18C76 20 94 22 100 28V58C100 64 92 68 84 68H16C8 68 0 64 0 58V28C6 22 24 20 24 18L28 8Z" fill="#1A1A1E" opacity=".9"/></svg>`,n:'Sort Tee',b:'H&M',c:[240,10,10],cat:'base'},
+    {svg:`<svg width="110" height="76" viewBox="0 0 100 70" fill="none"><path d="M28 8C28 4 72 4 72 8L76 18C76 20 94 22 100 28V58C100 64 92 68 84 68H16C8 68 0 64 0 58V28C6 22 24 20 24 18L28 8Z" fill="#E0DAD0" opacity=".9"/></svg>`,n:'Hvit Tee',b:'Uniqlo',c:[35,15,85],cat:'base'},
+    {svg:`<svg width="110" height="82" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#1E2A3A" opacity=".9"/></svg>`,n:'Navy Skjorte',b:'Zara',c:[215,40,20],cat:'base'}
   ],
   lower:[
-    {svg:`<svg width="100" height="122" viewBox="0 0 90 130" fill="none"><path d="M8 0H82C86 0 90 4 90 8V50L64 130H50L45 60L40 130H26L0 50V8C0 4 4 0 8 0Z" fill="#1A2030" opacity=".85"/></svg>`,n:'Morke Jeans',b:"Levi's",c:[215,40,14]},
-    {svg:`<svg width="100" height="122" viewBox="0 0 90 130" fill="none"><path d="M8 0H82C86 0 90 4 90 8V50L64 130H50L45 60L40 130H26L0 50V8C0 4 4 0 8 0Z" fill="#C4B89A" opacity=".8"/></svg>`,n:'Beige Chinos',b:'Arket',c:[38,30,65]},
-    {svg:`<svg width="100" height="122" viewBox="0 0 90 130" fill="none"><path d="M8 0H82C86 0 90 4 90 8V50L64 130H50L45 60L40 130H26L0 50V8C0 4 4 0 8 0Z" fill="#1A1A1E" opacity=".85"/></svg>`,n:'Svarte Bukser',b:'COS',c:[240,10,10]}
+    {svg:`<svg width="100" height="122" viewBox="0 0 90 130" fill="none"><path d="M8 0H82C86 0 90 4 90 8V50L64 130H50L45 60L40 130H26L0 50V8C0 4 4 0 8 0Z" fill="#1A2030" opacity=".85"/></svg>`,n:'Morke Jeans',b:"Levi's",c:[215,40,14],cat:'lower'},
+    {svg:`<svg width="100" height="122" viewBox="0 0 90 130" fill="none"><path d="M8 0H82C86 0 90 4 90 8V50L64 130H50L45 60L40 130H26L0 50V8C0 4 4 0 8 0Z" fill="#C4B89A" opacity=".8"/></svg>`,n:'Beige Chinos',b:'Arket',c:[38,30,65],cat:'lower'},
+    {svg:`<svg width="100" height="122" viewBox="0 0 90 130" fill="none"><path d="M8 0H82C86 0 90 4 90 8V50L64 130H50L45 60L40 130H26L0 50V8C0 4 4 0 8 0Z" fill="#1A1A1E" opacity=".85"/></svg>`,n:'Svarte Bukser',b:'COS',c:[240,10,10],cat:'lower'}
   ],
   shoes:[
-    {svg:`<svg width="110" height="44" viewBox="0 0 120 50" fill="none"><path d="M10 20C10 10 20 2 35 2H85C100 2 110 10 110 20V30C110 40 100 48 85 48H35C20 48 10 40 10 30V20Z" fill="#1A1A1E" opacity=".9"/></svg>`,n:'Svarte Loafers',b:'Massimo Dutti',c:[240,10,10]},
-    {svg:`<svg width="110" height="44" viewBox="0 0 120 50" fill="none"><path d="M10 20C10 10 20 2 35 2H85C100 2 110 10 110 20V30C110 40 100 48 85 48H35C20 48 10 40 10 30V20Z" fill="#E0DAD0" opacity=".85"/></svg>`,n:'Hvite Sneakers',b:'Nike',c:[35,15,85]},
-    {svg:`<svg width="110" height="44" viewBox="0 0 120 50" fill="none"><path d="M10 20C10 10 20 2 35 2H85C100 2 110 10 110 20V30C110 40 100 48 85 48H35C20 48 10 40 10 30V20Z" fill="#5A3020" opacity=".9"/></svg>`,n:'Brune Boots',b:'Red Wing',c:[20,55,25]}
+    {svg:`<svg width="110" height="44" viewBox="0 0 120 50" fill="none"><path d="M10 20C10 10 20 2 35 2H85C100 2 110 10 110 20V30C110 40 100 48 85 48H35C20 48 10 40 10 30V20Z" fill="#1A1A1E" opacity=".9"/></svg>`,n:'Svarte Loafers',b:'Massimo Dutti',c:[240,10,10],cat:'shoes'},
+    {svg:`<svg width="110" height="44" viewBox="0 0 120 50" fill="none"><path d="M10 20C10 10 20 2 35 2H85C100 2 110 10 110 20V30C110 40 100 48 85 48H35C20 48 10 40 10 30V20Z" fill="#E0DAD0" opacity=".85"/></svg>`,n:'Hvite Sneakers',b:'Nike',c:[35,15,85],cat:'shoes'},
+    {svg:`<svg width="110" height="44" viewBox="0 0 120 50" fill="none"><path d="M10 20C10 10 20 2 35 2H85C100 2 110 10 110 20V30C110 40 100 48 85 48H35C20 48 10 40 10 30V20Z" fill="#5A3020" opacity=".9"/></svg>`,n:'Brune Boots',b:'Red Wing',c:[20,55,25],cat:'shoes'}
   ]
 };
 
 const MAX_CARDS=20;
 const cats=['outer','base','lower','shoes'];
 let idx=0, hintShown=false;
+let currentMode='7030'; // '7030' or 'full'
 
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 function generateCombo(){return cats.map(c=>pick(G[c]))}
@@ -208,6 +217,35 @@ function hslAvg(combo){
   return[h/4,s/4,l/4];
 }
 
+// ═══ SCROLL DOTS ═══
+function buildScrollDots(){
+  const total=Math.min(MAX_CARDS,10); // show max 10 dots
+  let html='';
+  for(let i=0;i<total;i++){
+    html+=`<div class="scroll-dot${i===0?' active':''}"></div>`;
+  }
+  return html;
+}
+function updateScrollDots(){
+  const dots=document.querySelectorAll('.scroll-dot');
+  const dotIdx=idx % dots.length;
+  dots.forEach((d,i)=>{d.classList.toggle('active',i===dotIdx)});
+}
+
+// ═══ TOGGLE ═══
+function setMode(mode){
+  currentMode=mode;
+  document.querySelectorAll('.oc-toggle-btn').forEach(b=>{
+    b.classList.remove('active-gold','active-sage');
+    b.classList.add('inactive');
+  });
+  const active=document.querySelector(`[data-mode="${mode}"]`);
+  if(active){
+    active.classList.remove('inactive');
+    active.classList.add(mode==='7030'?'active-gold':'active-sage');
+  }
+}
+
 function buildCard(combo,index,type,isFirst){
   const sc=68+Math.floor(Math.random()*28);
   const[aH,aS,aL]=hslAvg(combo);
@@ -215,49 +253,59 @@ function buildCard(combo,index,type,isFirst){
   const card=document.createElement('div');
   card.className='outfit-card '+(index===0?'active':'entering');
 
-  const badgeClass=type==='rotation'?'rotation':'owned';
-  const badgeText=type==='rotation'?'Ikke brukt pa 14 dager':'Du eier alt dette';
-  const recommendedHtml=isFirst?`<div class="oc-recommended">Anbefalt i dag</div>`:'';
-  const hintHtml=(!hintShown)?`<div class="swipe-hint">swipe opp for neste</div>`:'';
+  const badgeClass=type==='rotation'?'rotation-tag':'owned-tag';
+  const hintHtml=(!hintShown)?`<div class="swipe-hint">&uarr; Swipe for neste</div>`:'';
   if(!hintShown) hintShown=true;
+
+  // Outfit name from garment types
+  const outfitName=combo.map(g=>g.n.split(' ').pop()).join(' + ');
+  // Brand line
+  const brands=[...new Set(combo.map(g=>g.b))].join(' &middot; ');
 
   card.innerHTML=`
     <div class="oc-bg">
-      <div class="oc-blob oc-b1" style="background:hsla(${aH},${aS+15}%,${aL+8}%,.18)"></div>
-      <div class="oc-blob oc-b2" style="background:hsla(${aH+30},${aS}%,${aL+5}%,.1)"></div>
+      <div class="oc-blob oc-b1" style="background:hsla(${aH},${aS+15}%,${Math.max(aL-5,5)}%,.12)"></div>
+      <div class="oc-blob oc-b2" style="background:hsla(${aH+30},${aS}%,${Math.max(aL-3,5)}%,.08)"></div>
+      <div class="oc-blob oc-b3" style="background:hsla(${aH-20},${aS+10}%,${Math.max(aL,5)}%,.06)"></div>
     </div>
-    <div class="oc-header">
-      <div class="oc-title">Discover</div>
-      <span class="bookmark-btn" onclick="event.stopPropagation();bookmarkOutfit(this)">&#9734;</span>
+    <div class="score-watermark">${sc}</div>
+    <div class="oc-toggle">
+      <button class="oc-toggle-btn ${currentMode==='7030'?'active-gold':'inactive'}" data-mode="7030" onclick="event.stopPropagation();setMode('7030')">70/30</button>
+      <button class="oc-toggle-btn ${currentMode==='full'?'active-sage':'inactive'}" data-mode="full" onclick="event.stopPropagation();setMode('full')">Full</button>
     </div>
-    ${recommendedHtml}
+    <div class="scroll-dots">${buildScrollDots()}</div>
     <div class="oc-stage">
       <div class="oc-stack">
-        ${combo.map(g=>{
-          const brandLabel=g.b?`<span class="brand">${g.b}</span>`:'';
-          return `<div class="oc-item">
-            <span class="like-btn" onclick="event.stopPropagation();toggleLike(this)">&#9825;</span>
-            ${g.svg}
-            <span class="g-label">${g.n}${brandLabel?' &middot; ':''}${brandLabel}</span>
-          </div>`;
-        }).join('')}
+        ${combo.map(g=>`<div class="oc-item">${g.svg}</div>`).join('')}
       </div>
-      <div class="oc-name">${combo.map(g=>g.n.split(' ').pop()).join(' &middot; ')}</div>
+    </div>
+    <div class="oc-actions">
+      <div class="action-btn like" onclick="event.stopPropagation();toggleLike(this)">
+        <div class="action-circle lg"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <span class="action-label">Like</span>
+      </div>
+      <div class="action-btn hook" onclick="event.stopPropagation();bookmarkOutfit(this)">
+        <div class="action-circle lg"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L4 7v13l8-5 8 5V7z"/></svg></div>
+        <span class="action-label">Hook</span>
+      </div>
+      <div class="action-btn pass" onclick="event.stopPropagation();nextCard()">
+        <div class="action-circle sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+        <span class="action-label">Pass</span>
+      </div>
     </div>
     <div class="oc-bottom">
-      <div class="oc-meta">
-        <div class="oc-score-area">
-          <span class="oc-score ${sc>=85?'high':'mid'}">${sc}</span>
-          <span class="oc-score-label">outfit match</span>
-        </div>
-        <span class="oc-badge ${badgeClass}">${badgeText}</span>
+      <div class="oc-brand-line">${brands}</div>
+      <div class="oc-outfit-name">${outfitName}</div>
+      <div class="oc-tags">
+        ${combo.map(g=>`<span class="oc-tag ${badgeClass}">${g.n}</span>`).join('')}
       </div>
-      <div class="oc-garments">${combo.map(g=>g.n).join(' + ')}</div>
-      <button class="oc-cta" onclick="event.stopPropagation()">Apne i Studio</button>
       ${hintHtml}
     </div>
     <div class="save-flash" id="sf-${index}"><span>Lagret &#10003;</span></div>
   `;
+
+  // Update scroll dots after render
+  requestAnimationFrame(()=>updateScrollDots());
 
   // Swipe up = next, swipe right = save
   let startX=0,startY=0,currentX=0,currentY=0,dragging=false;
@@ -310,18 +358,30 @@ function buildEndCard(){
   return card;
 }
 
-// ═══ LIKE ═══
+// ═══ LIKE (per outfit now via action button) ═══
 function toggleLike(el){
   const isLiked=el.classList.toggle('liked');
-  el.innerHTML=isLiked?'&#9829;':'&#9825;';
-  if(isLiked){el.style.transform='translateY(-50%) scale(1.4)';setTimeout(()=>{el.style.transform='translateY(-50%)'},300)}
+  const circle=el.querySelector('.action-circle');
+  const svg=circle.querySelector('svg');
+  if(isLiked){
+    svg.setAttribute('fill','currentColor');
+    el.style.transform='scale(1.2)';setTimeout(()=>{el.style.transform=''},300);
+  } else {
+    svg.setAttribute('fill','none');
+  }
 }
 
-// ═══ BOOKMARK ═══
+// ═══ BOOKMARK / HOOK ═══
 function bookmarkOutfit(el){
-  el.classList.toggle('saved');
-  el.innerHTML=el.classList.contains('saved')?'&#9733;':'&#9734;';
-  if(el.classList.contains('saved')){el.style.transform='scale(1.3)';setTimeout(()=>{el.style.transform=''},300)}
+  const isSaved=el.classList.toggle('saved');
+  const circle=el.querySelector('.action-circle');
+  const svg=circle.querySelector('svg');
+  if(isSaved){
+    svg.setAttribute('fill','currentColor');
+    el.style.transform='scale(1.2)';setTimeout(()=>{el.style.transform=''},300);
+  } else {
+    svg.setAttribute('fill','none');
+  }
 }
 
 // ═══ SAVE (swipe right) ═══

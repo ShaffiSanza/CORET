@@ -104,7 +104,10 @@ def _outfit_strength(outfit: list[dict], archetype: str = DEFAULT_ARCHETYPE) -> 
 
 def generate_combinations(garments: list[dict]) -> list[dict]:
     """Generate all valid outfits. From ScoringHelpers.generateOutfits.
-    Outfit = 1 upper + 1 lower + 1 shoes."""
+    Outfit = 1 upper + 1 lower + 1 shoes.
+    Note: Coats are category=upper, base_group=coat — they participate as uppers.
+    Swift engine has separate outerwear category with 4-piece outfits (upper × lower × shoes × outerwear).
+    Backend V1 keeps 3-piece for simplicity. Outerwear support in V2."""
     uppers = [g for g in garments if g.get("category") == "upper"]
     lowers = [g for g in garments if g.get("category") == "lower"]
     shoes = [g for g in garments if g.get("category") == "shoes"]
@@ -250,8 +253,9 @@ def analyze_wardrobe(garments: list[dict], season: str | None = None) -> dict:
     strong_combos = sum(1 for c in combinations if c["strength"] >= STRONG_OUTFIT_THRESHOLD)
     total = len(combinations)
 
-    # Clarity estimate: simplified version
-    # Based on strong combo ratio + gap penalty
+    # Clarity estimate: simplified V1 backend version.
+    # DIVERGES from Swift engine which uses: primaryArchetype × 0.60 + cohesion × 0.40 + breadth bonus.
+    # This is intentional — backend lacks archetype data. When iOS connects, Swift engine is authoritative.
     if total > 0:
         strong_ratio = strong_combos / total
         gap_penalty = len(gaps) * 8

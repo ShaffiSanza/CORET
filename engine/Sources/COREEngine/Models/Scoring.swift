@@ -182,6 +182,7 @@ public struct OutfitScore: Identifiable, Codable, Sendable {
     public let colorVerdict: String
     public let archetypeMatch: Archetype
     public let suggestion: String?
+    public let explanation: ExplanationResult?
     public let createdAt: Date
 
     public init(
@@ -191,6 +192,7 @@ public struct OutfitScore: Identifiable, Codable, Sendable {
         colorVerdict: String = "Neutral",
         archetypeMatch: Archetype = .smartCasual,
         suggestion: String? = nil,
+        explanation: ExplanationResult? = nil,
         createdAt: Date = Date()
     ) {
         self.id = id
@@ -199,6 +201,7 @@ public struct OutfitScore: Identifiable, Codable, Sendable {
         self.colorVerdict = colorVerdict
         self.archetypeMatch = archetypeMatch
         self.suggestion = suggestion
+        self.explanation = explanation
         self.createdAt = createdAt
     }
 }

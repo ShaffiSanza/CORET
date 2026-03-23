@@ -2,803 +2,681 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=375, initial-scale=1.0">
-<title>CORET — Studio Swipe Flatlay</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORET Studio — Flat Lay + Side Drawer</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #1a1714;
-    --card: #221f1a;
-    --border: #2e2a22;
-    --text: #EAE5DE;
-    --text-2: #B0A99E;
-    --text-3: #6B625C;
-    --text-4: #4a4540;
-    --gold: #C9A96E;
-    --gold-dim: rgba(201,169,110,0.55);
-    --gold-soft: rgba(201,169,110,0.10);
-    --green: #7A9A6E;
-    --green-soft: rgba(122,154,110,0.10);
-    --red: #B4705A;
-    --red-soft: rgba(180,90,70,0.10);
-    --r: 18px;
-    --r-sm: 10px;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #0e0c0a;
-    color: var(--text);
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px 60px;
-    -webkit-font-smoothing: antialiased;
-  }
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#faf8f4; --bg2:#f4f0e8; --bg3:#ede8de;
+  --border:rgba(30,20,5,0.07); --border2:rgba(30,20,5,0.12);
+  --gold:#b8860b; --gold-s:rgba(184,134,11,0.09); --gold-b:rgba(184,134,11,0.2);
+  --sage:#5a8a5e; --sage-s:rgba(90,138,94,0.09);
+  --text:#18140c; --text2:#5a5040; --text3:#8a7d68; --text4:#b0a590;
+  --shadow:rgba(30,20,5,0.08); --shadow2:rgba(30,20,5,0.14);
+}
+body {
+  background:#ddd8ce; font-family:'DM Sans',sans-serif; color:var(--text);
+  padding:56px 24px 80px; min-height:100vh;
+}
+body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 30% 20%,rgba(184,134,11,0.04),transparent 50%); pointer-events:none; }
+.page { position:relative; z-index:1; max-width:860px; margin:0 auto; }
+.hdr { text-align:center; margin-bottom:48px; }
+.hdr-tag { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--text3); margin-bottom:12px; }
+.hdr-title { font-family:'Instrument Serif',serif; font-size:42px; font-weight:400; letter-spacing:-0.02em; line-height:1; margin-bottom:10px; }
+.hdr-title em { font-style:italic; color:var(--gold); }
+.hdr-sub { font-size:13px; color:var(--text3); max-width:480px; margin:0 auto; line-height:1.65; }
+.phones { display:flex; gap:28px; justify-content:center; flex-wrap:wrap; align-items:flex-start; margin-bottom:52px; }
+.pw { display:flex; flex-direction:column; align-items:center; gap:14px; }
+.ptag { font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text3); text-align:center; max-width:200px; line-height:1.5; }
 
-  .phone {
-    width: 393px; height: 852px;
-    border-radius: 44px;
-    border: 2.5px solid #2a2520;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
-  }
+.phone {
+  width:290px; background:var(--bg); border-radius:46px; overflow:hidden; flex-shrink:0;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.9),0 0 0 2px var(--border),0 28px 72px var(--shadow2),0 4px 14px var(--shadow);
+  animation:up 0.6s cubic-bezier(0.22,1,0.36,1) both;
+}
+.phone-1 { animation-delay:0.05s; }
+.phone-2 { animation-delay:0.2s; }
+.phone-3 { animation-delay:0.32s; }
 
-  /* ═══ DYNAMIC BACKGROUND ═══ */
-  .dynamic-bg {
-    position: absolute;
-    inset: 0;
-    transition: background 1.8s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 0;
-  }
+@keyframes up { from{opacity:0;transform:translateY(24px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes fill-in { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+@keyframes shimmer { to{transform:translateX(100%)} }
+@keyframes float-bob { 0%,100%{transform:translateY(0) rotate(var(--r,0deg))} 50%{transform:translateY(-3px) rotate(var(--r,0deg))} }
+@keyframes pop-in { from{opacity:0;transform:scale(0.7) rotate(var(--r,0deg))} to{opacity:1;transform:scale(1) rotate(var(--r,0deg))} }
+@keyframes slide-down { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
 
-  .ambient-blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(100px);
-    transition: all 1.8s cubic-bezier(0.16, 1, 0.3, 1);
-    pointer-events: none;
-  }
-  .blob-a { width: 300px; height: 300px; top: 20%; left: -20%; opacity: 0.3; }
-  .blob-b { width: 260px; height: 260px; bottom: 10%; right: -15%; opacity: 0.25; }
+/* Chrome */
+.sb { height:54px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 22px 10px; font-size:11px; font-weight:500; color:var(--text3); }
+.top-bar { height:44px; display:flex; justify-content:space-between; align-items:center; padding:0 16px; border-bottom:1px solid var(--border); }
+.logo { font-family:'Instrument Serif',serif; font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); opacity:0.75; }
+.surprise-btn { display:inline-flex; align-items:center; gap:4px; background:rgba(184,134,11,0.07); border:1px solid var(--gold-b); color:var(--gold); font-size:9px; padding:5px 12px; border-radius:100px; font-weight:500; }
+.score-bar { height:40px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; border-bottom:1px solid var(--border); background:rgba(255,255,255,0.45); }
+.score-label { font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text3); }
+.score-right { display:flex; align-items:baseline; gap:5px; }
+.score-num { font-family:'Instrument Serif',serif; font-size:26px; color:var(--text); line-height:1; letter-spacing:-0.03em; }
+.score-delta { font-size:10px; color:var(--sage); font-weight:500; }
 
-  .scr {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    z-index: 1;
-  }
+/* ============================== */
+/* FLAT LAY CANVAS                */
+/* ============================== */
+.canvas-wrap {
+  position:relative;
+  height:310px;
+  overflow:hidden;
+  background:var(--bg);
+}
 
-  /* noise */
-  .scr::after {
-    content: ''; position: fixed; inset: 0; opacity: 0.012; pointer-events: none; z-index: 100;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+.canvas-wrap::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 50%, rgba(255,248,235,0.5), transparent 70%);
+  pointer-events:none; z-index:0;
+}
 
-  .sb { padding: 14px 24px 0; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 600; color: var(--text-2); flex-shrink: 0; }
+/* Atelier grid overlay — editorial flat lay feel */
+.canvas-wrap::after {
+  content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(30,20,5,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,20,5,0.018) 1px, transparent 1px);
+  background-size:24px 24px;
+}
 
-  /* ═══ HEADER ═══ */
-  .studio-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 20px 0;
-    flex-shrink: 0;
-  }
-  .studio-title {
-    font-family: 'Instrument Serif', serif;
-    font-size: 28px; font-weight: 400;
-  }
-  .header-actions { display: flex; gap: 8px; align-items: center; }
-  .surprise-btn, .explore-btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px; letter-spacing: 0.8px;
-    padding: 8px 16px; border-radius: 20px;
-    border: 1px solid rgba(201,169,110,0.15);
-    background: rgba(201,169,110,0.06);
-    color: var(--gold);
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .surprise-btn:hover, .explore-btn:hover { background: rgba(201,169,110,0.12); border-color: rgba(201,169,110,0.25); }
-  .surprise-btn:active, .explore-btn:active { transform: scale(0.95); }
-  .explore-btn.active {
-    background: rgba(201,169,110,0.18);
-    border-color: var(--gold);
-    color: var(--text);
-  }
+/* Flat lay area — shrinks when drawer opens */
+.flatlay-area {
+  position:absolute; top:0; left:0; bottom:0;
+  right:0; /* shrinks to right:74px when open */
+  transition:right 0.38s cubic-bezier(0.22,1,0.36,1);
+  overflow:hidden;
+}
 
-  /* ═══ SCORE FLOAT ═══ */
-  .score-float {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 20px 8px;
-    flex-shrink: 0;
-  }
-  .mood-words {
-    font-family: 'Instrument Serif', serif;
-    font-size: 14px; font-style: italic;
-    color: var(--text-3);
-    transition: all 0.6s;
-  }
-  .clarity-float {
-    display: flex; align-items: baseline; gap: 6px;
-  }
-  .clarity-num {
-    font-family: 'Instrument Serif', serif;
-    font-size: 38px; line-height: 1;
-    color: var(--text);
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    text-shadow: 0 0 20px rgba(201,169,110,0.15);
-  }
-  .clarity-num.flash-green { color: var(--green); text-shadow: 0 0 30px rgba(122,154,110,0.3); }
-  .clarity-num.flash-red { color: var(--red); text-shadow: 0 0 30px rgba(180,90,70,0.3); }
-  .clarity-label {
-    font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--text-4);
-  }
+.flatlay-area.drawer-open {
+  right:74px;
+}
 
-  /* ═══ FLATLAY AREA ═══ */
-  .flatlay {
-    flex: 1;
-    display: flex; flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0 0 0;
-    position: relative;
-    margin-top: -10px;
-  }
+/* ============================== */
+/* SIDE DRAWER                    */
+/* ============================== */
+.side-drawer {
+  position:absolute; top:0; right:0; bottom:0;
+  width:0; /* expands to 74px when open */
+  overflow:hidden;
+  transition:width 0.38s cubic-bezier(0.22,1,0.36,1);
+  z-index:30;
+  background:rgba(255,255,255,0.88);
+  border-left:1px solid var(--border2);
+  backdrop-filter:blur(14px);
+}
 
-  /* ═══ SWIPE ROW ═══ */
-  .swipe-row {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    cursor: grab;
-    transition: opacity 0.4s;
-  }
-  .swipe-row:active { cursor: grabbing; }
-  .swipe-row.dimmed { opacity: 0.45; }
+.side-drawer.open {
+  width:74px;
+}
 
-  /* Row heights by category hierarchy */
-  .swipe-row[data-cat="outer"]  { height: 140px; margin-bottom: -14px; z-index: 4; }
-  .swipe-row[data-cat="upper"]  { height: 90px;  margin-bottom: -14px; z-index: 3; }
-  .swipe-row[data-cat="lower"]  { height: 150px; margin-bottom: -14px; z-index: 2; }
-  .swipe-row[data-cat="shoes"]  { height: 80px;  z-index: 1; }
+.drawer-inner-v {
+  width:74px; height:100%;
+  padding:10px 8px;
+  display:flex; flex-direction:column; gap:8px;
+  overflow-y:auto; scrollbar-width:none;
+}
+.drawer-inner-v::-webkit-scrollbar { display:none; }
 
-  .swipe-track {
-    display: flex;
-    height: 100%;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: transform;
-  }
+/* Drawer items */
+.dv-item {
+  flex-shrink:0; width:58px;
+  background:rgba(255,255,255,0.7);
+  border:1px solid var(--border);
+  border-radius:12px; overflow:hidden;
+  cursor:pointer; transition:all 0.15s;
+  animation:slide-down 0.3s cubic-bezier(0.22,1,0.36,1) both;
+}
 
-  .swipe-item {
-    flex: 0 0 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-  }
-  .swipe-item.active { transform: scale(1.0); opacity: 1.0; }
-  .swipe-item.inactive { transform: scale(0.92); opacity: 0.6; }
+.dv-item:nth-child(1){animation-delay:0.04s}
+.dv-item:nth-child(2){animation-delay:0.09s}
+.dv-item:nth-child(3){animation-delay:0.14s}
+.dv-item:nth-child(4){animation-delay:0.19s}
+.dv-item:nth-child(5){animation-delay:0.24s}
 
-  /* Garment silhouette — filled, colored, heavy shadow */
-  .garment-sil {
-    filter: drop-shadow(0 25px 40px rgba(0,0,0,0.18));
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
+.dv-item.active {
+  border-color:rgba(184,134,11,0.35);
+  background:rgba(184,134,11,0.07);
+  box-shadow:0 0 0 2px rgba(184,134,11,0.1);
+}
 
-  /* ═══ INSIGHT ═══ */
-  .insight {
-    text-align: center;
-    padding: 12px 30px 0;
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-size: 13px;
-    color: var(--text-3);
-    opacity: 0.7;
-    transition: all 0.6s;
-    min-height: 36px;
-    flex-shrink: 0;
-  }
+.dv-img {
+  height:44px; display:flex; align-items:center; justify-content:center;
+  background:var(--bg3); position:relative;
+}
 
-  /* ═══ GHOST GARMENT ═══ */
-  .swipe-item.ghost { opacity: 0.35; }
-  .swipe-item.ghost.active { opacity: 0.45; }
-  .swipe-item.ghost .garment-sil { filter: drop-shadow(0 25px 40px rgba(0,0,0,0.10)); }
-  .ghost-border {
-    position: absolute;
-    inset: 15%;
-    border: 2px dashed rgba(201,169,110,0.35);
-    border-radius: 16px;
-    pointer-events: none;
-  }
-  .ghost-label {
-    position: absolute;
-    bottom: 4px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 9px;
-    letter-spacing: 0.8px;
-    color: var(--gold-dim);
-    white-space: nowrap;
-    font-weight: 500;
-  }
-  .ghost-impact {
-    position: absolute;
-    top: 6px; right: 15%;
-    font-size: 8px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: var(--green-soft);
-    color: var(--green);
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .swipe-item.ghost.active .ghost-impact { opacity: 1; }
+.dv-dot { position:absolute; top:2px; right:2px; width:5px; height:5px; border-radius:50%; background:var(--gold); box-shadow:0 0 3px rgba(184,134,11,0.6); }
+.dv-name { font-size:7px; color:var(--text2); text-align:center; padding:3px 4px 5px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dv-name.gold { color:var(--gold); font-weight:500; }
 
-  /* ═══ CTA ═══ */
-  .cta-area {
-    padding: 16px 20px 0;
-    flex-shrink: 0;
-  }
-  .cta-btn {
-    width: 100%;
-    padding: 16px;
-    border-radius: 14px;
-    border: none;
-    background: rgba(201,169,110,0.10);
-    color: var(--gold);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .cta-btn:hover { background: rgba(201,169,110,0.16); }
-  .cta-btn:active { transform: scale(0.98); }
+.dv-add {
+  flex-shrink:0; width:58px; height:58px;
+  border:1.5px dashed rgba(184,134,11,0.18);
+  border-radius:12px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px;
+}
 
-  /* ═══ TAB BAR ═══ */
-  .tab-bar {
-    display: flex; align-items: center; justify-content: space-around;
-    padding: 10px 16px 28px;
-    background: linear-gradient(transparent, rgba(26,23,20,0.92) 30%);
-    backdrop-filter: blur(20px);
-    flex-shrink: 0;
-  }
-  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 6px 10px; }
-  .tab-i { font-size: 17px; opacity: 0.3; }
-  .tab-l { font-size: 8.5px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-4); }
-  .tab.on .tab-i { opacity: 1; }
-  .tab.on .tab-l { color: var(--gold-dim); }
+/* ============================== */
+/* GRIP TAB                       */
+/* ============================== */
+.grip-tab {
+  position:absolute; top:50%; right:0;
+  transform:translateY(-50%);
+  z-index:35; cursor:pointer;
+  transition:right 0.38s cubic-bezier(0.22,1,0.36,1);
+}
 
-  .phone-label {
-    text-align: center; margin-top: 16px;
-    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-4);
-  }
+.grip-tab.open {
+  right:74px;
+}
 
-  /* ═══ SWIPE INDICATORS ═══ */
-  .swipe-dots {
-    display: flex; gap: 4px; justify-content: center;
-    padding: 6px 0 0;
-    position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
-  }
-  .swipe-dot {
-    width: 4px; height: 4px; border-radius: 50%;
-    background: var(--text-4); opacity: 0.3;
-    transition: all 0.3s;
-  }
-  .swipe-dot.active { opacity: 1; background: var(--gold); width: 12px; border-radius: 2px; }
+.grip-inner {
+  width:18px; height:64px;
+  background:rgba(255,255,255,0.9);
+  border:1px solid var(--border2);
+  border-right:none;
+  border-radius:8px 0 0 8px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px;
+  box-shadow:-2px 0 8px rgba(30,20,5,0.06);
+  backdrop-filter:blur(8px);
+  transition:background 0.2s;
+}
+
+.grip-inner:hover { background:rgba(255,255,255,1); }
+
+.grip-dot { width:3px; height:3px; border-radius:50%; background:var(--text4); }
+.grip-arrow { font-size:8px; color:rgba(184,134,11,0.5); margin-top:2px; letter-spacing:-1px; }
+
+/* ============================== */
+/* GARMENTS — realistic CSS       */
+/* ============================== */
+.garment {
+  position:absolute; cursor:pointer;
+  transition:transform 0.15s, filter 0.15s;
+  z-index:2;
+}
+.garment:hover { z-index:20; filter:brightness(1.05); transform:scale(1.02); }
+.garment:hover .g-hl { opacity:1; }
+.g-hl { position:absolute; inset:-2px; border-radius:inherit; border:1.5px solid rgba(184,134,11,0.45); background:rgba(184,134,11,0.04); opacity:0; transition:opacity 0.2s; pointer-events:none; z-index:10; }
+.g-lbl { position:absolute; bottom:-17px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.9); border:1px solid var(--border2); border-radius:100px; padding:2px 8px; font-size:7px; color:var(--text2); letter-spacing:0.08em; white-space:nowrap; backdrop-filter:blur(8px); box-shadow:0 2px 6px var(--shadow); display:flex; align-items:center; gap:3px; }
+.g-lbl-dot { width:3px; height:3px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+
+/* JACKET */
+.jacket { width:120px; height:108px; top:12px; left:50%; transform:translateX(-50%) rotate(-3deg); }
+.jacket-sleeve-l { position:absolute; top:18px; left:0; width:22px; height:64px; background:linear-gradient(160deg,#6b1a1a 0%,#4a1010 100%); border-radius:10px 4px 6px 8px; box-shadow:inset 2px 0 6px rgba(0,0,0,0.3),2px 4px 10px rgba(0,0,0,0.2); }
+.jacket-sleeve-r { position:absolute; top:18px; right:0; width:22px; height:64px; background:linear-gradient(200deg,#6b1a1a 0%,#4a1010 100%); border-radius:4px 10px 8px 6px; box-shadow:inset -2px 0 6px rgba(0,0,0,0.3),-2px 4px 10px rgba(0,0,0,0.2); }
+.jacket-main { position:absolute; width:88px; height:86px; top:16px; left:16px; background:linear-gradient(135deg,#6b1a1a 0%,#5a1515 30%,#4a1010 60%,#3a0c0c 100%); border-radius:6px 6px 4px 4px; box-shadow:inset 0 2px 4px rgba(255,255,255,0.08),inset -3px 0 8px rgba(0,0,0,0.3),0 8px 24px rgba(58,12,12,0.5),0 2px 8px rgba(0,0,0,0.15); }
+.jacket-collar-l { position:absolute; top:10px; left:40px; width:22px; height:24px; background:linear-gradient(135deg,#7a2020 0%,#5a1515 100%); clip-path:polygon(0 0,100% 20%,80% 100%,0% 80%); }
+.jacket-collar-r { position:absolute; top:10px; left:58px; width:22px; height:24px; background:linear-gradient(225deg,#7a2020 0%,#5a1515 100%); clip-path:polygon(0 20%,100% 0,100% 80%,20% 100%); }
+.jacket-inner { position:absolute; top:14px; left:49px; width:22px; height:20px; background:linear-gradient(180deg,#1a1218,#0e0c10); clip-path:polygon(20% 0%,80% 0%,100% 100%,0% 100%); }
+.jacket-zip { position:absolute; top:28px; left:59px; width:2px; height:62px; background:linear-gradient(180deg,rgba(200,180,140,0.5),rgba(200,180,140,0.2)); border-radius:1px; }
+.jacket-hem { position:absolute; bottom:14px; left:16px; width:88px; height:8px; background:repeating-linear-gradient(90deg,#3a0c0c 0px,#3a0c0c 3px,#2a0808 3px,#2a0808 6px); border-radius:0 0 4px 4px; opacity:0.8; }
+.jacket-shine { position:absolute; top:18px; left:22px; width:20px; height:50px; background:linear-gradient(160deg,rgba(255,255,255,0.07),transparent); border-radius:10px; }
+
+/* TEE */
+.tee { width:82px; height:74px; top:106px; left:50%; transform:translateX(-42%) rotate(2deg); z-index:1; }
+.tee-sleeve-l { position:absolute; top:12px; left:0; width:16px; height:28px; background:linear-gradient(160deg,#1a1818,#0e0c0c); border-radius:6px 2px 4px 6px; box-shadow:1px 2px 6px rgba(0,0,0,0.2); }
+.tee-sleeve-r { position:absolute; top:12px; right:0; width:16px; height:28px; background:linear-gradient(200deg,#1a1818,#0e0c0c); border-radius:2px 6px 6px 4px; box-shadow:-1px 2px 6px rgba(0,0,0,0.2); }
+.tee-main { position:absolute; width:62px; height:62px; top:10px; left:10px; background:linear-gradient(160deg,#1a1818,#0e0c0c); border-radius:3px 3px 5px 5px; box-shadow:inset 0 2px 4px rgba(255,255,255,0.05),0 4px 14px rgba(0,0,0,0.3); }
+.tee-neck { position:absolute; top:4px; left:26px; width:30px; height:12px; background:#0e0c0c; border-radius:50% 50% 0 0; border-top:1.5px solid rgba(255,255,255,0.06); }
+
+/* JEANS */
+.jeans { width:96px; height:120px; top:152px; left:50%; transform:translateX(-52%) rotate(-1deg); z-index:1; }
+.jeans-waist { position:absolute; top:0; left:8px; width:80px; height:14px; background:linear-gradient(180deg,#1a1828,#141420); border-radius:3px 3px 0 0; box-shadow:inset 0 1px 3px rgba(255,255,255,0.08); }
+.jeans-main { position:absolute; top:12px; left:8px; width:80px; height:44px; background:repeating-linear-gradient(92deg,#1e2038 0px,#1e2038 1px,#1a1c30 1px,#1a1c30 3px,#1e2038 3px,#1e2038 4px,#161828 4px,#161828 8px); box-shadow:inset 0 2px 4px rgba(0,0,0,0.3); }
+.jeans-leg-l { position:absolute; top:54px; left:8px; width:38px; height:66px; background:repeating-linear-gradient(92deg,#1e2038 0px,#1e2038 1px,#1a1c30 1px,#1a1c30 3px,#1e2038 3px,#1e2038 4px,#161828 4px,#161828 8px); border-radius:0 0 3px 3px; box-shadow:inset -2px 0 6px rgba(0,0,0,0.3); }
+.jeans-leg-r { position:absolute; top:54px; right:8px; width:38px; height:66px; background:repeating-linear-gradient(92deg,#1e2038 0px,#1e2038 1px,#1a1c30 1px,#1a1c30 3px,#1e2038 3px,#1e2038 4px,#161828 4px,#161828 8px); border-radius:0 0 3px 3px; box-shadow:inset 2px 0 6px rgba(0,0,0,0.3); }
+.jeans-crease-l { position:absolute; top:56px; left:26px; width:1px; height:50px; background:linear-gradient(180deg,rgba(255,255,255,0.08),transparent); }
+.jeans-crease-r { position:absolute; top:56px; right:26px; width:1px; height:50px; background:linear-gradient(180deg,rgba(255,255,255,0.08),transparent); }
+.jeans-fly { position:absolute; top:14px; left:42px; width:12px; height:28px; background:rgba(255,255,255,0.03); border-right:1px solid rgba(255,255,255,0.05); }
+
+/* SHOES */
+.shoes { width:110px; height:46px; top:258px; left:50%; transform:translateX(-50%) rotate(1deg); }
+.shoe-l { position:absolute; left:2px; top:4px; width:48px; height:36px; }
+.shoe-l-body { position:absolute; inset:0; background:linear-gradient(135deg,#2a2030,#100c14); border-radius:20px 6px 4px 10px; box-shadow:inset 0 2px 4px rgba(255,255,255,0.06),0 6px 16px rgba(0,0,0,0.4),0 2px 6px rgba(0,0,0,0.2); }
+.shoe-l-strap { position:absolute; top:8px; left:12px; width:22px; height:5px; background:linear-gradient(180deg,#3a2a40,#2a1c30); border-radius:2px; }
+.shoe-l-sole { position:absolute; bottom:0; left:2px; width:44px; height:5px; background:#100c14; border-radius:0 0 4px 6px; }
+.shoe-l-shine { position:absolute; top:5px; left:8px; width:10px; height:18px; background:linear-gradient(160deg,rgba(255,255,255,0.1),transparent); border-radius:6px; }
+.shoe-r { position:absolute; right:2px; top:0; width:50px; height:38px; transform:rotate(4deg); }
+.shoe-r-body { position:absolute; inset:0; background:linear-gradient(225deg,#2a2030,#100c14); border-radius:6px 20px 10px 4px; box-shadow:inset 0 2px 4px rgba(255,255,255,0.06),0 6px 16px rgba(0,0,0,0.4),0 2px 6px rgba(0,0,0,0.2); }
+.shoe-r-strap { position:absolute; top:9px; right:12px; width:22px; height:5px; background:linear-gradient(180deg,#3a2a40,#2a1c30); border-radius:2px; }
+.shoe-r-sole { position:absolute; bottom:0; right:2px; width:46px; height:5px; background:#100c14; border-radius:0 0 6px 4px; }
+.shoe-r-shine { position:absolute; top:6px; right:14px; width:10px; height:14px; background:linear-gradient(200deg,rgba(255,255,255,0.1),transparent); border-radius:6px; }
+
+/* FLOATING ACCESSORIES */
+.f-acc { position:absolute; z-index:8; }
+.f-bag { bottom:28px; left:6px; --r:-8deg; animation:pop-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.1s both, float-bob 4.2s ease 0.6s infinite; }
+.f-watch { top:26px; left:8px; --r:12deg; animation:pop-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.18s both, float-bob 3.8s ease 1s infinite; }
+.f-glasses { top:14px; right:12px; --r:-6deg; animation:pop-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.08s both, float-bob 4.5s ease 1.4s infinite; }
+.f-ring-1 { top:186px; right:24px; animation:pop-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.22s both; }
+.f-ring-2 { top:202px; right:14px; animation:pop-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.28s both; }
+
+.float-card { background:rgba(255,255,255,0.93); border:1px solid rgba(184,134,11,0.18); border-radius:11px; padding:5px; box-shadow:0 4px 14px rgba(30,20,5,0.1),0 0 0 1px rgba(255,255,255,0.6); backdrop-filter:blur(10px); width:52px; }
+.float-card-img { height:36px; display:flex; align-items:center; justify-content:center; background:var(--bg3); border-radius:7px; margin-bottom:3px; position:relative; }
+.f-gold-dot { position:absolute; top:2px; right:2px; width:5px; height:5px; border-radius:50%; background:var(--gold); box-shadow:0 0 4px rgba(184,134,11,0.7); }
+.float-name { font-size:7px; color:var(--text); font-weight:500; text-align:center; display:block; }
+.float-sub { font-size:6px; color:var(--gold); text-align:center; display:block; }
+
+/* BAG CSS */
+.bag-wrap { position:relative; width:42px; height:38px; transform:rotate(-8deg); filter:drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
+.bag-chain { position:absolute; top:8px; left:0; width:44px; height:4px; background:repeating-linear-gradient(90deg,#d4a040 0px,#d4a040 3px,#b88020 3px,#b88020 6px); border-radius:2px; opacity:0.85; }
+.bag-handle { position:absolute; top:0; left:10px; width:22px; height:10px; border:2px solid #8a6432; border-bottom:none; border-radius:6px 6px 0 0; }
+.bag-flap { position:absolute; bottom:16px; left:2px; width:38px; height:16px; background:linear-gradient(180deg,#7a5828,#6a4a22); border-radius:4px 4px 0 0; }
+.bag-main { position:absolute; bottom:0; left:2px; width:38px; height:24px; background:linear-gradient(135deg,#8a6432,#5a3c18); border-radius:3px; box-shadow:inset 0 2px 4px rgba(255,200,100,0.1); }
+.bag-clasp { position:absolute; bottom:12px; left:50%; transform:translateX(-50%); width:8px; height:5px; background:linear-gradient(180deg,#d4a040,#b88020); border-radius:2px; }
+
+/* WATCH CSS */
+.watch-wrap { position:relative; width:32px; height:46px; transform:rotate(12deg); filter:drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
+.watch-band-t { position:absolute; top:0; left:8px; width:16px; height:12px; background:linear-gradient(180deg,#2a2028,#1e1820); border-radius:3px 3px 0 0; }
+.watch-case { position:absolute; top:10px; left:3px; width:26px; height:26px; background:linear-gradient(135deg,#d4a040,#b88020); border-radius:6px; box-shadow:inset 0 2px 4px rgba(255,230,150,0.3),0 3px 8px rgba(184,128,32,0.4); }
+.watch-face { position:absolute; top:14px; left:7px; width:18px; height:18px; background:linear-gradient(135deg,#1a1820,#0e0c14); border-radius:4px; }
+.watch-h { position:absolute; top:19px; left:15px; width:1.5px; height:6px; background:rgba(255,255,255,0.7); border-radius:1px; transform-origin:bottom center; transform:rotate(-30deg); }
+.watch-m { position:absolute; top:17px; left:16px; width:1px; height:8px; background:rgba(255,255,255,0.5); border-radius:1px; transform-origin:bottom center; transform:rotate(60deg); }
+.watch-crown { position:absolute; top:20px; right:1px; width:3px; height:5px; background:linear-gradient(180deg,#d4a040,#b88020); border-radius:1px; }
+.watch-band-b { position:absolute; bottom:0; left:8px; width:16px; height:12px; background:linear-gradient(180deg,#1e1820,#2a2028); border-radius:0 0 3px 3px; }
+
+/* GLASSES CSS */
+.glasses-wrap { position:relative; width:64px; height:26px; transform:rotate(-6deg); filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15)); }
+.glass-l { position:absolute; left:0; top:4px; width:24px; height:18px; border:2px solid #c4a060; border-radius:5px 3px 7px 3px; background:rgba(200,180,100,0.08); }
+.glass-r { position:absolute; right:0; top:4px; width:24px; height:18px; border:2px solid #c4a060; border-radius:3px 5px 3px 7px; background:rgba(200,180,100,0.08); }
+.glass-bridge { position:absolute; top:11px; left:23px; width:18px; height:2px; background:#c4a060; border-radius:1px; }
+.glass-arm-l { position:absolute; top:8px; left:-6px; width:8px; height:2px; background:#b89040; border-radius:1px; transform:rotate(-10deg); }
+.glass-arm-r { position:absolute; top:8px; right:-6px; width:8px; height:2px; background:#b89040; border-radius:1px; transform:rotate(10deg); }
+.glass-shine { position:absolute; top:5px; left:3px; width:7px; height:5px; background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent); border-radius:3px; }
+
+/* RING CSS */
+.ring-css { width:16px; height:16px; border-radius:50%; border:2.5px solid #c4a060; box-shadow:0 2px 6px rgba(184,128,32,0.3); position:relative; }
+.ring-gem { width:6px; height:6px; border-radius:50%; background:linear-gradient(135deg,#e8d060,#c4a040); position:absolute; top:-4px; left:3px; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
+
+/* Score footer */
+.score-footer { padding:9px 16px 10px; background:rgba(255,255,255,0.55); backdrop-filter:blur(8px); }
+.score-rows { display:flex; flex-direction:column; gap:5px; margin-bottom:8px; }
+.sr { display:flex; align-items:center; gap:7px; }
+.sr-lbl { font-size:9px; color:var(--text3); width:48px; flex-shrink:0; }
+.sr-track { flex:1; height:3px; background:rgba(30,20,5,0.06); border-radius:1.5px; overflow:hidden; }
+.sr-fill { height:100%; border-radius:1.5px; animation:fill-in 1s ease forwards; transform-origin:left; }
+.sr-val { font-size:9px; color:var(--text3); width:16px; text-align:right; }
+.arch-row { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.5); border:1px solid var(--border); border-radius:100px; padding:5px 12px; margin-bottom:8px; }
+.arch-name { font-family:'Instrument Serif',serif; font-size:12px; font-style:italic; color:var(--text); }
+.arch-tag { font-size:8px; color:var(--sage); background:var(--sage-s); padding:2px 7px; border-radius:4px; }
+.cta-btn { width:100%; padding:11px; background:rgba(184,134,11,0.08); border:1px solid var(--gold-b); border-radius:12px; color:var(--gold); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; text-align:center; position:relative; overflow:hidden; }
+.cta-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(184,134,11,0.06),transparent); transform:translateX(-100%); animation:shimmer 3s ease infinite 1s; }
+.nav { display:flex; justify-content:space-around; padding:10px 8px 22px; border-top:1px solid var(--border); background:var(--bg); }
+.ni { display:flex; flex-direction:column; align-items:center; gap:3px; }
+.ni svg { width:16px; height:16px; stroke:var(--text4); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.ni-l { font-size:8px; color:var(--text4); }
+.ni.on svg { stroke:var(--gold); }
+.ni.on .ni-l { color:var(--gold); font-weight:500; }
+
+/* Notes */
+.notes { max-width:680px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.note { background:rgba(255,255,255,0.6); border:1px solid var(--border); border-radius:14px; padding:18px; position:relative; overflow:hidden; }
+.note::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--gold),transparent); }
+.note-t { font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; font-weight:500; }
+.note-b { font-size:11px; color:var(--text3); line-height:1.65; }
 </style>
 </head>
 <body>
+<div class="page">
 
-<div>
-<div class="phone">
-  <!-- Dynamic background -->
-  <div class="dynamic-bg" id="dynamicBg">
-    <div class="ambient-blob blob-a" id="blobA"></div>
-    <div class="ambient-blob blob-b" id="blobB"></div>
-  </div>
-
-  <div class="scr">
-    <div class="sb"><span>9:41</span><span style="font-size:11px; opacity:0.3;">●●●●  📶  🔋</span></div>
-
-    <!-- Header -->
-    <div class="studio-header">
-      <div class="studio-title">Studio</div>
-      <div class="header-actions">
-        <button class="explore-btn" id="exploreBtn" onclick="toggleExplore()">Utforsk</button>
-        <button class="surprise-btn" onclick="surprise()">Surprise</button>
-      </div>
-    </div>
-
-    <!-- Score float -->
-    <div class="score-float">
-      <div class="mood-words" id="moodWords">Structured · Warm · Layered</div>
-      <div class="clarity-float">
-        <span class="clarity-num" id="clarityNum">84</span>
-        <span class="clarity-label">Clarity</span>
-      </div>
-    </div>
-
-    <!-- Flatlay -->
-    <div class="flatlay">
-
-      <!-- OUTER ROW -->
-      <div class="swipe-row" data-cat="outer" id="row-outer">
-        <div class="swipe-track" id="track-outer">
-          <div class="swipe-item active" data-color="#5C3D1E" data-name="Ullfrakk">
-            <svg class="garment-sil" width="120" height="120" viewBox="0 0 52 66" fill="none">
-              <path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#5C3D1E" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#1A1A1E" data-name="Skinnjakke">
-            <svg class="garment-sil" width="110" height="110" viewBox="0 0 48 56" fill="none">
-              <path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" fill="#1A1A1E" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#3A4A2A" data-name="Oliven Bomber">
-            <svg class="garment-sil" width="110" height="110" viewBox="0 0 48 56" fill="none">
-              <path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" fill="#3A4A2A" opacity="0.85"/>
-            </svg>
-          </div>
-          <!-- Ghost: no outer gap in this wardrobe -->
-        </div>
-        <div class="swipe-dots" id="dots-outer"></div>
-      </div>
-
-      <!-- UPPER ROW (base layer) -->
-      <div class="swipe-row" data-cat="upper" id="row-upper">
-        <div class="swipe-track" id="track-upper">
-          <div class="swipe-item active" data-color="#2C3E5A" data-name="Navy Skjorte">
-            <svg class="garment-sil" width="70" height="70" viewBox="0 0 40 52" fill="none">
-              <path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#E8E4E0" data-name="Hvit T-shirt">
-            <svg class="garment-sil" width="65" height="65" viewBox="0 0 34 40" fill="none">
-              <path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#E8E4E0" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#1C1C22" data-name="Sort T-shirt">
-            <svg class="garment-sil" width="65" height="65" viewBox="0 0 34 40" fill="none">
-              <path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#1C1C22" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#C4B89A" data-name="Beige Polo">
-            <svg class="garment-sil" width="65" height="65" viewBox="0 0 34 40" fill="none">
-              <path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#C4B89A" opacity="0.85"/>
-            </svg>
-          </div>
-          <!-- Ghost: Blazer (mid-layer gap) -->
-          <div class="swipe-item inactive ghost" data-color="#2A3040" data-name="Blazer" data-ghost="true" data-impact="+13 clarity" style="display:none;">
-            <div class="ghost-border"></div>
-            <svg class="garment-sil" width="70" height="70" viewBox="0 0 40 52" fill="none">
-              <path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2A3040" opacity="0.5"/>
-            </svg>
-            <span class="ghost-label">Mangler: Blazer</span>
-            <span class="ghost-impact">+13 clarity</span>
-          </div>
-        </div>
-        <div class="swipe-dots" id="dots-upper"></div>
-      </div>
-
-      <!-- LOWER ROW -->
-      <div class="swipe-row" data-cat="lower" id="row-lower">
-        <div class="swipe-track" id="track-lower">
-          <div class="swipe-item active" data-color="#C4AA82" data-name="Beige Chinos">
-            <svg class="garment-sil" width="90" height="130" viewBox="0 0 32 48" fill="none">
-              <path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#1A1A20" data-name="Svarte Jeans">
-            <svg class="garment-sil" width="90" height="130" viewBox="0 0 32 48" fill="none">
-              <path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#1A1A20" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#4A6A2A" data-name="Cargo Pants">
-            <svg class="garment-sil" width="95" height="130" viewBox="0 0 34 48" fill="none">
-              <path d="M3 0H31C33 0 34 2 34 4V20L25 48H20L17 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#4A6A2A" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#6A8AB0" data-name="Lyse Jeans">
-            <svg class="garment-sil" width="90" height="130" viewBox="0 0 32 48" fill="none">
-              <path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#6A8AB0" opacity="0.85"/>
-            </svg>
-          </div>
-          <!-- Ghost: Linen trousers (summer gap) -->
-          <div class="swipe-item inactive ghost" data-color="#C8C0A8" data-name="Lin bukse" data-ghost="true" data-impact="+6 clarity" style="display:none;">
-            <div class="ghost-border"></div>
-            <svg class="garment-sil" width="90" height="130" viewBox="0 0 32 48" fill="none">
-              <path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C8C0A8" opacity="0.35"/>
-            </svg>
-            <span class="ghost-label">Mangler: Lin bukse</span>
-            <span class="ghost-impact">+6 clarity</span>
-          </div>
-        </div>
-        <div class="swipe-dots" id="dots-lower"></div>
-      </div>
-
-      <!-- SHOES ROW -->
-      <div class="swipe-row" data-cat="shoes" id="row-shoes">
-        <div class="swipe-track" id="track-shoes">
-          <div class="swipe-item active" data-color="#6B4A2A" data-name="Brune Boots">
-            <svg class="garment-sil" width="80" height="40" viewBox="0 0 34 16" fill="none">
-              <path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#6B4A2A" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#D8D4D0" data-name="Hvite Sneakers">
-            <svg class="garment-sil" width="80" height="40" viewBox="0 0 34 16" fill="none">
-              <path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#D8D4D0" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="swipe-item inactive" data-color="#2A2A30" data-name="Svarte Derby">
-            <svg class="garment-sil" width="80" height="40" viewBox="0 0 34 16" fill="none">
-              <path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#2A2A30" opacity="0.85"/>
-            </svg>
-          </div>
-        </div>
-        <div class="swipe-dots" id="dots-shoes"></div>
-      </div>
-
-    </div>
-
-    <!-- Insight -->
-    <div class="insight" id="insight">Sterk tonal dybde mellom frakk og chinos</div>
-
-    <!-- CTA -->
-    <div class="cta-area">
-      <button class="cta-btn" onclick="wearToday()">Bruk i dag</button>
-    </div>
-
-    <!-- Tab bar -->
-    <div class="tab-bar">
-      <div class="tab"><span class="tab-i">▦</span><span class="tab-l">Wardrobe</span></div>
-      <div class="tab on"><span class="tab-i">✦</span><span class="tab-l">Studio</span></div>
-      <div class="tab"><span class="tab-i">◎</span><span class="tab-l">Discover</span></div>
-    </div>
-  </div>
-</div>
-<div class="phone-label">Studio — Swipe Flatlay</div>
+<div class="hdr">
+  <div class="hdr-tag">CORET Studio</div>
+  <div class="hdr-title">Flat lay + <em>side drawer</em></div>
+  <div class="hdr-sub">Accessories-skuffen glir inn fra hoyre mot venstre langs kanten av flat lay-canvasen.</div>
 </div>
 
-<script>
-// ═══ STATE ═══
-let exploreMode = false;
-const rows = {};
-const ROW_IDS = ['outer', 'upper', 'lower', 'shoes'];
+<div class="phones">
 
-// Simulated outfit scores (keyed by combo of selected indices)
-const insights = [
-  'Sterk tonal dybde mellom frakk og chinos',
-  'Kontrast mellom overdel og underdel gir visuell balanse',
-  'Nøytral base holder antrekket rolig',
-  'Lys base gir et luftig uttrykk',
-  'Mork farge-harmoni — enhetlig og strukturert',
-  'Oversize ytterlag over fitted base gir lagdybde',
-  'Varm tone gjennomgaande — harmonisk',
-  'Blanding av varme og kjolige toner skaper spenning',
-];
+<!-- ======================== -->
+<!-- PHONE 1: DRAWER HIDDEN   -->
+<!-- ======================== -->
+<div class="pw">
+<div class="phone phone-1">
+  <div class="sb"><span>9:41</span><span style="opacity:0.4">4G</span></div>
+  <div class="top-bar"><div class="logo">CORET</div><div class="surprise-btn"><svg width="9" height="9" viewBox="0 0 24 24" fill="#b8860b" stroke="none"><path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16.4l-6.4 4.8L8 14 2 9.2h7.6z"/></svg> Surprise</div></div>
+  <div class="score-bar">
+    <div class="score-label">Live Score</div>
+    <div class="score-right"><div class="score-num">91</div><div class="score-delta"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5a8a5e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg> +19</div></div>
+  </div>
 
-const moodSets = [
-  'Structured · Warm · Layered',
-  'Refined · Cool · Clean',
-  'Relaxed · Earthy · Textured',
-  'Minimal · Neutral · Sharp',
-  'Bold · Dark · Cohesive',
-  'Balanced · Tonal · Grounded',
-];
+  <div class="canvas-wrap">
+    <!-- Flat lay area — full width -->
+    <div class="flatlay-area">
 
-// ═══ INIT ═══
-ROW_IDS.forEach(id => {
-  const row = document.getElementById('row-' + id);
-  const track = document.getElementById('track-' + id);
-  const items = track.querySelectorAll('.swipe-item');
-  const dotsEl = document.getElementById('dots-' + id);
+      <!-- JACKET -->
+      <div class="garment jacket">
+        <div class="jacket-sleeve-l"></div><div class="jacket-sleeve-r"></div>
+        <div class="jacket-main"></div><div class="jacket-collar-l"></div><div class="jacket-collar-r"></div>
+        <div class="jacket-inner"></div><div class="jacket-zip"></div><div class="jacket-hem"></div><div class="jacket-shine"></div>
+        <div class="g-hl"></div>
+        <div class="g-lbl"><div class="g-lbl-dot"></div>Ytterlag</div>
+      </div>
 
-  rows[id] = {
-    el: row,
-    track: track,
-    items: Array.from(items),
-    current: 0,
-    count: items.length,
-    dotsEl: dotsEl,
-    dragging: false,
-    startX: 0,
-    currentX: 0,
-  };
+      <!-- TEE -->
+      <div class="garment tee">
+        <div class="tee-sleeve-l"></div><div class="tee-sleeve-r"></div>
+        <div class="tee-main"></div><div class="tee-neck"></div>
+        <div class="g-hl"></div>
+        <div class="g-lbl" style="bottom:-16px;"><div class="g-lbl-dot" style="background:var(--text4);"></div>Overdel</div>
+      </div>
 
-  // Build dots
-  for (let i = 0; i < items.length; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'swipe-dot' + (i === 0 ? ' active' : '');
-    dotsEl.appendChild(dot);
-  }
+      <!-- JEANS -->
+      <div class="garment jeans">
+        <div class="jeans-waist"></div><div class="jeans-main"></div><div class="jeans-fly"></div>
+        <div class="jeans-leg-l"></div><div class="jeans-leg-r"></div>
+        <div class="jeans-crease-l"></div><div class="jeans-crease-r"></div>
+        <div class="g-hl"></div>
+        <div class="g-lbl" style="bottom:-16px;"><div class="g-lbl-dot" style="background:var(--text4);"></div>Underdel</div>
+      </div>
 
-  // Touch/mouse events
-  row.addEventListener('mousedown', e => startDrag(id, e.clientX));
-  row.addEventListener('touchstart', e => startDrag(id, e.touches[0].clientX), { passive: true });
-  row.addEventListener('mousemove', e => moveDrag(id, e.clientX));
-  row.addEventListener('touchmove', e => moveDrag(id, e.touches[0].clientX), { passive: true });
-  row.addEventListener('mouseup', () => endDrag(id));
-  row.addEventListener('mouseleave', () => endDrag(id));
-  row.addEventListener('touchend', () => endDrag(id));
-});
+      <!-- SHOES -->
+      <div class="garment shoes">
+        <div class="shoe-l"><div class="shoe-l-body"></div><div class="shoe-l-strap"></div><div class="shoe-l-sole"></div><div class="shoe-l-shine"></div></div>
+        <div class="shoe-r"><div class="shoe-r-body"></div><div class="shoe-r-strap"></div><div class="shoe-r-sole"></div><div class="shoe-r-shine"></div></div>
+        <div class="g-hl"></div>
+        <div class="g-lbl" style="bottom:-16px;"><div class="g-lbl-dot" style="background:var(--text4);"></div>Sko</div>
+      </div>
 
-updateAll();
+      <!-- FLOATING ACCESSORIES -->
+      <div class="f-acc f-watch">
+        <div class="watch-wrap">
+          <div class="watch-band-t"></div><div class="watch-case"></div><div class="watch-face"></div>
+          <div class="watch-h"></div><div class="watch-m"></div><div class="watch-crown"></div><div class="watch-band-b"></div>
+        </div>
+      </div>
 
-// ═══ DRAG SYSTEM ═══
-function startDrag(id, x) {
-  const r = rows[id];
-  r.dragging = true;
-  r.startX = x;
-  r.currentX = x;
-  r.track.style.transition = 'none';
+      <div class="f-acc f-glasses">
+        <div class="glasses-wrap">
+          <div class="glass-arm-l"></div><div class="glass-arm-r"></div>
+          <div class="glass-l"><div class="glass-shine"></div></div>
+          <div class="glass-r"></div><div class="glass-bridge"></div>
+        </div>
+      </div>
 
-  // Dim other rows
-  ROW_IDS.forEach(rid => {
-    if (rid !== id) rows[rid].el.classList.add('dimmed');
-  });
-}
+      <div class="f-acc f-bag">
+        <div class="bag-wrap">
+          <div class="bag-chain"></div><div class="bag-handle"></div>
+          <div class="bag-flap"></div><div class="bag-main"></div><div class="bag-clasp"></div>
+        </div>
+      </div>
 
-function moveDrag(id, x) {
-  const r = rows[id];
-  if (!r.dragging) return;
-  r.currentX = x;
-  const diff = r.currentX - r.startX;
-  const base = -r.current * r.el.offsetWidth;
-  r.track.style.transform = `translateX(${base + diff}px)`;
-}
+      <div class="f-acc f-ring-1"><div class="ring-css"><div class="ring-gem"></div></div></div>
+      <div class="f-acc f-ring-2"><div class="ring-css" style="width:14px;height:14px;border-color:#a88040;"></div></div>
 
-function endDrag(id) {
-  const r = rows[id];
-  if (!r.dragging) return;
-  r.dragging = false;
-  r.track.style.transition = '';
+    </div>
 
-  const diff = r.currentX - r.startX;
-  const threshold = r.el.offsetWidth * 0.25;
+    <!-- Side drawer — hidden -->
+    <div class="side-drawer" id="drawer1"></div>
 
-  if (diff < -threshold && r.current < r.count - 1) {
-    r.current++;
-  } else if (diff > threshold && r.current > 0) {
-    r.current--;
-  }
+    <!-- Grip tab -->
+    <div class="grip-tab" id="grip1">
+      <div class="grip-inner">
+        <div class="grip-dot"></div>
+        <div class="grip-dot"></div>
+        <div class="grip-dot"></div>
+        <div class="grip-arrow">←</div>
+      </div>
+    </div>
 
-  snapTo(id, r.current);
+  </div>
 
-  // Un-dim all
-  ROW_IDS.forEach(rid => rows[rid].el.classList.remove('dimmed'));
-}
+  <div class="score-footer">
+    <div class="score-rows">
+      <div class="sr"><div class="sr-lbl">Flyt</div><div class="sr-track"><div class="sr-fill" style="width:94%;background:var(--gold);"></div></div><div class="sr-val">94</div></div>
+      <div class="sr"><div class="sr-lbl">Farger</div><div class="sr-track"><div class="sr-fill" style="width:88%;background:var(--sage);animation-delay:0.15s;"></div></div><div class="sr-val">88</div></div>
+      <div class="sr"><div class="sr-lbl">Balanse</div><div class="sr-track"><div class="sr-fill" style="width:90%;background:rgba(184,134,11,0.7);animation-delay:0.3s;"></div></div><div class="sr-val">90</div></div>
+    </div>
+    <div class="arch-row"><div class="arch-name">Smart Casual</div><div class="arch-tag">passer stilen din</div></div>
+    <div class="cta-btn">Bruk i dag →</div>
+  </div>
+  <div class="nav">
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="ni-l">Wardrobe</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span class="ni-l">Studio</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg><span class="ni-l">Discover</span></div>
+  </div>
+</div>
+<div class="ptag">Skjult — grip tab ←</div>
+</div>
 
-function snapTo(id, index) {
-  const r = rows[id];
-  r.current = index;
-  r.track.style.transform = `translateX(${-index * r.el.offsetWidth}px)`;
+<!-- ======================== -->
+<!-- PHONE 2: DRAWER OPEN     -->
+<!-- ======================== -->
+<div class="pw">
+<div class="phone phone-2">
+  <div class="sb"><span>9:41</span><span style="opacity:0.4">4G</span></div>
+  <div class="top-bar"><div class="logo">CORET</div><div class="surprise-btn"><svg width="9" height="9" viewBox="0 0 24 24" fill="#b8860b" stroke="none"><path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16.4l-6.4 4.8L8 14 2 9.2h7.6z"/></svg> Surprise</div></div>
+  <div class="score-bar">
+    <div class="score-label">Live Score</div>
+    <div class="score-right"><div class="score-num">91</div><div class="score-delta"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5a8a5e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg> +19</div></div>
+  </div>
 
-  // Update active/inactive
-  r.items.forEach((item, i) => {
-    item.classList.toggle('active', i === index);
-    item.classList.toggle('inactive', i !== index);
-  });
+  <div class="canvas-wrap">
+    <div class="flatlay-area drawer-open">
+      <!-- Flat lay compressed to left -->
+      <div class="garment jacket" style="transform:translateX(-58%) rotate(-3deg);top:12px;">
+        <div class="jacket-sleeve-l"></div><div class="jacket-sleeve-r"></div>
+        <div class="jacket-main"></div><div class="jacket-collar-l"></div><div class="jacket-collar-r"></div>
+        <div class="jacket-inner"></div><div class="jacket-zip"></div><div class="jacket-hem"></div><div class="jacket-shine"></div>
+        <div class="g-hl"></div>
+      </div>
+      <div class="garment tee" style="transform:translateX(-56%) rotate(2deg);">
+        <div class="tee-sleeve-l"></div><div class="tee-sleeve-r"></div><div class="tee-main"></div><div class="tee-neck"></div>
+        <div class="g-hl"></div>
+      </div>
+      <div class="garment jeans" style="transform:translateX(-58%) rotate(-1deg);">
+        <div class="jeans-waist"></div><div class="jeans-main"></div>
+        <div class="jeans-leg-l"></div><div class="jeans-leg-r"></div>
+        <div class="g-hl"></div>
+      </div>
+      <div class="garment shoes" style="transform:translateX(-60%) rotate(1deg);">
+        <div class="shoe-l"><div class="shoe-l-body"></div><div class="shoe-l-strap"></div><div class="shoe-l-sole"></div><div class="shoe-l-shine"></div></div>
+        <div class="shoe-r"><div class="shoe-r-body"></div><div class="shoe-r-strap"></div><div class="shoe-r-sole"></div><div class="shoe-r-shine"></div></div>
+        <div class="g-hl"></div>
+      </div>
+      <!-- Accessories still floating but pushed left -->
+      <div class="f-acc f-bag" style="left:4px;bottom:24px;">
+        <div class="bag-wrap"><div class="bag-chain"></div><div class="bag-handle"></div><div class="bag-flap"></div><div class="bag-main"></div><div class="bag-clasp"></div></div>
+      </div>
+    </div>
 
-  // Update dots
-  r.dotsEl.querySelectorAll('.swipe-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', i === index);
-  });
+    <!-- Drawer OPEN -->
+    <div class="side-drawer open">
+      <div class="drawer-inner-v">
 
-  updateAll();
-}
+        <div class="dv-item active">
+          <div class="dv-img">
+            <div style="position:relative;width:34px;height:30px;">
+              <div style="position:absolute;top:0;left:9px;width:16px;height:8px;border:1.5px solid #8a6432;border-bottom:none;border-radius:5px 5px 0 0;"></div>
+              <div style="position:absolute;bottom:10px;left:2px;width:30px;height:12px;background:#7a5828;border-radius:3px 3px 0 0;"></div>
+              <div style="position:absolute;bottom:0;left:2px;width:30px;height:16px;background:linear-gradient(135deg,#8a6432,#5a3c18);border-radius:3px;"></div>
+              <div style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:7px;height:4px;background:#d4a040;border-radius:1px;"></div>
+            </div>
+            <div class="dv-dot"></div>
+          </div>
+          <span class="dv-name gold">Tote</span>
+        </div>
 
-// ═══ UPDATE ═══
-function updateAll() {
-  updateBackground();
-  updateScore();
-  updateMood();
-  updateInsight();
-  if (exploreMode) updateCTA();
-}
+        <div class="dv-item active">
+          <div class="dv-img">
+            <div style="position:relative;width:44px;height:20px;margin-top:4px;">
+              <div style="position:absolute;left:0;top:0;width:17px;height:14px;border:1.5px solid #c4a060;border-radius:4px;background:rgba(200,180,100,0.08);"></div>
+              <div style="position:absolute;right:0;top:0;width:17px;height:14px;border:1.5px solid #c4a060;border-radius:4px;background:rgba(200,180,100,0.08);"></div>
+              <div style="position:absolute;top:6px;left:16px;width:12px;height:1.5px;background:#c4a060;border-radius:1px;"></div>
+            </div>
+            <div class="dv-dot"></div>
+          </div>
+          <span class="dv-name gold">Briller</span>
+        </div>
 
-function getActiveColors() {
-  return ROW_IDS.map(id => {
-    const r = rows[id];
-    return r.items[r.current].dataset.color;
-  });
-}
+        <div class="dv-item active">
+          <div class="dv-img">
+            <div style="position:relative;width:22px;height:32px;">
+              <div style="position:absolute;top:0;left:6px;width:10px;height:8px;background:#1a1820;border-radius:2px;"></div>
+              <div style="position:absolute;top:7px;left:2px;width:18px;height:18px;background:linear-gradient(135deg,#d4a040,#b88020);border-radius:4px;box-shadow:inset 0 1px 3px rgba(255,230,150,0.3);"></div>
+              <div style="position:absolute;top:10px;left:5px;width:12px;height:12px;background:#1a1820;border-radius:3px;"></div>
+              <div style="position:absolute;top:17px;left:10px;width:1px;height:6px;background:rgba(255,255,255,0.6);border-radius:1px;transform-origin:bottom center;transform:rotate(-20deg);"></div>
+              <div style="position:absolute;bottom:0;left:6px;width:10px;height:8px;background:#1a1820;border-radius:2px;"></div>
+            </div>
+            <div class="dv-dot"></div>
+          </div>
+          <span class="dv-name gold">Klokke</span>
+        </div>
 
-function hexToHSL(hex) {
-  let r = parseInt(hex.slice(1,3), 16) / 255;
-  let g = parseInt(hex.slice(3,5), 16) / 255;
-  let b = parseInt(hex.slice(5,7), 16) / 255;
-  const max = Math.max(r,g,b), min = Math.min(r,g,b);
-  let h, s, l = (max+min)/2;
-  if (max === min) { h = s = 0; }
-  else {
-    const d = max - min;
-    s = l > 0.5 ? d/(2-max-min) : d/(max+min);
-    switch(max) {
-      case r: h = ((g-b)/d + (g<b?6:0))/6; break;
-      case g: h = ((b-r)/d+2)/6; break;
-      case b: h = ((r-g)/d+4)/6; break;
-    }
-  }
-  return [h*360, s*100, l*100];
-}
+        <div class="dv-item">
+          <div class="dv-img">
+            <svg width="36" height="22" viewBox="0 0 48 34" fill="none">
+              <path d="M8 18 Q8 6 24 6 Q40 6 40 18 L40 22 L8 22Z" fill="#2a2830" opacity="0.85"/>
+              <path d="M6 22 L42 22 L44 26 L4 26Z" fill="#222028" opacity="0.9"/>
+              <path d="M4 26 L44 26 Q46 30 44 32 L4 32 Q2 30 4 26Z" fill="#1a1820" opacity="0.9"/>
+            </svg>
+          </div>
+          <span class="dv-name">Caps</span>
+        </div>
 
-function updateBackground() {
-  const colors = getActiveColors();
-  let hSum=0, sSum=0, lSum=0;
-  colors.forEach(c => {
-    const [h,s,l] = hexToHSL(c);
-    hSum += h; sSum += s; lSum += l;
-  });
-  const n = colors.length;
-  const avgH = hSum/n, avgS = sSum/n, avgL = lSum/n;
+        <div class="dv-item">
+          <div class="dv-img">
+            <div style="position:relative;width:18px;height:22px;">
+              <div style="width:18px;height:18px;border-radius:50%;border:2.5px solid #c4a060;"></div>
+              <div style="position:absolute;top:-4px;left:4px;width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#e8d060,#c4a040);"></div>
+            </div>
+          </div>
+          <span class="dv-name">Ring</span>
+        </div>
 
-  const bg = document.getElementById('dynamicBg');
-  const darkL = Math.max(avgL * 0.15, 5);
-  const midL = Math.max(avgL * 0.22, 8);
-  bg.style.background = `
-    radial-gradient(circle at 30% 25%, hsl(${avgH}, ${avgS*0.4}%, ${midL}%) 0%, transparent 60%),
-    radial-gradient(circle at 70% 75%, hsl(${avgH+20}, ${avgS*0.3}%, ${darkL}%) 0%, transparent 50%),
-    hsl(${avgH}, ${avgS*0.15}%, ${darkL * 0.7}%)
-  `;
+        <div class="dv-add">
+          <div style="font-size:16px;color:rgba(184,134,11,0.25);line-height:1;">+</div>
+          <div style="font-size:7px;color:var(--text4);margin-top:2px;">Legg til</div>
+        </div>
 
-  const blobA = document.getElementById('blobA');
-  const blobB = document.getElementById('blobB');
-  blobA.style.background = `hsl(${avgH}, ${avgS*0.5}%, ${avgL*0.25}%)`;
-  blobB.style.background = `hsl(${avgH+30}, ${avgS*0.4}%, ${avgL*0.2}%)`;
-}
+      </div>
+    </div>
 
-function updateScore() {
-  // Simulated scoring based on color harmony
-  const colors = getActiveColors();
-  const hsls = colors.map(hexToHSL);
+    <!-- Grip tab — pushed left with drawer -->
+    <div class="grip-tab open">
+      <div class="grip-inner" style="background:rgba(255,255,255,0.95);">
+        <div class="grip-dot" style="background:rgba(184,134,11,0.4);"></div>
+        <div class="grip-dot" style="background:rgba(184,134,11,0.4);"></div>
+        <div class="grip-dot" style="background:rgba(184,134,11,0.4);"></div>
+        <div class="grip-arrow" style="color:var(--gold);">→</div>
+      </div>
+    </div>
 
-  // Simple harmony: lower hue variance = higher score
-  const hues = hsls.map(h => h[0]);
-  const meanH = hues.reduce((a,b)=>a+b,0)/hues.length;
-  const variance = hues.reduce((a,h)=>a+Math.pow(h-meanH,2),0)/hues.length;
-  const harmony = Math.max(60, Math.min(96, 95 - Math.sqrt(variance) * 0.3));
-  const score = Math.round(harmony);
+  </div>
 
-  const el = document.getElementById('clarityNum');
-  const prev = parseInt(el.textContent);
+  <div class="score-footer">
+    <div class="score-rows">
+      <div class="sr"><div class="sr-lbl">Flyt</div><div class="sr-track"><div class="sr-fill" style="width:94%;background:var(--gold);"></div></div><div class="sr-val">94</div></div>
+      <div class="sr"><div class="sr-lbl">Farger</div><div class="sr-track"><div class="sr-fill" style="width:88%;background:var(--sage);animation-delay:0.15s;"></div></div><div class="sr-val">88</div></div>
+      <div class="sr"><div class="sr-lbl">Balanse</div><div class="sr-track"><div class="sr-fill" style="width:90%;background:rgba(184,134,11,0.7);animation-delay:0.3s;"></div></div><div class="sr-val">90</div></div>
+    </div>
+    <div class="arch-row"><div class="arch-name">Smart Casual</div><div class="arch-tag">passer stilen din</div></div>
+    <div class="cta-btn">Bruk i dag →</div>
+  </div>
+  <div class="nav">
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="ni-l">Wardrobe</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span class="ni-l">Studio</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg><span class="ni-l">Discover</span></div>
+  </div>
+</div>
+<div class="ptag">Åpen — glir fra høyre mot venstre</div>
+</div>
 
-  el.textContent = score;
-  el.style.transform = 'scale(1.12)';
-  setTimeout(() => { el.style.transform = 'scale(1)'; }, 300);
+<!-- ======================== -->
+<!-- PHONE 3: FLOATERS ACTIVE -->
+<!-- ======================== -->
+<div class="pw">
+<div class="phone phone-3">
+  <div class="sb"><span>9:41</span><span style="opacity:0.4">4G</span></div>
+  <div class="top-bar"><div class="logo">CORET</div><div class="surprise-btn"><svg width="9" height="9" viewBox="0 0 24 24" fill="#b8860b" stroke="none"><path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16.4l-6.4 4.8L8 14 2 9.2h7.6z"/></svg> Surprise</div></div>
+  <div class="score-bar" style="background:rgba(184,134,11,0.04);">
+    <div class="score-label">Live Score</div>
+    <div class="score-right"><div class="score-num">91</div><div class="score-delta"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5a8a5e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg> +19</div></div>
+  </div>
 
-  if (score > prev) {
-    el.classList.add('flash-green');
-    setTimeout(() => el.classList.remove('flash-green'), 600);
-  } else if (score < prev) {
-    el.classList.add('flash-red');
-    setTimeout(() => el.classList.remove('flash-red'), 600);
-  }
-}
+  <div class="canvas-wrap">
+    <div class="flatlay-area">
+      <div class="garment jacket">
+        <div class="jacket-sleeve-l"></div><div class="jacket-sleeve-r"></div>
+        <div class="jacket-main"></div><div class="jacket-collar-l"></div><div class="jacket-collar-r"></div>
+        <div class="jacket-inner"></div><div class="jacket-zip"></div><div class="jacket-hem"></div><div class="jacket-shine"></div>
+        <div class="g-hl"></div>
+      </div>
+      <div class="garment tee">
+        <div class="tee-sleeve-l"></div><div class="tee-sleeve-r"></div><div class="tee-main"></div><div class="tee-neck"></div>
+        <div class="g-hl"></div>
+      </div>
+      <div class="garment jeans">
+        <div class="jeans-waist"></div><div class="jeans-main"></div><div class="jeans-fly"></div>
+        <div class="jeans-leg-l"></div><div class="jeans-leg-r"></div><div class="jeans-crease-l"></div><div class="jeans-crease-r"></div>
+        <div class="g-hl"></div>
+      </div>
+      <div class="garment shoes">
+        <div class="shoe-l"><div class="shoe-l-body"></div><div class="shoe-l-strap"></div><div class="shoe-l-sole"></div><div class="shoe-l-shine"></div></div>
+        <div class="shoe-r"><div class="shoe-r-body"></div><div class="shoe-r-strap"></div><div class="shoe-r-sole"></div><div class="shoe-r-shine"></div></div>
+        <div class="g-hl"></div>
+      </div>
 
-function updateMood() {
-  const idx = (rows.outer.current + rows.upper.current + rows.lower.current + rows.shoes.current) % moodSets.length;
-  document.getElementById('moodWords').textContent = moodSets[idx];
-}
+      <!-- ALL FLOATERS ACTIVE -->
+      <div class="f-acc f-watch">
+        <div class="watch-wrap"><div class="watch-band-t"></div><div class="watch-case"></div><div class="watch-face"></div><div class="watch-h"></div><div class="watch-m"></div><div class="watch-crown"></div><div class="watch-band-b"></div></div>
+      </div>
+      <div class="f-acc f-glasses">
+        <div class="glasses-wrap"><div class="glass-arm-l"></div><div class="glass-arm-r"></div><div class="glass-l"><div class="glass-shine"></div></div><div class="glass-r"></div><div class="glass-bridge"></div></div>
+      </div>
+      <div class="f-acc f-bag">
+        <div class="bag-wrap"><div class="bag-chain"></div><div class="bag-handle"></div><div class="bag-flap"></div><div class="bag-main"></div><div class="bag-clasp"></div></div>
+      </div>
+      <div class="f-acc f-ring-1"><div class="ring-css"><div class="ring-gem"></div></div></div>
+      <div class="f-acc f-ring-2"><div class="ring-css" style="width:14px;height:14px;border-color:#a88040;"></div></div>
+    </div>
 
-function updateInsight() {
-  // Check if any active item is a ghost
-  for (const id of ROW_IDS) {
-    const r = rows[id];
-    const item = r.items[r.current];
-    if (item && item.dataset.ghost === 'true') {
-      const impact = item.dataset.impact || '+? clarity';
-      document.getElementById('insight').textContent = item.dataset.name + ' ville fylle et strukturelt gap — ' + impact + ' · +18 kombinasjoner';
-      return;
-    }
-  }
-  const idx = (rows.outer.current * 3 + rows.upper.current * 2 + rows.lower.current + rows.shoes.current) % insights.length;
-  document.getElementById('insight').textContent = insights[idx];
-}
+    <!-- Drawer hidden again -->
+    <div class="side-drawer"></div>
+    <div class="grip-tab">
+      <div class="grip-inner"><div class="grip-dot"></div><div class="grip-dot"></div><div class="grip-dot"></div><div class="grip-arrow">←</div></div>
+    </div>
+  </div>
 
-// ═══ SURPRISE ═══
-function surprise() {
-  const delays = [0, 120, 240, 360];
-  ROW_IDS.forEach((id, i) => {
-    setTimeout(() => {
-      const r = rows[id];
-      const newIdx = Math.floor(Math.random() * r.count);
-      snapTo(id, newIdx);
-    }, delays[i]);
-  });
-}
+  <div class="score-footer">
+    <div class="score-rows">
+      <div class="sr"><div class="sr-lbl">Flyt</div><div class="sr-track"><div class="sr-fill" style="width:94%;background:var(--gold);"></div></div><div class="sr-val">94</div></div>
+      <div class="sr"><div class="sr-lbl">Farger</div><div class="sr-track"><div class="sr-fill" style="width:88%;background:var(--sage);animation-delay:0.15s;"></div></div><div class="sr-val">88</div></div>
+      <div class="sr"><div class="sr-lbl">Balanse</div><div class="sr-track"><div class="sr-fill" style="width:90%;background:rgba(184,134,11,0.7);animation-delay:0.3s;"></div></div><div class="sr-val">90</div></div>
+    </div>
+    <div class="arch-row"><div class="arch-name">Smart Casual</div><div class="arch-tag">passer stilen din</div></div>
+    <div class="cta-btn">Bruk i dag →</div>
+  </div>
+  <div class="nav">
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="ni-l">Wardrobe</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span class="ni-l">Studio</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg><span class="ni-l">Discover</span></div>
+  </div>
+</div>
+<div class="ptag">Lukket igjen — alle accessories flyter</div>
+</div>
 
-// ═══ EXPLORE MODE ═══
-function toggleExplore() {
-  exploreMode = !exploreMode;
-  const btn = document.getElementById('exploreBtn');
-  btn.classList.toggle('active', exploreMode);
+</div>
 
-  // Show/hide ghost items
-  document.querySelectorAll('.swipe-item.ghost').forEach(ghost => {
-    ghost.style.display = exploreMode ? '' : 'none';
-  });
+<!-- Notes -->
+<div class="notes">
+  <div class="note">
+    <div class="note-t">← Glir fra høyre</div>
+    <div class="note-b">Grip-tab sitter langs høyre kant. Drar du den mot venstre glir accessories-panelet inn og flat lay-canvasen krymper til venstre. Grip-pilen snur fra ← til → når den er åpen.</div>
+  </div>
+  <div class="note">
+    <div class="note-t">Anatomisk plassering</div>
+    <div class="note-b">Velger du bag → popper inn nederst til venstre. Briller → øverst til høyre. Klokke → øverst til venstre. Ringer → ved buksene. Automatisk, ingen manuell dra-og-slipp.</div>
+  </div>
+  <div class="note">
+    <div class="note-t">Med ekte produktbilder</div>
+    <div class="note-b">Hver CSS-blokk er en placeholder for et Shopify-produktbilde. Layouten, rotasjonene og floater-posisjonene forblir identiske — bare bytt ut med img-tags.</div>
+  </div>
+</div>
 
-  // Rebuild rows (item count changed)
-  ROW_IDS.forEach(id => {
-    const track = document.getElementById('track-' + id);
-    const items = track.querySelectorAll('.swipe-item' + (exploreMode ? '' : ':not([style*="display: none"])'));
-    const visibleItems = Array.from(track.querySelectorAll('.swipe-item')).filter(el => el.style.display !== 'none');
-    rows[id].items = visibleItems;
-    rows[id].count = visibleItems.length;
-
-    // Rebuild dots
-    const dotsEl = rows[id].dotsEl;
-    dotsEl.innerHTML = '';
-    for (let i = 0; i < visibleItems.length; i++) {
-      const dot = document.createElement('div');
-      dot.className = 'swipe-dot' + (i === rows[id].current ? ' active' : '');
-      dotsEl.appendChild(dot);
-    }
-  });
-
-  // Update CTA
-  updateCTA();
-  updateAll();
-}
-
-function updateCTA() {
-  const btn = document.querySelector('.cta-btn');
-  const hasGhostActive = ROW_IDS.some(id => {
-    const r = rows[id];
-    const item = r.items[r.current];
-    return item && item.dataset.ghost === 'true';
-  });
-
-  if (hasGhostActive) {
-    btn.textContent = 'Legg til garderobe';
-    btn.onclick = addGhost;
-  } else {
-    btn.textContent = 'Bruk i dag';
-    btn.onclick = wearToday;
-  }
-}
-
-function addGhost() {
-  const btn = document.querySelector('.cta-btn');
-  const ghostItems = ROW_IDS.map(id => {
-    const r = rows[id];
-    const item = r.items[r.current];
-    return (item && item.dataset.ghost === 'true') ? item.dataset.name : null;
-  }).filter(Boolean);
-
-  btn.textContent = 'Legger til: ' + ghostItems.join(', ') + '...';
-  btn.style.background = 'rgba(201,169,110,0.15)';
-  setTimeout(() => {
-    btn.textContent = 'Lagt til!';
-    btn.style.background = 'rgba(122,154,110,0.15)';
-    btn.style.color = 'var(--green)';
-    setTimeout(() => {
-      btn.style.background = '';
-      btn.style.color = '';
-      updateCTA();
-    }, 1500);
-  }, 800);
-}
-
-// ═══ WEAR TODAY ═══
-function wearToday() {
-  const btn = document.querySelector('.cta-btn');
-  const names = ROW_IDS.map(id => rows[id].items[rows[id].current].dataset.name);
-  btn.textContent = 'Logget: ' + names.join(' + ');
-  btn.style.background = 'rgba(122,154,110,0.15)';
-  btn.style.color = 'var(--green)';
-  setTimeout(() => {
-    btn.textContent = 'Bruk i dag';
-    btn.style.background = '';
-    btn.style.color = '';
-  }, 2000);
-}
-</script>
-
+</div>
 </body>
 </html>

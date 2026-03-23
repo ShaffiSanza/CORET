@@ -14,12 +14,16 @@ public enum DailyOutfitScorer: Sendable {
         let archetypeMatch = dominantArchetype(garments: garments)
         let suggestion = strength < 0.85 ? generateSuggestion(garments: garments, profile: profile, currentStrength: strength) : nil
 
+        // Fashion Intelligence — rule-based explanation
+        let explanation = generateExplanation(garments: garments, profile: profile, strength: strength, archetype: archetypeMatch)
+
         return OutfitScore(
             totalStrength: strength,
             silhouetteVerdict: silhouetteVerdict,
             colorVerdict: colorVerdict,
             archetypeMatch: archetypeMatch,
-            suggestion: suggestion
+            suggestion: suggestion,
+            explanation: explanation
         )
     }
 
@@ -85,5 +89,19 @@ public enum DailyOutfitScorer: Sendable {
         }
 
         return nil
+    }
+
+    private static func generateExplanation(
+        garments: [Garment],
+        profile: UserProfile,
+        strength: Double,
+        archetype: Archetype,
+        locale: String = "en"
+    ) -> ExplanationResult? {
+        guard let kb = FashionTheoryEngine.loadKnowledgeBase() else { return nil }
+        let results = FashionTheoryEngine.evaluate(garments: garments, profile: profile, knowledgeBase: kb)
+        guard !results.isEmpty else { return nil }
+        let prioritized = RulePriorityEngine.prioritize(results)
+        return ExplanationEngine.explain(prioritized: prioritized, score: strength, archetype: archetype, locale: locale)
     }
 }

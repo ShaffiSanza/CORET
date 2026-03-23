@@ -54,7 +54,7 @@ CORET/
 │   ├── Coordinators/      EngineCoordinator.swift
 │   └── ViewModels/        4 @Observable ViewModels (one per tab)
 ├── backend/               ← Python/FastAPI backend (full wardrobe platform)
-│   ├── models/            Enums, Pydantic schemas (garment, outfit, wear_log, wardrobe_map, clarity)
+│   ├── models/            Enums, Pydantic schemas (garment, outfit, wear_log, wardrobe_map, clarity, discover, shopify, profile)
 │   ├── services/          Business logic:
 │   │                        garment_store, outfit_store, wear_log_store (JSON persistence)
 │   │                        image_polish, image_normalize, image_storage (image pipeline)
@@ -62,8 +62,12 @@ CORET/
 │   │                        wardrobe_analysis (combo engine, gap detection, key/weak garments)
 │   │                        clarity_tracker (score history for Evolution)
 │   │                        wardrobe_io (import validation)
-│   ├── routers/           pipeline.py, garments.py, wardrobe.py, outfits.py, wear.py
-│   ├── tests/             pytest test suite (115 tests)
+│   │                        discover_feed (feed generation, bookmarks, actions, seen tracking)
+│   │                        shopify_client (Shopify Admin API, pagination, rate limiting, style inference)
+│   │                        ghost_catalog (brand registry, product sync, gap-to-product matching, brand grid)
+│   │                        user_profile (style_context + archetype, JSON persistence)
+│   ├── routers/           pipeline.py, garments.py, wardrobe.py, outfits.py, wear.py, discover.py, brands.py, profile.py
+│   ├── tests/             pytest test suite (212 tests)
 │   ├── data/              Runtime storage: garments.json, outfits.json, wear_logs.json, images/ (gitignored)
 │   └── v1_5/              Archived services (receipt_parser) for future release
 ├── moodboard/             ← Visual references for UI (HTML + wireframe .md files)
@@ -83,12 +87,12 @@ NOT reference for: prices, brand names, social features, shopping UI, lifestyle 
 | Package | Tests | Status |
 |---------|-------|--------|
 | engine/ (V2 — ACTIVE) | 353/353 | ✅ All passing |
-| backend/ (Python/FastAPI) | 115/115 | ✅ All passing |
+| backend/ (Python/FastAPI) | 212/212 | ✅ All passing |
 | archive/core-v1/ (V1 — ARCHIVED) | 218/218 | ✅ All passing |
 
 **V2 engines:** CohesionEngine (70), ClarityEngine (23), ScoreProjector (22), IdentityResolver (15), KeyGarmentResolver (21), MilestoneTracker (38), SeasonalEngineV2 (26), OptimizeEngineV2 (19), BehaviouralEngine (27), SimilarityEngine (18), DailyOutfitScorer (9), BestOutfitFinder (8), NetworkUnlockCalculator (10), DailyOutfitEngine (13), StyleDirectionEngine (14), Models (18).
 
-**Backend test breakdown:** health (2), color_extraction (10), image_polish (3), image_normalize (10), image_storage (5), product_search (3), barcode_lookup (3), metadata_extractor (4), wardrobe_io (11), garments CRUD (12), wardrobe_analysis (22), outfits (7), wear+clarity (10), stubs (3).
+**Backend test breakdown:** health (3), color_extraction (21), image_polish (3), image_normalize (10), image_storage (5), product_search (3), barcode_lookup (3), metadata_extractor (4), wardrobe_io (13), garments CRUD (11), wardrobe_analysis (34), outfits (7), wear+clarity (10), discover (32), outfit_graph (8), shopify (25), style_context (20).
 
 Build commands:
 ```
@@ -106,32 +110,48 @@ SwiftUI and SwiftData require Mac + Xcode. Development machine is Arch Linux. En
 1. Open Xcode, add `ios/` files to iOS target
 2. Import `engine/COREEngine` as local Swift package
 3. Build and wire SwiftUI views to ViewModels
-4. Connect to backend API (25 endpoints ready)
+4. Connect to backend API (45 endpoints ready)
 5. Camera capture → `POST /api/garments/{id}/image` → real garment photos
 6. Studio ViewModel → engine scoring via EngineCoordinator
 
-**Backend API overview (25 endpoints):**
+**Backend API overview (45 endpoints):**
 ```
-# Pipeline (processing)
+# Pipeline (5)
 POST /api/product-search, /api/barcode-lookup, /api/extract-colors
 POST /api/product-metadata, /api/image-polish
 
-# Garment CRUD + Images
+# Garment CRUD + Images (7)
 POST/GET /api/garments, GET/PUT/DELETE /api/garments/{id}
 POST /api/garments/{id}/image, GET /api/images/{id}/{variant}
 
-# Wardrobe Map (analysis)
+# Wardrobe Map + Analysis (8)
 GET /api/wardrobe/analysis, /api/wardrobe/garment/{id}
 GET /api/wardrobe/gaps, /api/wardrobe/key-garments, /api/wardrobe/weak-garments
+GET /api/wardrobe/export, POST /api/wardrobe/import, GET /api/wardrobe/suggest
 
-# Outfits
+# Outfits (5)
 POST/GET /api/outfits, GET/PUT/DELETE /api/outfits/{id}
 
-# Wear Tracking + Clarity History
+# Wear Tracking + Clarity History (4)
 POST /api/garments/{id}/wear, GET /api/garments/{id}/wears
 GET /api/clarity/history, POST /api/clarity/snapshot
 
-# Health
+# Discover Feed (7)
+GET /api/discover/brands (brand grid for Full mode)
+GET /api/discover/feed (mode=7030|full, season, tags, style_context, brand_id)
+POST /api/discover/bookmark, DELETE /api/discover/bookmark/{id}
+GET /api/discover/bookmarks
+POST /api/discover/action, GET /api/discover/stats
+
+# Brand Partners / Shopify (7)
+POST /api/brands/register, GET /api/brands, GET /api/brands/{id}
+DELETE /api/brands/{id}, POST /api/brands/{id}/sync
+GET /api/brands/{id}/products, POST /api/brands/webhook
+
+# User Profile (2)
+GET/PUT /api/profile (style_context, archetype)
+
+# Health (1)
 GET /api/health
 ```
 

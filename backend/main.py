@@ -23,7 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from config import settings
-from routers import pipeline, garments, wardrobe, outfits, wear
+from routers import pipeline, garments, wardrobe, outfits, wear, discover, brands, profile, auth
 
 
 # ============================================================
@@ -84,12 +84,30 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
         # Sjekk API-nøkkelen i headeren
         api_key = request.headers.get("X-API-Key")
         if not api_key or not hmac.compare_digest(api_key, settings.coret_api_key):
+            from services.security_logger import log_invalid_api_key
+            client_ip = request.client.host if request.client else "unknown"
+            log_invalid_api_key(client_ip, request.url.path)
             raise HTTPException(
                 status_code=401,
                 detail="Ugyldig eller manglende API-nøkkel."
             )
 
         return await call_next(request)
+
+
+# ============================================================
+# Security Headers Middleware
+# Legger til standard sikkerhetshoder på alle responses.
+# ============================================================
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' https: data:; script-src 'self'; style-src 'self' 'unsafe-inline'"
+        return response
 
 
 # Opprett FastAPI-appen
@@ -100,6 +118,9 @@ app = FastAPI(
 )
 
 # Legg til sikkerhetslag (rekkefølge betyr noe — ytterste først)
+# 0. Security headers — alltid på
+app.add_middleware(SecurityHeadersMiddleware)
+
 # 1. Rate limiting — stopp spam FØR vi sjekker auth
 app.add_middleware(RateLimitMiddleware, max_requests=settings.rate_limit_per_minute)
 
@@ -121,6 +142,10 @@ app.include_router(garments.router, prefix="/api")
 app.include_router(wardrobe.router, prefix="/api")
 app.include_router(outfits.router, prefix="/api")
 app.include_router(wear.router, prefix="/api")
+app.include_router(discover.router, prefix="/api")
+app.include_router(brands.router, prefix="/api")
+app.include_router(profile.router, prefix="/api")
+app.include_router(auth.router, prefix="/api")
 
 
 # Helsesjekk — Railway bruker denne for å sjekke om appen lever.

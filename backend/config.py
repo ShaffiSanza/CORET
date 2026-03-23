@@ -29,6 +29,15 @@ class Settings(BaseSettings):
     coret_api_key: str = ""           # API-nøkkel som iOS-appen sender med hver request
     rate_limit_per_minute: int = 30   # Maks antall requests per minutt per IP
 
+    # --- Shopify ---
+    shopify_store_domain: str = ""        # f.eks. "brand-name.myshopify.com"
+    shopify_access_token: str = ""        # Admin API access token (legacy manual)
+    shopify_webhook_secret: str = ""      # Webhook HMAC validation secret
+    shopify_api_key: str = ""             # OAuth app client ID
+    shopify_api_secret: str = ""          # OAuth app client secret
+    shopify_scopes: str = "read_products,read_product_listings"
+    shopify_redirect_uri: str = ""        # OAuth callback URL
+
     # --- App-innstillinger ---
     allowed_origins: str = "https://coret-production.up.railway.app"  # CORS: kun egne domener
     environment: str = "development"  # "development" eller "production"

@@ -86,6 +86,16 @@ class Season(str, Enum):
     all_season = "all_season"
 
 
+class StyleContext(str, Enum):
+    """Stil-kontekst for ghost-plagg filtrering.
+    Brukes kun i backend — aldri eksponert som 'kjønn' i UI.
+    Styrer hvilke Shopify-produkter som vises som ghost-plagg."""
+    menswear = "menswear"
+    womenswear = "womenswear"
+    unisex = "unisex"
+    fluid = "fluid"
+
+
 class ImportSource(str, Enum):
     """Hvordan plagget ble lagt til i CORET.
     Brukes for analyse og sporing av input-metode."""

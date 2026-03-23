@@ -4,14 +4,19 @@ CORET Backend — Outfit Models
 Mirrors ios/Persistence/SavedOutfitEntity.swift
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 
 
 class OutfitCreate(BaseModel):
     """Request body for saving an outfit."""
     garment_ids: list[str] = Field(..., min_length=1, max_length=10)
-    label: str = ""
+    label: str = Field("", max_length=200)
+
+    @field_validator("label")
+    @classmethod
+    def strip_label(cls, v: str) -> str:
+        return v.strip()
     score: Optional[float] = Field(None, ge=0.0, le=1.0)
 
 

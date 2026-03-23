@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CORET — Architecture Map</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a1714;
+      --card: #221f1a;
+      --card-raised: #282420;
+      --border: #2e2a22;
+      --border-light: #3a3530;
+      --text: #EAE5DE;
+      --text-2: #B0A99E;
+      --text-3: #6B625C;
+      --text-4: #4a4540;
+      --gold: #C9A96E;
+      --gold-dim: rgba(201,169,110,0.55);
+      --gold-soft: rgba(201,169,110,0.10);
+      --green: #7A9A6E;
+      --green-soft: rgba(122,154,110,0.10);
+      --red: #B4705A;
+      --red-soft: rgba(180,90,70,0.10);
+      --amber: #C4944A;
+      --blue: #5B7B9A;
+      --r: 18px;
+      --r-sm: 10px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #0e0c0a;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    .hero {
+      text-align: center;
+      padding: 80px 20px 40px;
+      position: relative;
+    }
+    .hero::before {
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;height:400px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(201,169,110,0.12), transparent 70%);
+      pointer-events:none;
+    }
+    .hero-brand {
+      font-family: 'Instrument Serif', serif;
+      font-size: 18px;
+      letter-spacing: 6px;
+      color: var(--gold-dim);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 42px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .hero-sub {
+      font-size: 14px;
+      color: var(--text-3);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── SECTION SYSTEM ── */
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px 40px;
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .section-num {
+      font-family: 'Instrument Serif', serif;
+      font-size: 48px;
+      color: var(--gold);
+      opacity: 0.3;
+      line-height: 1;
+    }
+    .section-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: 28px;
+      font-weight: 400;
+    }
+    .section-desc {
+      font-size: 13px;
+      color: var(--text-3);
+      margin-top: 4px;
+    }
+    .divider {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    /* ── IDENTITY CARD ── */
+    .identity-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .id-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 24px;
+      text-align: center;
+    }
+    .id-card .id-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+      opacity: 0.6;
+    }
+    .id-card h3 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 6px;
+    }
+    .id-card p {
+      font-size: 12px;
+      color: var(--text-3);
+      line-height: 1.5;
+    }
+
+    /* ── 3 PHONE SCREENS (iframe embeds) ── */
+    .screens-row {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 20px 0;
+    }
+    .screen-wrap {
+      flex-shrink: 0;
+      width: 300px;
+      height: 700px;
+      overflow: hidden;
+      position: relative;
+      border-radius: 34px;
+    }
+    .screen-iframe {
+      width: 440px;
+      height: 960px;
+      border: none;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: scale(0.68);
+      transform-origin: top left;
+      background: #0e0c0a;
+    }
+
+    .screen-label {
+      text-align:center;margin-top:16px;
+      font-family:'Instrument Serif',serif;font-size:18px;
+      color:var(--text-2);
+    }
+    .screen-sublabel {
+      text-align:center;font-size:11px;color:var(--text-3);margin-top:4px;
+    }
+
+    /* ── ENGINE DIAGRAM ── */
+    .engine-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .engine-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    .engine-card:hover {
+      border-color: rgba(201,169,110,0.2);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+    .engine-name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .engine-tests {
+      font-size: 10px;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+    .engine-desc {
+      font-size: 11px;
+      color: var(--text-3);
+      line-height: 1.5;
+    }
+    .engine-tag {
+      display:inline-block;
+      font-size:8px;letter-spacing:1px;text-transform:uppercase;
+      padding:2px 6px;border-radius:4px;margin-top:8px;
+    }
+    .tag-core { color:var(--gold);background:var(--gold-soft); }
+    .tag-analysis { color:var(--blue);background:rgba(91,123,154,0.10); }
+    .tag-behaviour { color:var(--green);background:var(--green-soft); }
+    .tag-optimize { color:var(--red);background:var(--red-soft); }
+
+    /* ── LAYER DIAGRAM ── */
+    .layer-stack {
+      display:flex;flex-direction:column;gap:2px;max-width:800px;margin:0 auto;
+    }
+    .layer {
+      display:flex;align-items:center;gap:16px;
+      padding:16px 20px;border-radius:14px;
+      position:relative;
+    }
+    .layer-num {
+      font-family:'Instrument Serif',serif;font-size:32px;
+      color:var(--gold);opacity:0.25;width:40px;text-align:center;
+    }
+    .layer-content { flex:1; }
+    .layer-name {
+      font-family:'Instrument Serif',serif;font-size:17px;
+      margin-bottom:2px;
+    }
+    .layer-tech {
+      font-size:11px;color:var(--text-3);
+    }
+    .layer-items {
+      font-size:10px;color:var(--text-2);margin-top:4px;
+    }
+    .layer:nth-child(1) { background: rgba(201,169,110,0.06);border:1px solid rgba(201,169,110,0.12); }
+    .layer:nth-child(2) { background: rgba(91,123,154,0.06);border:1px solid rgba(91,123,154,0.12); }
+    .layer:nth-child(3) { background: rgba(122,154,110,0.06);border:1px solid rgba(122,154,110,0.12); }
+    .layer:nth-child(4) { background: rgba(180,112,90,0.06);border:1px solid rgba(180,112,90,0.12); }
+    .layer-arrow {
+      text-align:center;font-size:18px;color:var(--text-4);padding:4px 0;
+    }
+
+    /* ── DATA FLOW ── */
+    .flow-row {
+      display:flex;align-items:center;justify-content:center;gap:12px;
+      flex-wrap:wrap;padding:20px 0;
+    }
+    .flow-box {
+      background:var(--card);border:1px solid var(--border);
+      border-radius:10px;padding:10px 16px;font-size:11px;
+      text-align:center;min-width:120px;
+    }
+    .flow-box strong { color:var(--gold);display:block;font-size:12px;margin-bottom:2px; }
+    .flow-arrow { color:var(--text-4);font-size:18px; }
+
+    /* ── COHESION FORMULA ── */
+    .formula-card {
+      background:var(--card);border:1px solid rgba(201,169,110,0.12);
+      border-radius:var(--r);padding:24px;max-width:700px;margin:0 auto 24px;
+    }
+    .formula-title {
+      font-family:'Instrument Serif',serif;font-size:20px;margin-bottom:12px;
+    }
+    .formula-row {
+      display:flex;align-items:center;gap:8px;margin-bottom:6px;
+    }
+    .formula-bar {
+      height:8px;border-radius:4px;
+    }
+    .formula-label {
+      font-size:11px;width:140px;flex-shrink:0;
+    }
+    .formula-weight {
+      font-size:11px;color:var(--text-3);width:40px;text-align:right;flex-shrink:0;
+    }
+
+    /* ── TAB MAPPING ── */
+    .tab-map {
+      display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;
+    }
+    .tab-card {
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r);padding:20px;
+    }
+    .tab-card h3 {
+      font-family:'Instrument Serif',serif;font-size:17px;margin-bottom:4px;
+    }
+    .tab-card .tab-icon {
+      font-size:20px;margin-bottom:8px;opacity:0.5;
+    }
+    .tab-card ul {
+      list-style:none;padding:0;
+    }
+    .tab-card li {
+      font-size:11px;color:var(--text-3);padding:3px 0;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .tab-card li:last-child { border:none; }
+    .tab-card li strong { color:var(--text-2);font-weight:500; }
+
+    /* ── PROFILE BOX ── */
+    .profile-aside {
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r);padding:20px;max-width:400px;
+      margin:24px auto 0;text-align:center;
+    }
+    .profile-aside h3 {
+      font-family:'Instrument Serif',serif;font-size:17px;margin-bottom:8px;
+    }
+    .profile-aside p {
+      font-size:11px;color:var(--text-3);line-height:1.5;
+    }
+
+    /* ── BACKEND ── */
+    .api-grid {
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;
+    }
+    .api-group {
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r-sm);padding:14px;
+    }
+    .api-group h4 {
+      font-size:12px;color:var(--gold);margin-bottom:6px;
+      letter-spacing:0.5px;
+    }
+    .api-group code {
+      display:block;font-size:10px;color:var(--text-3);
+      padding:2px 0;font-family:'DM Sans',sans-serif;
+    }
+
+    /* ── ONBOARDING FLOW ── */
+    .onboard-flow {
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      flex-wrap:wrap;padding:16px 0;
+    }
+    .onboard-step {
+      background:var(--card);border:1px solid var(--border);
+      border-radius:12px;padding:12px 16px;text-align:center;
+      width:130px;
+    }
+    .onboard-step .step-icon { font-size:22px;margin-bottom:4px; }
+    .onboard-step .step-label { font-size:10px;color:var(--text-2); }
+    .onboard-step .step-time { font-size:9px;color:var(--text-3);margin-top:2px; }
+    .onboard-arrow { color:var(--text-4);font-size:16px; }
+
+    /* ── PROGRESSIVE UNLOCK ── */
+    .unlock-timeline {
+      position:relative;padding:16px 0 16px 40px;
+    }
+    .unlock-timeline::before {
+      content:'';position:absolute;left:16px;top:20px;bottom:20px;
+      width:2px;background:linear-gradient(180deg,var(--gold),var(--border) 80%,transparent);
+    }
+    .unlock-item {
+      display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;
+      position:relative;
+    }
+    .unlock-dot {
+      width:10px;height:10px;border-radius:50%;
+      position:absolute;left:-28px;top:4px;
+      background:var(--gold);
+    }
+    .unlock-dot.dim { background:var(--border-light); }
+    .unlock-count {
+      font-family:'Instrument Serif',serif;font-size:24px;color:var(--gold);
+      width:30px;flex-shrink:0;
+    }
+    .unlock-text { font-size:12px;color:var(--text-2);line-height:1.5; }
+    .unlock-text strong { color:var(--text);font-weight:500; }
+
+    /* ── MONETIZATION ── */
+    .mono-row {
+      display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px;margin:0 auto;
+    }
+    .mono-card {
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r);padding:20px;
+    }
+    .mono-card h3 {
+      font-family:'Instrument Serif',serif;font-size:17px;margin-bottom:8px;
+    }
+    .mono-card.pro { border-color:rgba(201,169,110,0.2); }
+    .mono-card ul { list-style:none;padding:0; }
+    .mono-card li {
+      font-size:11px;color:var(--text-3);padding:4px 0;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .mono-card li:last-child { border:none; }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align:center;padding:60px 20px;
+      font-size:12px;color:var(--text-4);
+    }
+    .footer .brand-f {
+      font-family:'Instrument Serif',serif;
+      font-size:14px;letter-spacing:4px;color:var(--gold-dim);
+      margin-bottom:8px;
+    }
+
+    /* ── COLOR SYSTEM PREVIEW ── */
+    .color-row {
+      display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:16px 0;
+    }
+    .color-chip {
+      width:48px;height:48px;border-radius:10px;
+      display:flex;align-items:flex-end;justify-content:center;
+      padding-bottom:4px;font-size:7px;color:rgba(255,255,255,0.5);
+    }
+
+    @media (max-width:900px) {
+      .screens-row { flex-direction:column;align-items:center; }
+      .identity-row, .tab-map { grid-template-columns:1fr; }
+      .mono-row { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- HERO -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="hero">
+    <div class="hero-brand">CORET</div>
+    <h1>Architecture Map</h1>
+    <p class="hero-sub">
+      Your Wardrobe Operating System — komplett oversikt over alle lag, skjermer, engines og dataflyt.
+      <br>Alt i ett dokument. Mars 2026.
+    </p>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 1. HVA ER CORET -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">01</div>
+      <div>
+        <div class="section-title">Hva er CORET</div>
+        <div class="section-desc">Tre kjerneprinsipper som definerer alt</div>
+      </div>
+    </div>
+    <div class="identity-row">
+      <div class="id-card">
+        <div class="id-icon">&#9632;</div>
+        <h3>Struktur over trend</h3>
+        <p>Deterministisk scoringsmotor. Ingen ML i V1. Regler du kan forstå og stole på. Scorer 0&ndash;100 basert på kohesjon, proposjoner og plaggroller.</p>
+      </div>
+      <div class="id-card">
+        <div class="id-icon">&#9670;</div>
+        <h3>Kontroll over validering</h3>
+        <p>CORET måler &mdash; du bestemmer. Ingen "dette er feil"-meldinger. Bare strukturelle muligheter og simulering av endringer.</p>
+      </div>
+      <div class="id-card">
+        <div class="id-icon">&#9674;</div>
+        <h3>Engine-first, UI-second</h3>
+        <p>All logikk lever i en ren Swift-pakke (353 tester). UIen er utskiftbar. Motoren er ikke det. Backend (Python/FastAPI) håndterer bilder og API.</p>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 2. DE 3 SKJERMENE -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">02</div>
+      <div>
+        <div class="section-title">De 3 skjermene</div>
+        <div class="section-desc">Wardrobe &middot; Studio &middot; Discover &mdash; pluss Profile via menyikon</div>
+      </div>
+    </div>
+
+    <div class="screens-row">
+      <!-- WARDROBE -->
+      <div class="screen-wrap">
+        <iframe class="screen-iframe" src="../wardrobe/coret-wardrobe-v4.html" scrolling="no"></iframe>
+        <div class="screen-label">Wardrobe</div>
+        <div class="screen-sublabel">Glass cards &middot; hero outfit &middot; Clarity score &middot; gap-forslag</div>
+      </div>
+
+      <!-- STUDIO -->
+      <div class="screen-wrap">
+        <iframe class="screen-iframe" src="../studio/coret-studio.html" scrolling="no"></iframe>
+        <div class="screen-label">Studio</div>
+        <div class="screen-sublabel">Swipe flatlay &middot; live scoring &middot; ghost-plagg simulering</div>
+      </div>
+
+      <!-- DISCOVER -->
+      <div class="screen-wrap">
+        <iframe class="screen-iframe" src="../discover/coret-discover.html" scrolling="no"></iframe>
+        <div class="screen-label">Discover</div>
+        <div class="screen-sublabel">Full-screen swipe feed &middot; owned outfits &middot; rotasjonstips</div>
+      </div>
+    </div>
+
+    <!-- Profile aside -->
+    <div class="profile-aside">
+      <h3>Profile (menyikon &#8250;)</h3>
+      <p>Ikke en tab. &#197;pnes via &#8226;&#8226;&#8226; &oslash;verst til h&oslash;yre.<br>
+      Innhold: Arketype (primary), Style Direction, Season, Identity label + tags, Settings.</p>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 3. TAB → ENGINE MAPPING -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">03</div>
+      <div>
+        <div class="section-title">Skjerm → Engine mapping</div>
+        <div class="section-desc">Hva hver skjerm henter fra hvilken motor</div>
+      </div>
+    </div>
+    <div class="tab-map">
+      <div class="tab-card">
+        <div class="tab-icon">&#9638;</div>
+        <h3>Wardrobe</h3>
+        <ul>
+          <li><strong>Clarity score + band</strong><br>ClarityEngine.compute()</li>
+          <li><strong>Beste outfit i dag</strong><br>BestOutfitFinder.findUntriedBest()</li>
+          <li><strong>Gap-forslag</strong><br>OptimizeEngineV2 primary gap</li>
+          <li><strong>Plaggroller (&#9733; key)</strong><br>KeyGarmentResolver.roles()</li>
+          <li><strong>Removal impact</strong><br>ScoreProjector.reverseProject()</li>
+          <li><strong>Plagg-aging</strong><br>BehaviouralEngine.unusedRisk()</li>
+        </ul>
+      </div>
+      <div class="tab-card">
+        <div class="tab-icon">&#10022;</div>
+        <h3>Studio</h3>
+        <ul>
+          <li><strong>Outfit score (live)</strong><br>DailyOutfitScorer.scoreOutfit()</li>
+          <li><strong>Arketype-match</strong><br>CohesionEngine.allArchetypeScores()</li>
+          <li><strong>Swap-forslag</strong><br>DailyOutfitScorer.suggestion</li>
+          <li><strong>Ghost-plagg</strong><br>OptimizeEngineV2.detectGaps()</li>
+          <li><strong>Projeksjon</strong><br>ScoreProjector.project()</li>
+          <li><strong>Network effect</strong><br>NetworkUnlockCalculator</li>
+        </ul>
+      </div>
+      <div class="tab-card">
+        <div class="tab-icon">&#128269;</div>
+        <h3>Discover</h3>
+        <ul>
+          <li><strong>70/30 Feed</strong><br>owned&rarr;owned&rarr;owned&rarr;rotation + ghost</li>
+          <li><strong>Full: Brand-rom</strong><br>Brand grid &rarr; brand-filtrert feed</li>
+          <li><strong>Ghost-plagg</strong><br>Shopify + ProductEnricher + style_context</li>
+          <li><strong>Fashion Intelligence</strong><br>29 regler &rarr; ExplanationResult per kort</li>
+          <li><strong>Actions</strong><br>like/pass/hook + auto-bookmark + seen tracking</li>
+          <li><strong>Filtrering</strong><br>tags, season, style_context, brand_id</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 4. ARKITEKTURLAG -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">04</div>
+      <div>
+        <div class="section-title">Arkitekturlag</div>
+        <div class="section-desc">4 lag &mdash; fra bruker til motor og tilbake</div>
+      </div>
+    </div>
+    <div class="layer-stack">
+      <div class="layer">
+        <div class="layer-num">1</div>
+        <div class="layer-content">
+          <div class="layer-name">SwiftUI Views</div>
+          <div class="layer-tech">iOS &middot; SwiftUI &middot; 3 tabs + Profile + Detail screens</div>
+          <div class="layer-items">Viser data. Ingen logikk. Kaller kun ViewModels.</div>
+        </div>
+      </div>
+      <div class="layer-arrow">&#8595;</div>
+      <div class="layer">
+        <div class="layer-num">2</div>
+        <div class="layer-content">
+          <div class="layer-name">ViewModels + EngineCoordinator</div>
+          <div class="layer-tech">@MainActor @Observable &middot; WardrobeVM, StudioVM, DiscoverVM, ProfileVM</div>
+          <div class="layer-items">Koordinerer engine-kall. Aldri direkte engine-tilgang fra Views. Konverterer entities &rarr; domain models.</div>
+        </div>
+      </div>
+      <div class="layer-arrow">&#8595;</div>
+      <div class="layer">
+        <div class="layer-num">3</div>
+        <div class="layer-content">
+          <div class="layer-name">COREEngine (Swift Package)</div>
+          <div class="layer-tech">Pure Swift 6 &middot; 387 tester &middot; 17 engines + Fashion Intelligence &middot; Ingen UIKit-avhengigheter</div>
+          <div class="layer-items">Deterministisk. Stateless. Alle engines er caseless enums. Fashion Intelligence: 29 JSON-regler, i18n (no/en), ExplanationResult.</div>
+        </div>
+      </div>
+      <div class="layer-arrow">&#8595;</div>
+      <div class="layer">
+        <div class="layer-num">4</div>
+        <div class="layer-content">
+          <div class="layer-name">Persistence + Backend</div>
+          <div class="layer-tech">SwiftData (local) + Python/FastAPI (Railway) &middot; 243 tester</div>
+          <div class="layer-items">SwiftData lagrer garments, outfits, snapshots. Backend: 49 API-endepunkter. Shopify OAuth, strict auth, Product Enrichment Layer, Fashion Intelligence i18n, security headers.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data flow -->
+    <div style="margin-top:32px">
+      <div style="text-align:center;font-size:10px;color:var(--text-3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Dataflyt ved brukerhandling</div>
+      <div class="flow-row">
+        <div class="flow-box"><strong>User Action</strong>Legg til plagg</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><strong>ViewModel</strong>WardrobeVM.addItem()</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><strong>Coordinator</strong>EngineCoordinator.recompute()</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><strong>Engines</strong>Clarity, Cohesion, Optimize...</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><strong>SwiftData</strong>Snapshot lagret</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><strong>UI Refresh</strong>Score oppdatert</div>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 5. ALLE 16 ENGINES -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">05</div>
+      <div>
+        <div class="section-title">17 Engines + Fashion Intelligence</div>
+        <div class="section-desc">387 tester. Alle pure functions. Ingen state. 29 fashion-regler med i18n.</div>
+      </div>
+    </div>
+
+    <!-- Cohesion formula -->
+    <div class="formula-card">
+      <div class="formula-title">Clarity-formelen</div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:12px">
+        Clarity = primaryArchetype &times; 0.60 + cohesionTotal &times; 0.40 (+ breadth bonus)
+      </div>
+      <div style="font-size:10px;color:var(--text-3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Cohesion breakdown (6 sub-scores):</div>
+      <div class="formula-row">
+        <div class="formula-label">Layer Coverage</div>
+        <div style="flex:1"><div class="formula-bar" style="width:25%;background:var(--gold)"></div></div>
+        <div class="formula-weight">0.25</div>
+      </div>
+      <div class="formula-row">
+        <div class="formula-label">Proportion Balance</div>
+        <div style="flex:1"><div class="formula-bar" style="width:20%;background:var(--gold);opacity:0.85"></div></div>
+        <div class="formula-weight">0.20</div>
+      </div>
+      <div class="formula-row">
+        <div class="formula-label">Third Piece</div>
+        <div style="flex:1"><div class="formula-bar" style="width:15%;background:var(--gold);opacity:0.7"></div></div>
+        <div class="formula-weight">0.15</div>
+      </div>
+      <div class="formula-row">
+        <div class="formula-label">Capsule Ratios</div>
+        <div style="flex:1"><div class="formula-bar" style="width:15%;background:var(--gold);opacity:0.6"></div></div>
+        <div class="formula-weight">0.15</div>
+      </div>
+      <div class="formula-row">
+        <div class="formula-label">Combination Density</div>
+        <div style="flex:1"><div class="formula-bar" style="width:15%;background:var(--gold);opacity:0.5"></div></div>
+        <div class="formula-weight">0.15</div>
+      </div>
+      <div class="formula-row">
+        <div class="formula-label">Standalone Quality</div>
+        <div style="flex:1"><div class="formula-bar" style="width:10%;background:var(--gold);opacity:0.4"></div></div>
+        <div class="formula-weight">0.10</div>
+      </div>
+    </div>
+
+    <div class="engine-grid">
+      <div class="engine-card">
+        <div class="engine-name">CohesionEngine</div>
+        <div class="engine-tests">70 tester</div>
+        <div class="engine-desc">Master-formelen. 6 sub-scores: layer coverage, proportion balance, third piece, capsule ratios, combination density, standalone quality. Genererer alle outfits og scorer dem.</div>
+        <span class="engine-tag tag-core">CORE</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">ClarityEngine</div>
+        <div class="engine-tests">23 tester</div>
+        <div class="engine-desc">Hovedscoren brukeren ser. Kombinerer arketype-score (60%) + cohesion (40%) + breadth bonus. Fire band: Fragmentert &rarr; Krystallklar.</div>
+        <span class="engine-tag tag-core">CORE</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">ScoreProjector</div>
+        <div class="engine-tests">22 tester</div>
+        <div class="engine-desc">Simulerer "hva om jeg legger til / fjerner dette plagget?" Viser clarity delta, kombinasjoner gained/lost, gaps filled/opened.</div>
+        <span class="engine-tag tag-analysis">ANALYSIS</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">IdentityResolver</div>
+        <div class="engine-tests">15 tester</div>
+        <div class="engine-desc">Utleder garderobeidentitet: dominant silhouette, fargetemp, arketype. Genererer label, tags og prosa p&aring; norsk.</div>
+        <span class="engine-tag tag-analysis">ANALYSIS</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">KeyGarmentResolver</div>
+        <div class="engine-tests">21 tester</div>
+        <div class="engine-desc">Per-plagg analyse. Teller outfit-deltakelse. &ge;20% = key garment. Viser hvilke plagg er b&aelig;rebjelker i garderoben.</div>
+        <span class="engine-tag tag-analysis">ANALYSIS</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">MilestoneTracker</div>
+        <div class="engine-tests">38 tester</div>
+        <div class="engine-desc">Journey-faser: Building &rarr; Evolving. Milestones p&aring; norsk. Momentum (trend &times; volatility). Regression-regler.</div>
+        <span class="engine-tag tag-analysis">ANALYSIS</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">SeasonalEngineV2</div>
+        <div class="engine-tests">26 tester</div>
+        <div class="engine-desc">4-sesonger coverage per plagg. Justerer cohesion-vekter etter sesong. Detekterer sesong fra breddegrad.</div>
+        <span class="engine-tag tag-core">CORE</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">OptimizeEngineV2</div>
+        <div class="engine-tests">19 tester</div>
+        <div class="engine-desc">Gap-detektor: missing layers, proportion imbalance, archetype weakness, category gaps. Genererer syntetiske forslag med projisert clarity delta.</div>
+        <span class="engine-tag tag-optimize">OPTIMIZE</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">BehaviouralEngine</div>
+        <div class="engine-tests">27 tester</div>
+        <div class="engine-desc">Analyserer faktisk bruk (WearLog). Behavioural archetype, drift detection, next-wear prediction, unused risk, rotation score.</div>
+        <span class="engine-tag tag-behaviour">BEHAVIOUR</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">SimilarityEngine</div>
+        <div class="engine-tests">18 tester</div>
+        <div class="engine-desc">Cosine similarity p&aring; embeddings. Finner duplikater, mest like plagg, redundancy score. ML-embeddings lages p&aring; device.</div>
+        <span class="engine-tag tag-analysis">ANALYSIS</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">DailyOutfitScorer</div>
+        <div class="engine-tests">9 tester</div>
+        <div class="engine-desc">Scorer et enkelt outfit: totalStrength, silhouette verdict, color verdict, archetype match. Integrert med Fashion Intelligence &rarr; ExplanationResult p&aring; hvert outfit.</div>
+        <span class="engine-tag tag-core">CORE</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">BestOutfitFinder</div>
+        <div class="engine-tests">8 tester</div>
+        <div class="engine-desc">Finner sterkeste kombinasjoner. findBest() og findUntriedBest() &mdash; outfits brukeren ikke har pr&oslash;vd enn&aring;.</div>
+        <span class="engine-tag tag-core">CORE</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">NetworkUnlockCalculator</div>
+        <div class="engine-tests">10 tester</div>
+        <div class="engine-desc">"Legg til dette plagget &rarr; +N nye kombinasjoner." Viser nettverkseffekten av hvert plagg.</div>
+        <span class="engine-tag tag-optimize">OPTIMIZE</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">DailyOutfitEngine</div>
+        <div class="engine-tests">13 tester</div>
+        <div class="engine-desc">Wrapper for daglig anbefaling: outfit + score + rotasjonstips + clarity + primary gap. &Eacute;n funksjon, &eacute;tt resultat.</div>
+        <span class="engine-tag tag-core">CORE</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">StyleDirectionEngine</div>
+        <div class="engine-tests">14 tester</div>
+        <div class="engine-desc">Bruker velger m&aring;l-arketype. Viser n&aring;v&aelig;rende match% og gap-liste for &aring; n&aring; m&aring;let: "Add blazer &rarr; +12% Tailored".</div>
+        <span class="engine-tag tag-optimize">OPTIMIZE</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">Models (18 tester)</div>
+        <div class="engine-tests">18 tester</div>
+        <div class="engine-desc">Garment, UserProfile, CohesionBreakdown, ClaritySnapshot, ProjectionResult, WearLog, WardrobeIdentity. Alle Codable + Sendable.</div>
+        <span class="engine-tag tag-core">CORE</span>
+      </div>
+    </div>
+
+    <!-- Fashion Intelligence -->
+    <div style="margin-top:24px">
+      <div style="text-align:center;font-size:10px;color:var(--text-3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Fashion Intelligence System</div>
+      <div class="engine-grid">
+        <div class="engine-card" style="border-color:rgba(201,169,110,0.2)">
+          <div class="engine-name">FashionTheoryEngine</div>
+          <div class="engine-tests">34 tester</div>
+          <div class="engine-desc">Evaluerer outfit mot 29 JSON-regler. Ingen hardkodet logikk. 9 moduler: silhouette, color, outfit theory, archetypes, trends, depth, season, shoes, accessories.</div>
+          <span class="engine-tag tag-core">CORE</span>
+        </div>
+        <div class="engine-card">
+          <div class="engine-name">RulePriorityEngine</div>
+          <div class="engine-desc">Prioriterer: |impact| &times; confidence. Primary issue, secondary, primary positive.</div>
+          <span class="engine-tag tag-analysis">ANALYSIS</span>
+        </div>
+        <div class="engine-card">
+          <div class="engine-name">ExplanationEngine</div>
+          <div class="engine-desc">Genererer stylist-forklaring fra prioriterte regler. Type-basert: negative&rarr;headline+fix, positive&rarr;positives.</div>
+          <span class="engine-tag tag-analysis">ANALYSIS</span>
+        </div>
+        <div class="engine-card">
+          <div class="engine-name">I18nEngine</div>
+          <div class="engine-desc">Semantic tokens + templates. Locale fallback: no &rarr; en &rarr; key. Variable-injeksjon med lokaliserte verdier.</div>
+          <span class="engine-tag tag-core">CORE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SECURITY -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">06b</div>
+      <div>
+        <div class="section-title">Sikkerhet</div>
+        <div class="section-desc">Strict auth &middot; HSTS &middot; CSP &middot; token isolation &middot; HMAC webhooks</div>
+      </div>
+    </div>
+    <div class="engine-grid">
+      <div class="engine-card">
+        <div class="engine-name">Strict Auth Mode</div>
+        <div class="engine-desc">auth_type per brand: oauth | client_credentials. Ingen fallback. AuthError p&aring; feil, aldri tom liste. brand.status = auth_failed | active.</div>
+        <span class="engine-tag" style="color:var(--red);background:var(--red-soft)">SECURITY</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">Shopify OAuth</div>
+        <div class="engine-desc">State+nonce+TTL (CSRF). One-time use. Shop domain binding. Scope verification. Preview tokens (brand-scoped, 24h). Rate limit per shop.</div>
+        <span class="engine-tag" style="color:var(--red);background:var(--red-soft)">SECURITY</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">Token Management</div>
+        <div class="engine-desc">ENV first, secrets file fallback. Aldri i brands.json. Aldri i API responses. Aldri i logs. Security logger for failed HMAC + invalid keys.</div>
+        <span class="engine-tag" style="color:var(--red);background:var(--red-soft)">SECURITY</span>
+      </div>
+      <div class="engine-card">
+        <div class="engine-name">Headers + Validation</div>
+        <div class="engine-desc">HSTS (preload), CSP, XSS, nosniff, DENY. Input max_length + strip(). Webhook HMAC (raw body, timing-safe). Rate limiting (IP + shop).</div>
+        <span class="engine-tag" style="color:var(--red);background:var(--red-soft)">SECURITY</span>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 6. BACKEND -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">06</div>
+      <div>
+        <div class="section-title">Backend API</div>
+        <div class="section-desc">Python/FastAPI &middot; 49 endepunkter &middot; 244 tester &middot; Railway deploy</div>
+      </div>
+    </div>
+    <div class="api-grid">
+      <div class="api-group">
+        <h4>Pipeline</h4>
+        <code>POST /api/product-search</code>
+        <code>POST /api/barcode-lookup</code>
+        <code>POST /api/extract-colors</code>
+        <code>POST /api/product-metadata</code>
+        <code>POST /api/image-polish</code>
+      </div>
+      <div class="api-group">
+        <h4>Garment CRUD + Images</h4>
+        <code>POST/GET /api/garments</code>
+        <code>GET/PUT/DELETE /api/garments/{id}</code>
+        <code>POST /api/garments/{id}/image</code>
+        <code>GET /api/images/{id}/{variant}</code>
+      </div>
+      <div class="api-group">
+        <h4>Wardrobe Analysis</h4>
+        <code>GET /api/wardrobe/analysis</code>
+        <code>GET /api/wardrobe/garment/{id}</code>
+        <code>GET /api/wardrobe/gaps</code>
+        <code>GET /api/wardrobe/key-garments</code>
+        <code>GET /api/wardrobe/weak-garments</code>
+      </div>
+      <div class="api-group">
+        <h4>Outfits</h4>
+        <code>POST/GET /api/outfits</code>
+        <code>GET/PUT/DELETE /api/outfits/{id}</code>
+      </div>
+      <div class="api-group">
+        <h4>Wear + Clarity</h4>
+        <code>POST /api/garments/{id}/wear</code>
+        <code>GET /api/garments/{id}/wears</code>
+        <code>GET /api/clarity/history</code>
+        <code>POST /api/clarity/snapshot</code>
+      </div>
+      <div class="api-group">
+        <h4>Discover Feed (7)</h4>
+        <code>GET /api/discover/brands</code>
+        <code>GET /api/discover/feed</code>
+        <code>POST /api/discover/bookmark</code>
+        <code>DELETE /api/discover/bookmark/{id}</code>
+        <code>GET /api/discover/bookmarks</code>
+        <code>POST /api/discover/action</code>
+        <code>GET /api/discover/stats</code>
+      </div>
+      <div class="api-group">
+        <h4>Brand Partners (8)</h4>
+        <code>POST /api/brands/register</code>
+        <code>GET /api/brands</code>
+        <code>GET/DELETE /api/brands/{id}</code>
+        <code>POST /api/brands/{id}/sync</code>
+        <code>GET /api/brands/{id}/products</code>
+        <code>GET /api/brands/{id}/preview</code>
+        <code>POST /api/brands/webhook</code>
+      </div>
+      <div class="api-group">
+        <h4>OAuth (2)</h4>
+        <code>GET /api/auth/shopify</code>
+        <code>GET /api/auth/shopify/callback</code>
+      </div>
+      <div class="api-group">
+        <h4>Profile (2)</h4>
+        <code>GET /api/profile</code>
+        <code>PUT /api/profile</code>
+      </div>
+      <div class="api-group">
+        <h4>Image Pipeline</h4>
+        <code>image_normalize &rarr; bg removal</code>
+        <code>image_polish &rarr; studio quality</code>
+        <code>color_extraction &rarr; dominant hex</code>
+        <code>product_enricher &rarr; color + silhouette</code>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 6c. SHOPIFY + ENRICHMENT -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">06c</div>
+      <div>
+        <div class="section-title">Shopify + Product Enrichment</div>
+        <div class="section-desc">Live integrasjon &middot; 18 produkter synket &middot; 3-lags enrichment</div>
+      </div>
+    </div>
+
+    <div class="flow-row">
+      <div class="flow-box"><strong>Brand onboard</strong>OAuth / register</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><strong>Sync</strong>Shopify Admin API</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><strong>Raw cache</strong>shopify_cache/{id}.json</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><strong>Enrichment</strong>3 layers (read-time)</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><strong>Ghost-plagg</strong>i Discover feed</div>
+    </div>
+
+    <div style="margin-top:20px">
+      <div style="text-align:center;font-size:10px;color:var(--text-3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Product Enrichment Layer</div>
+      <div class="layer-stack">
+        <div class="layer" style="background:rgba(201,169,110,0.06);border:1px solid rgba(201,169,110,0.12);">
+          <div class="layer-num">1</div>
+          <div class="layer-content">
+            <div class="layer-name">Category Defaults</div>
+            <div class="layer-tech">upper&rarr;regular, lower&rarr;regular, shoes&rarr;none</div>
+          </div>
+        </div>
+        <div class="layer-arrow">&#8595;</div>
+        <div class="layer" style="background:rgba(91,123,154,0.06);border:1px solid rgba(91,123,154,0.12);">
+          <div class="layer-num">2</div>
+          <div class="layer-content">
+            <div class="layer-name">Title Heuristics</div>
+            <div class="layer-tech">&quot;black&quot;&rarr;neutral, &quot;navy&quot;&rarr;cool, &quot;slim&quot;&rarr;fitted, &quot;bomber&quot;&rarr;relaxed</div>
+          </div>
+        </div>
+        <div class="layer-arrow">&#8595;</div>
+        <div class="layer" style="background:rgba(122,154,110,0.06);border:1px solid rgba(122,154,110,0.12);">
+          <div class="layer-num">3</div>
+          <div class="layer-content">
+            <div class="layer-name">Manual Overrides</div>
+            <div class="layer-tech">product_overrides.json &mdash; highest priority, per-product</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 7. ONBOARDING -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">07</div>
+      <div>
+        <div class="section-title">Onboarding: 3 sek per plagg</div>
+        <div class="section-desc">5 plagg p&aring; under 1 minutt &rarr; f&oslash;rste Clarity-score</div>
+      </div>
+    </div>
+    <div class="onboard-flow">
+      <div class="onboard-step">
+        <div class="step-icon">&#128270;</div>
+        <div class="step-label">S&oslash;k etter plagg</div>
+        <div class="step-time">"Zara navy blazer"</div>
+      </div>
+      <div class="onboard-arrow">&rarr;</div>
+      <div class="onboard-step">
+        <div class="step-icon">&#128247;</div>
+        <div class="step-label">Studio-bilde funnet</div>
+        <div class="step-time">product_search API</div>
+      </div>
+      <div class="onboard-arrow">&rarr;</div>
+      <div class="onboard-step">
+        <div class="step-icon">&#9745;</div>
+        <div class="step-label">Bekreft kategori</div>
+        <div class="step-time">1 tap</div>
+      </div>
+      <div class="onboard-arrow">&rarr;</div>
+      <div class="onboard-step">
+        <div class="step-icon">&#9745;</div>
+        <div class="step-label">Velg baseGroup</div>
+        <div class="step-time">1 tap</div>
+      </div>
+      <div class="onboard-arrow">&rarr;</div>
+      <div class="onboard-step">
+        <div class="step-icon">&#10003;</div>
+        <div class="step-label">Lagret!</div>
+        <div class="step-time">~3 sek totalt</div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--text-3);margin-top:8px">
+      Ikke funnet? &rarr; Ta bilde selv &rarr; bakgrunnsfjerner automatisk &rarr; lagret
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 8. PROGRESSIVE UNLOCK -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">08</div>
+      <div>
+        <div class="section-title">Progressiv verdi</div>
+        <div class="section-desc">Appen gir verdi fra plagg #3 &mdash; ikke #20</div>
+      </div>
+    </div>
+    <div class="unlock-timeline">
+      <div class="unlock-item">
+        <div class="unlock-dot"></div>
+        <div class="unlock-count">3</div>
+        <div class="unlock-text"><strong>F&oslash;rste outfit.</strong> "Her er en kombinasjon du kan lage." Vises i Wardrobe hero og Studio.</div>
+      </div>
+      <div class="unlock-item">
+        <div class="unlock-dot"></div>
+        <div class="unlock-count">5</div>
+        <div class="unlock-text"><strong>Clarity-score.</strong> Tallet og bandet vises. "Garderoben din har en sterk base."</div>
+      </div>
+      <div class="unlock-item">
+        <div class="unlock-dot"></div>
+        <div class="unlock-count">7</div>
+        <div class="unlock-text"><strong>Outfit-scoring aktiv.</strong> Studio feedback-kort lyser opp med live kompatibilitet.</div>
+      </div>
+      <div class="unlock-item">
+        <div class="unlock-dot"></div>
+        <div class="unlock-count">10</div>
+        <div class="unlock-text"><strong>Gap-analyse.</strong> Ghost-outfits i Discover. Identity-profil vises.</div>
+      </div>
+      <div class="unlock-item">
+        <div class="unlock-dot"></div>
+        <div class="unlock-count">15</div>
+        <div class="unlock-text"><strong>Full Discover-feed.</strong> Nok plagg for meningsfull antrekks-variasjon.</div>
+      </div>
+      <div class="unlock-item">
+        <div class="unlock-dot dim"></div>
+        <div class="unlock-count" style="opacity:0.5">20+</div>
+        <div class="unlock-text"><strong>Full analyse.</strong> Arketype-breakdown, seasonal coverage, what-if simulator, alt &aring;pent.</div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--text-4);margin-top:8px">
+      Ingen "level up"-notifikasjoner. Seksjoner dukker bare opp n&aring;r de gir mening.
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 9. DESIGN SYSTEM -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">09</div>
+      <div>
+        <div class="section-title">Design System</div>
+        <div class="section-desc">Warm dark taupe &middot; frosted glass &middot; gold accents &middot; DM Sans + Instrument Serif</div>
+      </div>
+    </div>
+    <div class="color-row">
+      <div class="color-chip" style="background:#1a1714">bg</div>
+      <div class="color-chip" style="background:#221f1a">card</div>
+      <div class="color-chip" style="background:#282420">raised</div>
+      <div class="color-chip" style="background:#2e2a22">border</div>
+      <div class="color-chip" style="background:#C9A96E">gold</div>
+      <div class="color-chip" style="background:#7A9A6E">green</div>
+      <div class="color-chip" style="background:#B4705A">red</div>
+      <div class="color-chip" style="background:#5B7B9A">blue</div>
+      <div class="color-chip" style="background:#EAE5DE;color:rgba(0,0,0,0.5)">text</div>
+      <div class="color-chip" style="background:#B0A99E;color:rgba(0,0,0,0.5)">text-2</div>
+      <div class="color-chip" style="background:#6B625C">text-3</div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--text-3);line-height:1.8;max-width:600px;margin:0 auto;">
+      Fonter: <strong style="font-family:'Instrument Serif',serif;color:var(--text-2)">Instrument Serif</strong> (titler, score) + <strong style="color:var(--text-2)">DM Sans</strong> (body, labels)<br>
+      Radius: 18px (kort), 10px (sm), 12px (knapper)<br>
+      Shadows: 3 niv&aring;er (L1 subtle, L2 kort, L3 hero)<br>
+      Animasjoner: 200&ndash;300ms ease-out. Aldri bouncy. Aldri springy.<br>
+      Frosted glass: backdrop-filter blur(20px) + semi-transparent bakgrunn<br>
+      Regel: Hvis en skjerm f&oslash;les h&oslash;y, travel eller overstimulerende &mdash; er den feil.
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 10. MONETIZATION -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">10</div>
+      <div>
+        <div class="section-title">Monetisering</div>
+        <div class="section-desc">Free gir forst&aring;else. Pro gir kontroll. Ingen paywall i V1.</div>
+      </div>
+    </div>
+    <div class="mono-row">
+      <div class="mono-card">
+        <h3>Free (V1)</h3>
+        <ul>
+          <li>Full CohesionEngine (alle sub-scores)</li>
+          <li>ClarityEngine + band</li>
+          <li>Basic Optimize (1 primary gap)</li>
+          <li>SeasonalEngine (full)</li>
+          <li>Studio outfit builder</li>
+          <li>Discover feed</li>
+          <li>Full garderobe-administrasjon</li>
+        </ul>
+      </div>
+      <div class="mono-card pro">
+        <h3 style="color:var(--gold)">Pro (V1.5+)</h3>
+        <ul>
+          <li>Roadmap Mode: multi-step optimize, 2&ndash;3 steg fremover</li>
+          <li>Drift Detection: tidlige ustabilitetsvarsler</li>
+          <li>Snapshot Compare: m&aring;ned-for-m&aring;ned analyse</li>
+          <li>Advanced Density Tiering</li>
+          <li style="color:var(--text-2);font-weight:500">M&aring;l: 9&ndash;12 &euro;/m&aring;ned</li>
+          <li style="color:var(--text-2);font-weight:500">M&aring;l: 5&ndash;10K brukere &rarr; 1&ndash;3M &euro; ARR</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 11. DAILY LOOP -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">11</div>
+      <div>
+        <div class="section-title">Daglig l&oslash;kke</div>
+        <div class="section-desc">Hva som gj&oslash;r CORET til et daglig verkt&oslash;y, ikke et arkiv</div>
+      </div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-box"><strong>Morgen</strong>&Aring;pne appen</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><strong>Se</strong>Dagens anbefaling</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><strong>Bruk</strong>Eller juster i Studio</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><strong>Logg</strong>1 tap = wear logged</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><strong>L&aelig;r</strong>Behavioural engine oppdateres</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-box"><strong>Bedre</strong>Anbefaling i morgen</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 12. BUILD STATUS -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">12</div>
+      <div>
+        <div class="section-title">Build Status</div>
+        <div class="section-desc">Mars 2026</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:700px;margin:0 auto;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;">
+        <div style="font-family:'Instrument Serif',serif;font-size:36px;color:var(--green)">387</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:4px;">Engine-tester (Swift)</div>
+        <div style="font-size:9px;color:var(--green);margin-top:2px;">&#10003; Alle passerer</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;">
+        <div style="font-family:'Instrument Serif',serif;font-size:36px;color:var(--green)">244</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:4px;">Backend-tester (Python)</div>
+        <div style="font-size:9px;color:var(--green);margin-top:2px;">&#10003; Alle passerer</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;">
+        <div style="font-family:'Instrument Serif',serif;font-size:36px;color:var(--amber)">49</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:4px;">API-endepunkter</div>
+        <div style="font-size:9px;color:var(--amber);margin-top:2px;">Klare for iOS</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--text-3);">
+      <strong style="color:var(--red)">Blocker:</strong> SwiftUI + SwiftData krever Mac + Xcode. Engine + Backend kj&oslash;rer p&aring; Linux.<br>
+      N&aring;r Mac er tilgjengelig: importer engine som Swift package &rarr; wire ViewModels &rarr; bygg UI.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- FOOTER -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="footer">
+    <div class="brand-f">CORET</div>
+    Your Wardrobe Operating System &middot; Built Around Your Core<br>
+    Architecture Map &middot; 23 Mars 2026
+  </div>
+
+</body>
+</html>

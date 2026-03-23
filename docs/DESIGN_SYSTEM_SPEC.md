@@ -40,6 +40,49 @@
 }
 ```
 
+### 1.1b Light Theme Color Tokens
+
+Dark is default. Light is user-selectable. Same semantic tokens, different values.
+
+```css
+:root[data-theme="light"] {
+  /* Base */
+  --bg: #fdfaf6;
+  --card: #f5f0e8;
+  --card-raised: #ede6d8;
+  --border: rgba(30,20,5,0.07);
+  --border-light: rgba(30,20,5,0.12);
+
+  /* Text */
+  --text: #18140c;
+  --text-2: #5a5040;
+  --text-3: #8a7d68;
+  --text-4: #b0a590;
+
+  /* Accent */
+  --gold: #b8860b;
+  --gold-dim: rgba(184,134,11,0.55);
+  --gold-soft: rgba(184,134,11,0.09);
+  --gold-glow: rgba(184,134,11,0.04);
+  --green: #5a8a5e;
+  --green-soft: rgba(90,138,94,0.09);
+  --red: #a05040;
+  --red-soft: rgba(160,80,64,0.09);
+  --amber: #b8860b;
+
+  /* Radius — unchanged */
+  --r: 18px;
+  --r-sm: 10px;
+}
+```
+
+**Light theme adjustments:**
+- Gold is deeper (#b8860b vs #C9A96E) for sufficient contrast on light backgrounds
+- SVG garment silhouette opacity: 0.65–0.70 (vs 0.80–0.85 in dark)
+- Drop shadows: rgba(30,20,5,0.06–0.12) instead of rgba(0,0,0,0.35–0.65)
+- Card material: no backdrop-filter blur needed — solid warm surfaces
+- Moodboard reference: `moodboard/themes/coret-light-theme.html`
+
 ### 1.2 Typography
 
 **Fonts:**

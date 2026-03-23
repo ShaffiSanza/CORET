@@ -12,7 +12,11 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "COREEngine"
+            name: "COREEngine",
+            resources: [
+                .copy("Fashion/knowledge_base.json"),
+                .copy("Fashion/i18n")
+            ]
         ),
         .testTarget(
             name: "COREEngineTests",

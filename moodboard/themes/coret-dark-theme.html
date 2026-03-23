@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORET &mdash; Dark Theme</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:       #0E0C0A;
+  --surface:  #1a1714;
+  --surface2: #221f1a;
+  --border:   rgba(255,255,255,0.06);
+  --border-h: rgba(255,255,255,0.10);
+  --gold:     #C9A96E;
+  --gold-s:   rgba(201,169,110,0.09);
+  --gold-dim: rgba(201,169,110,0.55);
+  --green:    #7A9A6E;
+  --green-s:  rgba(122,154,110,0.09);
+  --red:      #B4705A;
+  --text:     #EAE5DE;
+  --text-2:   #B0A99E;
+  --text-3:   #6B625C;
+  --text-4:   #4a4540;
+  --shadow:   rgba(0,0,0,0.3);
+  --shadow-h: rgba(0,0,0,0.5);
+}
+
+body {
+  background: #0a0908;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  padding: 56px 24px 60px;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.wrap { display: flex; flex-direction: column; align-items: center; }
+
+/* ═══ HEADER ═══ */
+.page-head { text-align: center; margin-bottom: 48px; }
+.page-tag {
+  font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 10px;
+}
+.page-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 42px; font-weight: 400; letter-spacing: -0.02em; line-height: 1;
+}
+.page-title em { font-style: italic; color: var(--gold); }
+.page-sub {
+  font-size: 13px; color: var(--text-3); margin-top: 8px;
+}
+
+/* ═══ PALETTE ═══ */
+.chips {
+  display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px;
+}
+.chip {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 100px; padding: 5px 12px 5px 7px;
+}
+.chip-c {
+  width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--border); flex-shrink: 0;
+}
+.chip-l { font-size: 10px; color: var(--text-3); letter-spacing: 0.04em; }
+
+/* ═══ PHONES ROW ═══ */
+.phones {
+  display: flex; gap: 28px; justify-content: center; flex-wrap: wrap;
+  align-items: flex-start; margin-bottom: 56px;
+}
+.pw { display: flex; flex-direction: column; align-items: center; }
+.ptag {
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--text-3); margin-top: 16px;
+}
+
+/* ═══ PHONE SHELL ═══ */
+.phone {
+  width: 290px;
+  background: var(--bg);
+  border-radius: 44px;
+  overflow: hidden; flex-shrink: 0;
+  box-shadow:
+    0 0 0 1px rgba(201,169,110,0.10),
+    0 0 0 2px rgba(255,255,255,0.04),
+    0 24px 80px var(--shadow-h),
+    0 4px 16px var(--shadow),
+    0 0 60px rgba(201,169,110,0.04);
+  animation: up 0.55s cubic-bezier(0.22,1,0.36,1) both;
+}
+.phone:nth-child(1) { animation-delay: 0.05s; }
+.phone:nth-child(2) { animation-delay: 0.15s; }
+.phone:nth-child(3) { animation-delay: 0.25s; }
+@keyframes up {
+  from { opacity:0; transform:translateY(28px) scale(0.98); }
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+
+.sb {
+  display: flex; justify-content: space-between; padding: 15px 24px 0;
+  font-size: 11px; font-weight: 500; color: var(--text-3);
+}
+
+.sc { padding: 16px 18px 0; }
+
+.logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 4px; opacity: 0.75;
+}
+
+.stitle {
+  font-family: 'Instrument Serif', serif;
+  font-size: 30px; font-weight: 400; color: var(--text);
+  letter-spacing: -0.025em; line-height: 1; margin-bottom: 2px;
+}
+.ssub { font-size: 11px; color: var(--text-3); margin-bottom: 14px; }
+
+/* ═══ CLARITY CARD ═══ */
+.ccard {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; padding: 16px; margin-bottom: 14px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.ccard::before {
+  content:''; position:absolute; top:-24px; right:-24px;
+  width:110px; height:110px;
+  background: radial-gradient(circle, rgba(201,169,110,0.10), transparent 70%);
+}
+.ccard::after {
+  content:''; position:absolute; top:0; left:20px; right:20px; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(201,169,110,0.25), transparent);
+}
+.cnum {
+  font-family: 'Instrument Serif', serif;
+  font-size: 42px; font-weight: 400; color: var(--text); line-height: 1;
+}
+.clbl {
+  font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold); margin-left: 5px; vertical-align: middle; font-weight: 500;
+}
+.csub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+.fpill {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--gold-s); color: var(--gold);
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px; margin-top: 10px; font-weight: 500;
+}
+.fpill::before {
+  content:''; width:5px; height:5px; border-radius:50%;
+  background: var(--gold); opacity: 0.6;
+}
+
+/* Dagens sterkeste */
+.dagens {
+  display: flex; align-items: center; gap: 9px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 12px; padding: 9px 11px; margin-top: 10px;
+  backdrop-filter: blur(4px);
+}
+.dagens-garments { display: flex; }
+.dagens-garments svg {
+  margin-right: -6px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.di { flex:1; }
+.dt { font-size: 10px; font-weight: 500; color: var(--text); }
+.ds { font-size: 9px; color: var(--text-3); }
+
+/* ═══ TAB TOGGLE ═══ */
+.tabs {
+  display: flex; border-bottom: 1px solid var(--border); margin-bottom: 13px;
+}
+.to {
+  font-size: 11px; color: var(--text-3); padding: 7px 0; margin-right: 18px;
+  position: relative; font-weight: 400;
+}
+.to.on { color: var(--text); font-weight: 500; }
+.to.on::after {
+  content:''; position:absolute; bottom:-1px; left:0; right:0;
+  height: 1.5px; background: var(--gold); border-radius: 2px;
+}
+
+/* ═══ CATEGORY SECTIONS ═══ */
+.sh {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 9px;
+}
+.sc-cat {
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-3); display: flex; align-items: center; gap: 5px;
+}
+.scdot { width:4px; height:4px; border-radius:50%; background: var(--gold); opacity:0.5; }
+.sc-n { font-size: 10px; color: var(--text-3); }
+
+/* ═══ GARMENT GRID ═══ */
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; margin-bottom: 13px; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 13px; }
+
+.gc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 1px 4px var(--shadow);
+  transition: transform 0.15s;
+  position: relative;
+}
+.gc:active { transform: scale(0.96); }
+
+.gc-vis {
+  height: 64px; display: flex; align-items: center; justify-content: center;
+  background: var(--surface2); position: relative;
+}
+.gc-vis svg {
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.3));
+}
+
+/* Key garment dot */
+.key-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-s);
+}
+
+/* Silhouette tag */
+.sil-tag {
+  position: absolute; bottom: 4px; left: 5px;
+  background: rgba(255,255,255,0.04); backdrop-filter: blur(4px);
+  color: var(--text-3); font-size: 6px; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 2px 4px; border-radius: 4px;
+}
+
+.gc-info { padding: 5px 7px 8px; }
+.gc-name { font-size: 9px; color: var(--text); font-weight: 500; display: block; }
+.gc-meta { font-size: 8px; color: var(--text-3); }
+.gc-meta .hl { color: var(--gold); font-weight: 500; }
+
+/* Gap card */
+.gc.gap {
+  background: transparent; border: 1.5px dashed rgba(201,169,110,0.15);
+  box-shadow: none;
+}
+.gap-inner {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; gap: 4px; padding: 8px;
+}
+.gap-type {
+  font-size: 7px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold); font-weight: 500;
+}
+.gap-item {
+  font-family: 'Instrument Serif', serif; font-style: italic; font-size: 12px;
+  color: var(--text);
+}
+.gap-impact {
+  font-size: 8px; padding: 2px 7px; border-radius: 3px;
+  background: var(--gold-s); color: var(--gold);
+}
+
+/* ═══ STUDIO ═══ */
+.studio-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px;
+}
+.surp {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--gold-s); border: 1px solid rgba(201,169,110,0.15);
+  color: var(--gold); font-size: 10px; letter-spacing: 0.05em;
+  padding: 6px 14px; border-radius: 100px; font-weight: 500;
+}
+
+/* Hero outfit preview */
+.outfit-preview {
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  padding: 16px 0 8px;
+  margin-bottom: 12px;
+}
+.outfit-preview svg {
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.4));
+}
+
+/* Outfit builder slots */
+.builder {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 10px; margin-bottom: 12px;
+  box-shadow: 0 2px 10px var(--shadow);
+}
+.slot {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 10px;
+  border: 1px dashed var(--border); margin-bottom: 4px;
+  background: var(--bg);
+}
+.slot:last-child { margin-bottom:0; }
+.slot.filled {
+  border-style: solid; border-color: rgba(201,169,110,0.14);
+  background: rgba(255,255,255,0.04); backdrop-filter: blur(4px);
+}
+.slot-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--surface2); display: flex; align-items: center; justify-content: center;
+}
+.slot-icon svg { width: 18px; height: 18px; }
+.sn { font-size: 11px; color: var(--text); }
+.sd { font-size: 9px; color: var(--text-3); }
+.sp { font-size: 15px; color: var(--text-4); margin-left: auto; opacity: 0.5; }
+
+/* Metrics */
+.mets { display: flex; gap: 6px; margin-bottom: 13px; }
+.mc {
+  flex:1; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px 8px; text-align: center;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.mv {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px; color: var(--gold); font-weight: 400; line-height: 1;
+  margin-bottom: 2px;
+}
+.ml {
+  font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3);
+}
+
+/* Suggestion */
+.suggestion {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px; margin-bottom: 12px;
+}
+.sug-text { font-size: 11px; color: var(--text); }
+.sug-chip {
+  font-size: 9px; color: var(--green); background: var(--green-s);
+  padding: 3px 8px; border-radius: 5px; font-weight: 500;
+}
+
+/* CTA */
+.cta-btn {
+  width: 100%; padding: 12px; border-radius: 12px; border: none;
+  background: var(--gold-s); border: 1px solid rgba(201,169,110,0.15);
+  color: var(--gold); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all 0.2s;
+}
+.cta-btn:active { transform: scale(0.97); }
+
+/* ═══ DISCOVER ═══ */
+.discover-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; overflow: hidden; margin-bottom: 10px;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.dc-visual {
+  height: 200px; background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.dc-visual::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 25% 35%, rgba(201,169,110,0.06), transparent 55%),
+    radial-gradient(ellipse at 75% 65%, rgba(122,154,110,0.04), transparent 55%);
+}
+.dc-stack {
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  position: relative; z-index: 1;
+}
+.dc-stack svg {
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4));
+}
+.dc-stack > *:nth-child(2) { margin-top: -6px; transform: scale(0.96); }
+.dc-stack > *:nth-child(3) { margin-top: -4px; transform: scale(0.92); }
+.dc-stack > *:nth-child(4) { margin-top: -3px; transform: scale(0.88); }
+
+/* Bookmark */
+.dc-bookmark {
+  position: absolute; top: 10px; right: 12px; z-index: 2;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,0.04); backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--text-4); cursor: pointer;
+}
+
+/* Recommended badge */
+.dc-rec {
+  position: absolute; top: 10px; left: 12px; z-index: 2;
+  font-size: 8px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--gold); background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(6px); border: 1px solid rgba(201,169,110,0.15);
+  padding: 3px 10px; border-radius: 100px; font-weight: 500;
+}
+
+.dc-info { padding: 14px 16px; }
+.dc-name {
+  font-family: 'Instrument Serif', serif; font-style: italic;
+  font-size: 16px; color: var(--text); margin-bottom: 3px;
+}
+.dc-score { font-size: 11px; color: var(--text-3); margin-bottom: 10px; }
+.dc-score span {
+  font-family: 'Instrument Serif', serif;
+  font-size: 14px; color: var(--gold);
+}
+.dc-cta {
+  width: 100%; padding: 10px; border-radius: 10px; border: none;
+  background: var(--gold-s); border: 1px solid rgba(201,169,110,0.12);
+  color: var(--gold); font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500; cursor: pointer; text-align: center;
+}
+
+/* Badge for feed type */
+.dc-badge {
+  display: inline-block; font-size: 9px; padding: 3px 8px; border-radius: 6px;
+  font-weight: 500; margin-left: 6px;
+}
+.dc-badge.owned { color: var(--green); background: var(--green-s); }
+
+/* Swipe hint */
+.swipe-hint {
+  text-align: center; padding: 8px 0 6px;
+  font-size: 8px; color: var(--text-4); letter-spacing: 1px;
+}
+
+/* ═══ NAV ═══ */
+.nav {
+  display: flex; justify-content: space-around;
+  padding: 10px 8px 22px; border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+.ni { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.ni svg {
+  width: 18px; height: 18px; stroke: var(--text-4); fill: none;
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+.ni-l { font-size: 8px; letter-spacing: 0.06em; color: var(--text-4); }
+.ni.on svg { stroke: var(--gold); }
+.ni.on .ni-l { color: var(--gold); font-weight: 500; }
+
+/* ═══ NOTES ═══ */
+.notes {
+  max-width: 860px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.note {
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  border-radius: 18px; padding: 22px; backdrop-filter: blur(8px);
+}
+.note-t {
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 10px; font-weight: 500;
+}
+.note-b { font-size: 12px; color: var(--text-3); line-height: 1.7; }
+.cx {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 6px; padding: 2px 7px; font-size: 10px; color: var(--text);
+  font-family: monospace;
+}
+.cx-d { width:8px; height:8px; border-radius:50%; }
+
+@media (max-width:920px) {
+  .phones { flex-direction: column; align-items: center; }
+  .notes { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="page-head">
+  <div class="page-tag">CORET &mdash; Dark Theme</div>
+  <div class="page-title">Warm <em>Cinematic</em></div>
+  <div class="page-sub">Same identity, dark expression &mdash; warm blacks, gold accents, frosted glass</div>
+</div>
+
+<div class="chips">
+  <div class="chip"><div class="chip-c" style="background:#0E0C0A"></div><div class="chip-l">#0E0C0A bg</div></div>
+  <div class="chip"><div class="chip-c" style="background:#1A1714"></div><div class="chip-l">#1A1714 surface</div></div>
+  <div class="chip"><div class="chip-c" style="background:#221F1A"></div><div class="chip-l">#221F1A surface-2</div></div>
+  <div class="chip"><div class="chip-c" style="background:#C9A96E;border-color:rgba(201,169,110,0.3)"></div><div class="chip-l">#C9A96E gold</div></div>
+  <div class="chip"><div class="chip-c" style="background:#7A9A6E;border-color:rgba(122,154,110,0.3)"></div><div class="chip-l">#7A9A6E green</div></div>
+  <div class="chip"><div class="chip-c" style="background:#EAE5DE"></div><div class="chip-l">#EAE5DE text</div></div>
+  <div class="chip"><div class="chip-c" style="background:#6B625C"></div><div class="chip-l">#6B625C muted</div></div>
+</div>
+
+<div class="phones">
+
+<!-- ═══════════════════════════════════════ -->
+<!-- WARDROBE -->
+<!-- ═══════════════════════════════════════ -->
+<div class="pw">
+<div class="phone">
+  <div class="sb"><span>9:41</span><span style="opacity:0.4">4G</span></div>
+  <div class="sc">
+    <div class="logo">CORET</div>
+    <div class="stitle">Garderobe</div>
+    <div class="ssub">24 plagg</div>
+
+    <!-- Clarity -->
+    <div class="ccard">
+      <div><span class="cnum">78</span><span class="clbl">CLARITY</span></div>
+      <div class="csub">~48 sterke antrekk mulig</div>
+      <div class="fpill">Fokusert</div>
+      <div class="dagens">
+        <div class="dagens-garments">
+          <svg width="16" height="18" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#5C3D1E" opacity="0.8"/></svg>
+          <svg width="14" height="14" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.8"/></svg>
+          <svg width="14" height="16" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.8"/></svg>
+        </div>
+        <div class="di">
+          <div class="dt">Dagens sterkeste</div>
+          <div class="ds">Smart Casual &middot; 91</div>
+        </div>
+        <span style="color:var(--text-4);font-size:13px">&rsaquo;</span>
+      </div>
+    </div>
+
+    <div class="tabs"><div class="to on">Plagg</div><div class="to">Antrekk</div></div>
+
+    <!-- YTTERLAG -->
+    <div class="sh"><div class="sc-cat"><div class="scdot"></div>YTTERLAG</div><div class="sc-n">3</div></div>
+    <div class="g3">
+      <div class="gc">
+        <div class="gc-vis"><div class="key-dot"></div><div class="sil-tag">RLX</div><svg width="36" height="44" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#8B5537" opacity="0.8"/></svg></div>
+        <div class="gc-info"><span class="gc-name">Ullfrakk</span><span class="gc-meta"><span class="hl">N&oslash;kkel</span></span></div>
+      </div>
+      <div class="gc">
+        <div class="gc-vis"><div class="sil-tag">FIT</div><svg width="34" height="40" viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" fill="#2A2A30" opacity="0.75"/></svg></div>
+        <div class="gc-info"><span class="gc-name">Skinnjakke</span><span class="gc-meta">Fitted</span></div>
+      </div>
+      <div class="gc">
+        <div class="gc-vis"><div class="sil-tag">RLX</div><svg width="34" height="40" viewBox="0 0 48 56" fill="none"><path d="M12 6C12 3 36 3 36 6L38 14C38 16 46 16 48 20V44C48 48 44 50 40 50H36V52C36 56 12 56 12 52V50H8C4 50 0 48 0 44V20C2 16 10 16 10 14L12 6Z" fill="#4A5A30" opacity="0.75"/></svg></div>
+        <div class="gc-info"><span class="gc-name">Oliven Bomber</span><span class="gc-meta">Relaxed</span></div>
+      </div>
+    </div>
+
+    <!-- BASE -->
+    <div class="sh"><div class="sc-cat"><div class="scdot"></div>BASE</div><div class="sc-n">4</div></div>
+    <div class="g3">
+      <div class="gc">
+        <div class="gc-vis"><div class="key-dot"></div><svg width="28" height="32" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.8"/></svg></div>
+        <div class="gc-info"><span class="gc-name">Navy Skjorte</span><span class="gc-meta"><span class="hl">N&oslash;kkel</span></span></div>
+      </div>
+      <div class="gc">
+        <div class="gc-vis"><svg width="24" height="28" viewBox="0 0 34 40" fill="none"><path d="M9 4C9 2 25 2 25 4L27 8C27 10 32 10 34 14V16C32 18 28 18 27 16V34C27 38 7 38 7 34V16C6 18 2 18 0 16V14C2 10 7 10 7 8L9 4Z" fill="#E8E4E0" opacity="0.85"/></svg></div>
+        <div class="gc-info"><span class="gc-name">Hvit T-shirt</span><span class="gc-meta">Regular</span></div>
+      </div>
+      <div class="gc gap">
+        <div class="gap-inner">
+          <div class="gap-type">MISSING</div>
+          <div class="gap-item">Blazer</div>
+          <div class="gap-impact">+13 clarity</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNDERKROPP -->
+    <div class="sh"><div class="sc-cat"><div class="scdot" style="background:var(--green);opacity:0.7"></div>UNDERKROPP</div><div class="sc-n">4</div></div>
+    <div class="g3">
+      <div class="gc">
+        <div class="gc-vis"><div class="key-dot"></div><svg width="28" height="40" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.8"/></svg></div>
+        <div class="gc-info"><span class="gc-name">Beige Chinos</span><span class="gc-meta"><span class="hl">N&oslash;kkel</span></span></div>
+      </div>
+      <div class="gc">
+        <div class="gc-vis"><svg width="28" height="40" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#1A1A20" opacity="0.85"/></svg></div>
+        <div class="gc-info"><span class="gc-name">Svarte Jeans</span><span class="gc-meta">Slim</span></div>
+      </div>
+      <div class="gc">
+        <div class="gc-vis"><svg width="28" height="40" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#4A6A2A" opacity="0.8"/></svg></div>
+        <div class="gc-info"><span class="gc-name">Cargo Pants</span><span class="gc-meta">Wide</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="ni on"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="ni-l">Wardrobe</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span class="ni-l">Studio</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg><span class="ni-l">Discover</span></div>
+  </div>
+</div>
+<div class="ptag">Wardrobe</div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- STUDIO -->
+<!-- ═══════════════════════════════════════ -->
+<div class="pw">
+<div class="phone">
+  <div class="sb"><span>9:41</span><span style="opacity:0.4">4G</span></div>
+  <div class="sc">
+    <div class="logo">CORET</div>
+    <div class="studio-head">
+      <div class="stitle">Studio</div>
+      <div class="surp">&#10022; Surprise</div>
+    </div>
+    <div class="ssub" style="margin-top:2px">Bygg og analyser antrekk</div>
+
+    <!-- Outfit preview stack -->
+    <div class="outfit-preview">
+      <svg width="56" height="60" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#5C3D1E" opacity="0.75"/></svg>
+      <svg width="42" height="42" viewBox="0 0 40 52" fill="none" style="margin-top:-8px"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.75"/></svg>
+      <svg width="48" height="58" viewBox="0 0 32 48" fill="none" style="margin-top:-6px"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.75"/></svg>
+      <svg width="42" height="18" viewBox="0 0 34 16" fill="none" style="margin-top:-4px"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#6B4A2A" opacity="0.75"/></svg>
+    </div>
+
+    <!-- Builder -->
+    <div class="builder">
+      <div class="slot filled">
+        <div class="slot-icon"><svg width="18" height="20" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#5C3D1E" opacity="0.7"/></svg></div>
+        <div><div class="sn">Ullfrakk</div><div class="sd">Ytterlag &middot; Relaxed</div></div>
+      </div>
+      <div class="slot filled">
+        <div class="slot-icon"><svg width="16" height="18" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.7"/></svg></div>
+        <div><div class="sn">Navy Skjorte</div><div class="sd">Overdel &middot; Fitted</div></div>
+      </div>
+      <div class="slot filled">
+        <div class="slot-icon"><svg width="16" height="22" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.7"/></svg></div>
+        <div><div class="sn">Beige Chinos</div><div class="sd">Underdel &middot; Tapered</div></div>
+      </div>
+      <div class="slot filled">
+        <div class="slot-icon"><svg width="16" height="8" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#6B4A2A" opacity="0.7"/></svg></div>
+        <div><div class="sn">Brune Boots</div><div class="sd">Sko</div></div>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="mets">
+      <div class="mc"><div class="mv">84</div><div class="ml">Clarity</div></div>
+      <div class="mc"><div class="mv" style="font-size:13px;padding-top:5px">Smart Casual</div><div class="ml">Arketype</div></div>
+      <div class="mc"><div class="mv" style="color:var(--green)">&uarr;</div><div class="ml">Balanse</div></div>
+    </div>
+
+    <!-- Suggestion -->
+    <div class="suggestion">
+      <div class="sug-text">Bytt Hoodie &rarr; Blazer</div>
+      <div class="sug-chip">+6 clarity</div>
+    </div>
+
+    <button class="cta-btn">Bruk i dag</button>
+  </div>
+
+  <div class="nav">
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="ni-l">Wardrobe</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span class="ni-l">Studio</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg><span class="ni-l">Discover</span></div>
+  </div>
+</div>
+<div class="ptag">Studio</div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- DISCOVER -->
+<!-- ═══════════════════════════════════════ -->
+<div class="pw">
+<div class="phone">
+  <div class="sb"><span>9:41</span><span style="opacity:0.4">4G</span></div>
+  <div class="sc">
+    <div class="logo">CORET</div>
+    <div class="stitle">Discover</div>
+    <div class="ssub">Utforsk dine antrekk</div>
+
+    <!-- Card 1 — recommended -->
+    <div class="discover-card">
+      <div class="dc-visual">
+        <div class="dc-rec">Anbefalt i dag</div>
+        <div class="dc-bookmark">&#9734;</div>
+        <div class="dc-stack">
+          <svg width="60" height="64" viewBox="0 0 52 66" fill="none"><path d="M13 7C13 3 39 3 39 7L42 18C42 20 50 22 52 26V52C52 56 48 58 44 58H39V62C39 66 13 66 13 62V58H8C4 58 0 56 0 52V26C2 22 10 20 10 18L13 7Z" fill="#1E2A3A" opacity="0.8"/></svg>
+          <svg width="44" height="44" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#E8E4E0" opacity="0.85"/></svg>
+          <svg width="44" height="56" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#1A2030" opacity="0.8"/></svg>
+          <svg width="44" height="18" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#1A1A1E" opacity="0.8"/></svg>
+        </div>
+      </div>
+      <div class="dc-info">
+        <div class="dc-name">Frakk &middot; Tee &middot; Jeans &middot; Loafers</div>
+        <div class="dc-score">Outfit Match <span>91</span><span class="dc-badge owned">Du eier alt</span></div>
+        <button class="dc-cta">&Aring;pne i Studio</button>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="discover-card">
+      <div class="dc-visual" style="height:150px">
+        <div class="dc-bookmark">&#9734;</div>
+        <div class="dc-stack">
+          <svg width="44" height="44" viewBox="0 0 40 52" fill="none"><path d="M11 4C11 2 29 2 29 4L31 12C31 14 38 14 40 18V46C40 50 36 52 32 52H8C4 52 0 50 0 46V18C2 14 9 14 9 12L11 4Z" fill="#2C3E5A" opacity="0.8"/></svg>
+          <svg width="40" height="50" viewBox="0 0 32 48" fill="none"><path d="M3 0H29C31 0 32 2 32 4V20L23 48H18L16 24L14 48H9L0 20V4C0 2 1 0 3 0Z" fill="#C4AA82" opacity="0.8"/></svg>
+          <svg width="40" height="16" viewBox="0 0 34 16" fill="none"><path d="M2 7C2 4 5 1 10 1H13L16 0H18L21 1H24C29 1 32 4 32 7V10C32 13 29 16 24 16H10C5 16 2 13 2 10V7Z" fill="#D8D4D0" opacity="0.8"/></svg>
+        </div>
+      </div>
+      <div class="dc-info" style="padding:11px 16px">
+        <div class="dc-name">Skjorte &middot; Chinos &middot; Sneakers</div>
+        <div class="dc-score">Outfit Match <span>78</span><span class="dc-badge owned">Du eier alt</span></div>
+        <button class="dc-cta">&Aring;pne i Studio</button>
+      </div>
+    </div>
+
+    <div class="swipe-hint">swipe opp for neste &middot; h&oslash;yre for &aring; lagre</div>
+  </div>
+
+  <div class="nav">
+    <div class="ni"><svg viewBox="0 0 24 24"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg><span class="ni-l">Wardrobe</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg><span class="ni-l">Studio</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg><span class="ni-l">Discover</span></div>
+  </div>
+</div>
+<div class="ptag">Discover</div>
+</div>
+
+</div>
+
+<!-- ═══ DESIGN NOTES ═══ -->
+<div class="notes">
+  <div class="note">
+    <div class="note-t">Dark vs Light &mdash; same identity</div>
+    <div class="note-b">
+      Samme font (Instrument Serif), samme SVG-silhuetter, samme interaksjonsmonstre.
+      Eneste forskjell: fargetokens flippes. Identiteten er i typografi og struktur, ikke i fargen.
+    </div>
+  </div>
+  <div class="note">
+    <div class="note-t">Gold &mdash; justert for kontrast</div>
+    <div class="note-b">
+      Dark: <span class="cx"><span class="cx-d" style="background:#C9A96E"></span>#C9A96E</span> &mdash;
+      Light: <span class="cx"><span class="cx-d" style="background:#b8860b;border:1px solid rgba(184,134,11,0.4)"></span>#B8860B</span>.
+      Lysere gold p&aring; mork bakgrunn for &aring; oppn&aring; samme visuell vekt.
+    </div>
+  </div>
+  <div class="note">
+    <div class="note-t">SVG-silhuetter &mdash; ikke emojier</div>
+    <div class="note-b">
+      Samme plagg-shapes som light mode. Opacity justert fra 0.65-0.7 &rarr; 0.75-0.85 for sterkere uttrykk p&aring; mork bakgrunn.
+      Drop-shadow forsterket (0.3-0.4 vs 0.08) for bedre separation mot mork bakgrunn.
+    </div>
+  </div>
+  <div class="note">
+    <div class="note-t">Glass effects &mdash; mork variant</div>
+    <div class="note-b">
+      Backdrop-filter beholdt, men bakgrunn endret fra rgba(255,255,255,0.55) til rgba(255,255,255,0.04).
+      Phone shell har subtil gold outline-glow i stedet for hvit indre kant. Shadows er dypere og mer prominente.
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

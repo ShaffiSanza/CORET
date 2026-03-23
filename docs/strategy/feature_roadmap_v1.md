@@ -48,14 +48,44 @@ V1 does NOT prove: That it can style. That it needs AI. That it needs social fea
 
 | Feature | Type | Engine Impact | Notes |
 |---|---|---|---|
-| Email-Based Auto-Import | New ingestion layer | Engine must tolerate partial data | Gmail/Outlook OAuth. Whitelisted senders only. 2-tap confirmation (category + silhouette). Privacy-first. See `docs/Strategy/automated_ingestion_strategy.md` for full spec. |
-| Image-Based Classification Suggestion (V2.5) | ML layer | On-device vision suggests, user confirms | Introduces ML — breaks V1/V2 deterministic philosophy. Acceptable because user always confirms. Reduces confirmation from 2 taps to 1 tap. |
+| Email-Based Auto-Import | New ingestion layer | Engine must tolerate partial data | Gmail/Outlook OAuth. Whitelisted senders only. 2-tap confirmation (category + silhouette). Privacy-first. |
+| Image-Based Classification Suggestion (V2.5) | ML layer | On-device vision suggests, user confirms | Introduces ML — breaks V1/V2 deterministic philosophy. Acceptable because user always confirms. |
+| UGC as passive data in Studio | Presentation | None — aggregated wear-log display | "Worn by 12 wardrobes with similar Clarity." One line in Studio, not a feed. Requires backend auth + anonymised aggregation. |
+| UGC injection in 70/30 feed | Feed extension | DailyOutfitScorer scores UGC outfits | Fifth card type in rhythm: owned→owned→owned→rotation→[community]. Only if thresholds met: ≥500 active users, ≥1000 logged outfits, avg UGC outfit score >70. NOT a separate modus — injected into existing feed. |
 
 ### V3 — Scale mode
 
 | Feature | Type | Engine Impact | Notes |
 |---|---|---|---|
-| Retailer API Partnerships | Business + infrastructure | Structured SKU data eliminates parsing | Zalando, H&M, COS. Requires business agreements, legal contracts, scale validation. Breadwinner potential. |
+| Retailer API Partnerships | Business + infrastructure | Structured SKU data eliminates parsing | Zalando, H&M, COS. Requires business agreements, legal contracts, scale validation. |
+| Algorithmic Full Discover | Feed algorithm | BestOutfitFinder + BehaviouralEngine + UGC signals | Replaces brand-grid navigation with smart mixed feed. Brand-rom accessible via "Se mer fra [brand]". Only when enough brands + user data. |
+
+---
+
+## Discover Structure — Locked Decision (March 2026)
+
+```
+V1 (current):
+├── 70/30: brukerens garderobe + ghost fra alle brands
+└── Full: brand-rom (grid → én brands lifestyle-looks)
+
+V1.5 (post-launch, med brukere):
+└── UGC som passiv data i Studio: "Worn by 12 similar wardrobes"
+    Ikke synlig som feed. Krever auth + anonymisert aggregering.
+
+V2 (kun hvis thresholds nådd):
+├── 70/30: owned → owned → owned → rotation → [community]
+│   Community-kort kun hvis: ≥500 users, ≥1000 outfits, avg score >70
+└── Full: brand-rom (uendret)
+
+V3 (nok brands + data):
+└── Full: algoritmisk feed erstatter brand-grid
+    Brand-rom tilgjengelig via "Se mer fra [brand]"
+```
+
+**UGC policy:** CORET er et verktøy, ikke et sosialt nettverk. UGC er alltid engine-kuratert, anonymisert, og beslutningsstotte — aldri fritt postet innhold. Ingen Community-tab. Ingen Community-modus. UGC injiseres i eksisterende flyt kun nar signal quality rettferdiggjor det.
+
+**Beslutning lokt av:** Claude Code, GPT, Claude AI — mars 2026.
 
 ---
 
@@ -90,15 +120,19 @@ Users should never feel locked out of understanding their wardrobe. They should 
 
 ## What CORET Will Never Build
 
-- No social feed
-- No share outfits
-- No "Outfit of the day"
+- No social feed (UGC is engine-curated decision support, never freely posted content)
+- No share outfits publicly
 - No trend analysis
 - No Pinterest-style moodboards
 - No influencer alignment
-- No shopping recommendations
 - No AI-generated styling text
 - No gamification (streaks, achievements, badges)
+- No Community tab or modus (UGC injected into existing feed only, if signal quality thresholds met)
+
+**Clarified since V1 launch:**
+- Brand partnerships (Shopify ghost-plagg) are structural gap-filling, not shopping recommendations
+- Discover feed is engine-scored outfit presentation, not "Outfit of the day"
+- UGC is anonymised aggregate data ("12 similar wardrobes wore this"), not user-generated content posting
 
 These break the philosophical foundation. Non-negotiable.
 
@@ -125,4 +159,4 @@ None of these block V1 launch. All are post-launch iterations.
 ---
 
 *Council locked. Filed in `docs/strategy/`.*
-*Last updated: 15 March 2026*
+*Last updated: 22 March 2026*

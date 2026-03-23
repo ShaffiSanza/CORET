@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORET × Nilah</title>
+<style>@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap");</style>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:     #faf7f2;
+  --bg2:    #f3ede3;
+  --bg3:    #ece4d6;
+  --border: rgba(30,20,5,0.08);
+  --gold:   #b8860b;
+  --gold-s: rgba(184,134,11,0.09);
+  --gold-b: rgba(184,134,11,0.2);
+  --text:   #18140c;
+  --muted:  #8a7d68;
+  --muted2: #6b5e4a;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================== */
+/* HERO                           */
+/* ============================== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 60px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(184,134,11,0.09) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+.coret-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 48px;
+  animation: fadeUp 0.8s ease both;
+}
+
+.coret-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 14px rgba(184,134,11,0.5), 0 0 4px rgba(184,134,11,0.8);
+}
+
+.coret-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 400;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+  animation: fadeUp 0.8s ease 0.1s both;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: 28px;
+  animation: fadeUp 0.8s ease 0.15s both;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(184,134,11,0.15);
+}
+
+.hero-sub {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 480px;
+  line-height: 1.75;
+  margin-bottom: 52px;
+  animation: fadeUp 0.8s ease 0.2s both;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 400;
+  animation: fadeUp 0.8s ease 0.25s both;
+  cursor: pointer;
+}
+
+.hero-cta::after {
+  content: '';
+  display: inline-block;
+  width: 14px; height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23b8860b' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12l7 7 7-7'/%3E%3C/svg%3E");
+  animation: bounce 2s ease infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* ============================== */
+/* SHARED                         */
+/* ============================== */
+.section {
+  padding: 100px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.section-border { border-top: 1px solid var(--border); }
+.section-bg2 { background: var(--bg2); }
+
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 48px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.section-label::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.col-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+.col-title em { font-style: italic; color: var(--gold); }
+
+.col-body {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.col-body p + p { margin-top: 16px; }
+
+/* ============================== */
+/* HOW IT WORKS                   */
+/* ============================== */
+.how-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2px;
+  margin-top: 16px;
+}
+
+.how-card {
+  background: var(--bg2);
+  padding: 36px 32px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s;
+}
+
+.how-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.how-card:hover { background: var(--bg3); }
+.how-card:hover::before { opacity: 1; }
+
+.how-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 56px;
+  font-weight: 300;
+  color: rgba(184,134,11,0.14);
+  line-height: 1;
+  margin-bottom: 16px;
+  letter-spacing: -0.04em;
+}
+
+.how-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.how-body {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ============================== */
+/* PRODUCT IN PRACTICE            */
+/* ============================== */
+.practice-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.practice-copy { }
+
+.practice-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 32px;
+}
+
+.practice-headline em { font-style: italic; color: var(--gold); }
+
+.practice-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.practice-point {
+  display: flex;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.practice-point:last-child { border-bottom: none; }
+
+.pp-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  color: var(--gold);
+  opacity: 0.5;
+  width: 20px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.pp-text {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.pp-text strong {
+  color: var(--text);
+  font-weight: 400;
+}
+
+/* ============================== */
+/* PHONE MOCKUP                   */
+/* ============================== */
+.phone-mockup {
+  width: 280px;
+  margin: 0 auto;
+  background: #0d0b08;
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 0 0 2px rgba(184,134,11,0.1),
+    0 40px 100px rgba(0,0,0,0.25),
+    0 8px 32px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+.pm-screen {
+  position: relative;
+  height: 540px;
+  overflow: hidden;
+  background: #0d0b08;
+}
+
+.pm-atmo {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 35% 25%, rgba(50,38,18,0.9) 0%, transparent 55%),
+    radial-gradient(ellipse at 65% 75%, rgba(15,25,18,0.4) 0%, transparent 55%),
+    #0d0b08;
+}
+
+.pm-sb {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 20px 0;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.25);
+  z-index: 20;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.pm-mode {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 100px;
+  overflow: hidden;
+  z-index: 20;
+}
+
+.pm-mo {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  color: rgba(255,255,255,0.28);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.pm-mo.on {
+  background: rgba(184,134,11,0.18);
+  color: #c9a96e;
+  font-weight: 500;
+}
+
+/* Scroll dots left */
+.pm-dots {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 20;
+}
+
+.pm-dot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+}
+
+.pm-dot.on {
+  height: 14px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.45);
+}
+
+/* Outfit stage */
+.pm-outfit {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 0; right: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding-bottom: 160px;
+  padding-top: 60px;
+}
+
+.pm-mannequin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pm-piece {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.pm-top    { width: 88px; height: 100px; }
+.pm-mid    { width: 70px; height: 14px; background: transparent; border: none; }
+.pm-bottom { width: 80px; height: 108px; }
+.pm-shoe   { width: 72px; height: 42px; border-radius: 10px; }
+.pm-gap    { height: 3px; }
+
+.pm-piece svg { opacity: 0.7; }
+
+/* Ghost badge */
+.ghost-badge {
+  position: absolute;
+  top: -9px; right: -9px;
+  background: rgba(184,134,11,0.16);
+  border: 1px solid rgba(184,134,11,0.32);
+  color: #c9a96e;
+  font-size: 7px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+  box-shadow: 0 0 12px rgba(184,134,11,0.15);
+}
+
+/* Right actions */
+.pm-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 25;
+  align-items: center;
+}
+
+.pm-btn {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid;
+  backdrop-filter: blur(16px);
+}
+
+.pm-like { background: rgba(184,134,11,0.12); border-color: rgba(184,134,11,0.22); box-shadow: 0 4px 16px rgba(184,134,11,0.08); }
+.pm-hook { background: rgba(122,158,126,0.12); border-color: rgba(122,158,126,0.22); }
+.pm-pass { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); width: 34px; height: 34px; }
+
+.pm-btn-label {
+  font-size: 7px;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.06em;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Bottom overlay */
+.pm-bottom-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(
+    to top,
+    rgba(8,6,4,1) 0%,
+    rgba(8,6,4,0.97) 35%,
+    rgba(8,6,4,0.7) 60%,
+    transparent 100%
+  );
+  padding: 56px 16px 0;
+  z-index: 20;
+}
+
+.pm-brand {
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #c9a96e;
+  opacity: 0.7;
+  margin-bottom: 4px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.pm-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #f0ede6;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+.pm-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.pm-tag {
+  font-size: 8px;
+  color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 3px 7px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.pm-tag.g {
+  color: #c9a96e;
+  background: rgba(184,134,11,0.08);
+  border-color: rgba(184,134,11,0.18);
+}
+
+.pm-swipe {
+  text-align: center;
+  font-size: 8px;
+  color: rgba(255,255,255,0.14);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 4px 0 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Score watermark */
+.pm-score {
+  position: absolute;
+  right: 56px;
+  bottom: 100px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.035);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Nav */
+.pm-nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 11px 8px 20px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: #080604;
+}
+
+.pm-ni { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.pm-ni svg { opacity: 0.2; }
+.pm-ni-l { font-size: 8px; color: rgba(255,255,255,0.2); letter-spacing: 0.04em; font-family: 'DM Sans', sans-serif; }
+.pm-ni.on svg { opacity: 1; }
+.pm-ni.on .pm-ni-l { color: #c9a96e; }
+
+/* Caption below phone */
+.phone-caption {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.phone-caption strong {
+  color: var(--gold);
+  font-weight: 400;
+}
+
+/* ============================== */
+/* BENEFITS                       */
+/* ============================== */
+.benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.benefit {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.benefit:hover {
+  border-color: rgba(184,134,11,0.22);
+  box-shadow: 0 8px 32px rgba(184,134,11,0.06);
+}
+
+.benefit::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.benefit:hover::before { opacity: 0.4; }
+
+.benefit-icon {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.benefit-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 21px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.benefit-body {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.benefit-tag {
+  display: inline-block;
+  background: var(--gold-s);
+  border: 1px solid var(--gold-b);
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-top: 14px;
+}
+
+/* ============================== */
+/* STEPS                          */
+/* ============================== */
+.steps { max-width: 600px; }
+
+.step {
+  display: flex;
+  gap: 32px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.step:last-child { border-bottom: none; }
+
+.step-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  opacity: 0.55;
+  width: 20px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.step-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.step-body  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.step-time  { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-top: 8px; opacity: 0.65; }
+
+/* ============================== */
+/* TERMS                          */
+/* ============================== */
+.terms-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2px;
+  margin-top: 40px;
+}
+
+.term {
+  background: var(--bg3);
+  padding: 28px;
+  text-align: center;
+}
+
+.term-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 500;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.term-label { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
+
+/* ============================== */
+/* CTA                            */
+/* ============================== */
+.cta-section {
+  background: var(--text);
+  padding: 100px 60px;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(184,134,11,0.09) 0%, transparent 65%);
+}
+
+.cta-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cta-label::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.cta-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 5vw, 68px);
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: rgba(255,255,255,0.88);
+  max-width: 640px;
+  margin-bottom: 28px;
+}
+
+.cta-title em {
+  font-style: italic;
+  color: #c9a96e;
+  text-shadow: 0 0 40px rgba(184,134,11,0.2);
+}
+
+.cta-body {
+  font-size: 15px;
+  color: rgba(255,255,255,0.38);
+  max-width: 480px;
+  line-height: 1.75;
+  margin-bottom: 56px;
+}
+
+.cta-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cta-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+}
+
+.cta-action svg { flex-shrink: 0; }
+
+.cta-divider {
+  width: 40px;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 32px 0;
+}
+
+.cta-sig { }
+.sig-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.6);
+  font-style: italic;
+}
+
+.sig-role {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  margin-top: 4px;
+}
+
+/* ============================== */
+/* FOOTER                         */
+/* ============================== */
+.footer {
+  padding: 22px 60px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: var(--text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.18);
+}
+
+.footer-note { font-size: 11px; color: rgba(255,255,255,0.12); }
+
+/* ============================== */
+/* ANIMATIONS                     */
+/* ============================== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================== */
+/* RESPONSIVE                     */
+/* ============================== */
+@media (max-width: 800px) {
+  .hero { padding: 60px 32px; min-height: auto; padding-top: 100px; }
+  .section { padding: 72px 32px; }
+  .two-col, .practice-layout { grid-template-columns: 1fr; gap: 48px; }
+  .how-grid { grid-template-columns: 1fr; }
+  .benefits-grid { grid-template-columns: 1fr; }
+  .terms-row { grid-template-columns: 1fr; }
+  .cta-section { padding: 72px 32px; }
+  .footer { padding: 20px 32px; flex-direction: column; gap: 8px; text-align: center; }
+  .phone-mockup { width: 240px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="coret-badge">
+    <div class="coret-dot"></div>
+    <div class="coret-name">CORET</div>
+  </div>
+
+  <div class="hero-eyebrow">Founding Partner — Eksklusivt tilbud</div>
+
+  <h1 class="hero-title">
+    Produktene dine<br>
+    matched med<br>
+    <em>riktig person.</em>
+  </h1>
+
+  <p class="hero-sub">
+    CORET matcher produkter med folk som faktisk mangler akkurat det du lager — automatisk, kontekstuelt, og kun når det gir mening.
+  </p>
+
+  <div class="hero-cta" onclick="document.getElementById('how').scrollIntoView()">
+    Se hvordan det fungerer
+  </div>
+</section>
+
+<!-- WHAT IS CORET -->
+<section class="section section-border">
+  <div class="section-label">Hva er CORET</div>
+  <div class="two-col">
+    <div>
+      <h2 class="col-title">
+        En app som<br>
+        kjenner<br>
+        <em>garderoben din.</em>
+      </h2>
+    </div>
+    <div class="col-body">
+      <p>CORET er en wardrobe intelligence-app. Brukere legger inn klaerne sine og appen analyserer hva de har, hva som mangler, og hva som fungerer sammen.</p>
+      <p>I Discover-tabben ser brukere outfits bygget rundt klaerne de allerede eier. Men noen plagg er "ghost-plagg" — ting de ikke eier enda, som ville gjort outfiten komplett.</p>
+      <p>Nar noen mangler en veske som matcher stilen deres, viser CORET deg. Ikke som reklame. Som losningen pa et faktisk gap.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section section-border section-bg2" id="how">
+  <div class="section-label">Slik fungerer det</div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-num">01</div>
+      <div class="how-title">Brukeren bygger garderobe</div>
+      <div class="how-body">Hun legger inn klaerne sine. CORET analyserer stil, farger, og identifiserer hva som mangler for a fullfare outfits.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">02</div>
+      <div class="how-title">CORET finner gapet</div>
+      <div class="how-body">Appen ser at hun mangler en veske. Stilen, fargepaletten og priskategorien matcher Nilah sin katalog.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">03</div>
+      <div class="how-title">Nilah vises — naturlig</div>
+      <div class="how-body">Vesken dukker opp som en del av outfiten. Hun trykker og lander rett pa nettbutikken din. Ingen mellomledd.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT IN PRACTICE -->
+<section class="section section-border">
+  <div class="section-label">Produktet i praksis</div>
+  <div class="practice-layout">
+
+    <!-- Phone mockup -->
+    <div>
+      <div class="phone-mockup">
+        <div class="pm-screen">
+          <div class="pm-atmo"></div>
+          <div class="pm-sb"><span>9:41</span><span>4G</span></div>
+
+          <div class="pm-mode">
+            <div class="pm-mo on">70/30</div>
+            <div class="pm-mo">Full</div>
+          </div>
+
+          <div class="pm-dots">
+            <div class="pm-dot"></div>
+            <div class="pm-dot on"></div>
+            <div class="pm-dot"></div>
+            <div class="pm-dot"></div>
+          </div>
+
+          <!-- Outfit with SVG silhouettes -->
+          <div class="pm-outfit">
+            <div class="pm-mannequin">
+              <div class="pm-piece pm-top">
+                <svg width="48" height="56" viewBox="0 0 52 66" fill="none"><path d="M14 10C14 5 38 5 38 10L42 22C42 25 50 26 52 30V54C52 58 48 62 44 62H40V66C40 66 12 66 12 66V62H8C4 62 0 58 0 54V30C2 26 10 25 10 22L14 10Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/></svg>
+              </div>
+              <div class="pm-piece pm-mid">
+                <svg width="36" height="10" viewBox="0 0 40 12" fill="none"><path d="M8 2C8 1 32 1 32 2L34 6C34 7 38 8 40 10H0C2 8 6 7 6 6L8 2Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></svg>
+              </div>
+              <div class="pm-piece pm-bottom">
+                <svg width="40" height="64" viewBox="0 0 32 48" fill="none"><path d="M4 0H28C30 0 32 2 32 4V20L22 48H18L16 24L14 48H10L0 20V4C0 2 2 0 4 0Z" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/></svg>
+              </div>
+              <div class="pm-gap"></div>
+              <div class="pm-piece pm-shoe" style="width:88px; height:52px; background:rgba(184,134,11,0.08); border-color:rgba(184,134,11,0.22);">
+                <svg width="40" height="24" viewBox="0 0 44 28" fill="none"><path d="M4 8C4 4 10 1 18 1H26C34 1 40 4 40 8V12C44 14 44 18 42 20H2C0 18 0 14 4 12V8Z" fill="rgba(184,134,11,0.2)" stroke="rgba(184,134,11,0.35)" stroke-width="0.5"/><rect x="12" y="6" width="20" height="4" rx="2" fill="rgba(184,134,11,0.15)"/></svg>
+                <div class="ghost-badge">Nilah &#8599;</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pm-score">87</div>
+
+          <!-- Right actions -->
+          <div class="pm-actions">
+            <div>
+              <div class="pm-btn pm-like">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <div class="pm-btn-label" style="text-align:center; margin-top:3px;">Like</div>
+            </div>
+            <div>
+              <div class="pm-btn pm-hook">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7a9e7e" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L4 7v13l8-5 8 5V7z"/></svg>
+              </div>
+              <div class="pm-btn-label" style="text-align:center; margin-top:3px;">Hook</div>
+            </div>
+            <div style="display:flex; justify-content:center;">
+              <div class="pm-btn pm-pass">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom overlay -->
+          <div class="pm-bottom-overlay">
+            <div class="pm-brand">Smart Casual · Hast</div>
+            <div class="pm-name">Complete<br>Winter Look</div>
+            <div class="pm-tags">
+              <div class="pm-tag">Jakke</div>
+              <div class="pm-tag">Tee</div>
+              <div class="pm-tag">Bukser</div>
+              <div class="pm-tag g">Nilah Bag &#8599;</div>
+            </div>
+            <div class="pm-swipe">&#8593; Swipe for neste</div>
+          </div>
+        </div>
+
+        <div class="pm-nav">
+          <div class="pm-ni">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/><rect x="1" y="8" width="22" height="8" rx="2"/></svg>
+            <div class="pm-ni-l">Wardrobe</div>
+          </div>
+          <div class="pm-ni">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>
+            <div class="pm-ni-l">Studio</div>
+          </div>
+          <div class="pm-ni on">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>
+            <div class="pm-ni-l">Discover</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-caption">
+        Vesken er tagget <strong>Nilah &#8599;</strong> — ett trykk tar brukeren rett til nettbutikken.
+      </div>
+    </div>
+
+    <!-- Copy -->
+    <div class="practice-copy">
+      <h2 class="practice-headline">
+        Ikke reklame.<br>
+        <em>Losningen</em><br>
+        pa et reelt gap.
+      </h2>
+
+      <div class="practice-points">
+        <div class="practice-point">
+          <div class="pp-num">—</div>
+          <div class="pp-text">Brukeren ser en outfit bygget pa <strong>klaerne hun allerede eier.</strong> Nesten komplett.</div>
+        </div>
+        <div class="practice-point">
+          <div class="pp-num">—</div>
+          <div class="pp-text">CORET identifiserer at hun mangler en veske. Stilen matcher. Prisen matcher. <strong>Nilah er svaret.</strong></div>
+        </div>
+        <div class="practice-point">
+          <div class="pp-num">—</div>
+          <div class="pp-text">Vesken vises tydelig tagget som et ghost-plagg. <strong>Hun trykker. Hun lander hos deg.</strong></div>
+        </div>
+        <div class="practice-point">
+          <div class="pp-num">—</div>
+          <div class="pp-text">Ingen banner. Ingen popup. Bare <strong>riktig produkt til riktig person</strong> pa riktig tidspunkt.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WHAT YOU GET -->
+<section class="section section-border section-bg2">
+  <div class="section-label">Hva Nilah far</div>
+  <div class="benefits-grid">
+    <div class="benefit">
+      <span class="benefit-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b8860b" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16.4l-6.4 4.8L8 14 2 9.2h7.6z"/></svg></span>
+      <div class="benefit-title">Kontekstuell eksponering</div>
+      <div class="benefit-body">Produktene dine vises kun til brukere som faktisk mangler det du selger — basert pa stilen deres, ikke tilfeldige kriterier.</div>
+      <div class="benefit-tag">Kun relevante brukere</div>
+    </div>
+    <div class="benefit">
+      <span class="benefit-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b8860b" stroke-width="1.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg></span>
+      <div class="benefit-title">Founding Partner-status</div>
+      <div class="benefit-body">Du er blant de aller farste brandene i appen. Denne posisjonen tilbys ikke til samme vilkar etter launch.</div>
+      <div class="benefit-tag">Eksklusiv posisjon</div>
+    </div>
+    <div class="benefit">
+      <span class="benefit-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b8860b" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
+      <div class="benefit-title">Direkte til butikken din</div>
+      <div class="benefit-body">Ghost-plagg linker rett til Nilah sin Shopify. Ingen mellomledd, ingen provisjon i launch-perioden.</div>
+      <div class="benefit-tag">0% provisjon na</div>
+    </div>
+    <div class="benefit">
+      <span class="benefit-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b8860b" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+      <div class="benefit-title">Ingen arbeid for deg</div>
+      <div class="benefit-body">En API-nakkel. CORET henter produktene automatisk og holder alt synkronisert. Nye produkter dukker opp i feeden innen minutter.</div>
+      <div class="benefit-tag">5 minutter setup</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE NEED -->
+<section class="section section-border">
+  <div class="section-label">Hva vi trenger fra Nilah</div>
+  <div class="two-col">
+    <div>
+      <h2 class="col-title">
+        Tre steg.<br>
+        <em>Fem minutter.</em><br>
+        Ferdig.
+      </h2>
+      <div class="terms-row">
+        <div class="term">
+          <div class="term-val">5</div>
+          <div class="term-label">Min setup</div>
+        </div>
+        <div class="term">
+          <div class="term-val">0</div>
+          <div class="term-label">Kr det koster</div>
+        </div>
+        <div class="term">
+          <div class="term-val">1</div>
+          <div class="term-label">API-nakkel</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <div class="step-title">Lag en read-only API-nakkel i Shopify</div>
+            <div class="step-body">Shopify Admin &#8594; Settings &#8594; Apps &#8594; Develop apps &#8594; Create app. Gi den kun lesetilgang til produkter og generer Access Token.</div>
+            <div class="step-time">Ca. 3 minutter</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <div class="step-title">Send nakkelen</div>
+            <div class="step-body">Du sender meg nakkelen og butikk-domenet ditt. CORET kobler seg til og henter produktene automatisk.</div>
+            <div class="step-time">Ca. 1 minutt</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <div class="step-title">Nilah er live i CORET</div>
+            <div class="step-body">Produktene dine vises i feeden. Nye produkter synkroniseres automatisk — du trenger ikke gjare noe mer.</div>
+            <div class="step-time">Automatisk fra na av</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-label">Neste steg</div>
+
+  <h2 class="cta-title">
+    Vil du vaere med<br>
+    som <em>founding</em><br>
+    partner?
+  </h2>
+
+  <p class="cta-body">
+    Du lager noe handlaget, norsk, og unikt — akkurat det CORET-brukere ser etter nar de vil fullfore en outfit. Dette er ikke reklame. Det er riktig match.
+  </p>
+
+  <div class="cta-actions">
+    <div class="cta-action">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8860b" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      Send meg API-nakkelen fra Shopify
+    </div>
+    <div class="cta-action">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8860b" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      Eller ta en prat — ingen forpliktelser
+    </div>
+  </div>
+
+  <div class="cta-divider"></div>
+
+  <div class="cta-sig">
+    <div class="sig-name">Shaffi</div>
+    <div class="sig-role">Grunnlegger, CORET</div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-brand">CORET</div>
+  <div class="footer-note">Konfidensielt — kun for Nilah</div>
+</footer>
+
+</body>
+</html>
