@@ -1,15 +1,17 @@
-# CORET — Profile Tab Wireframe (V1)
+# CORET — Profile Wireframe (V1)
 
 ## Design Intent
 
-Profile is the system configuration screen.
+Profile is the system control panel, accessed via the top-right menu icon (not a tab).
 It is where the user defines *who they are* structurally — not how they look.
 
 This is not a social profile. No avatar. No bio. No followers.
 It is the control panel for the structural engine.
 
-Three sections: Identity (archetypes), Season, Settings.
+Six sections: Style Context, Identity (archetypes), Season, Favorite Fits, Import Sources, Settings.
 Minimal interaction. Maximum clarity.
+
+**Navigation:** 3 tabs (Wardrobe, Studio, Discover). Profile opens via menu icon on any tab.
 
 ---
 
@@ -17,23 +19,30 @@ Minimal interaction. Maximum clarity.
 
 ```
     ┌─────────────────────────────────────┐
-    │  9:41              CORET        ●●● │
+    │  9:41                     ●●●●  5G  │
     │                                     │
-    │  PROFIL                             │
+    │  ‹ Tilbake      Profil          ⚙  │
+    │                                     │
+    │  ┌─────────────────────────────────┐│
+    │  │  [S·W]  Structured · Warm      ││
+    │  │         Medlem siden jan 2026   ││
+    │  │                                 ││
+    │  │  [Tailored] [Smart Casual]      ││
+    │  │  [Vår/Sommer] [Oslo] [42 plagg] ││
+    │  └─────────────────────────────────┘│
     │                                     │
     │  ┌─────────────────────────────────┐│
     │  │  STRUKTURELL IDENTITET          ││
     │  │                                 ││
-    │  │  Primær                         ││
     │  │  ┌───┬────────────────────┐     ││
-    │  │  │ ▭ │ Tailored           │     ││
-    │  │  │   │ structuredMinimal  │     ││
+    │  │  │ ▭ │ PRIMÆR             │  →  ││
+    │  │  │   │ Tailored           │     ││
+    │  │  │   │ Rene linjer.       │     ││
     │  │  └───┴────────────────────┘     ││
-    │  │                                 ││
-    │  │  Sekundær                       ││
     │  │  ┌───┬────────────────────┐     ││
-    │  │  │ ▢ │ Smart Casual       │     ││
-    │  │  │   │ smartCasual        │     ││
+    │  │  │ ▢ │ SEKUNDÆR           │  →  ││
+    │  │  │   │ Smart Casual       │     ││
+    │  │  │   │ Kontrollert.       │     ││
     │  │  └───┴────────────────────┘     ││
     │  │                                 ││
     │  │  [ Endre retning ]              ││
@@ -42,35 +51,46 @@ Minimal interaction. Maximum clarity.
     │  ┌─────────────────────────────────┐│
     │  │  SESONG                         ││
     │  │                                 ││
-    │  │  Nåværende: Vår / Sommer        ││
+    │  │  ❄ Vår / Sommer        Oslo    ││
+    │  │                      Sist: 14/2 ││
     │  │                                 ││
     │  │  ┌──────────────────────────┐   ││
     │  │  │  ◉ Sesongskifte oppdaget │   ││
-    │  │  │  System anbefaler:       │   ││
+    │  │  │  Posisjonen din antyder: │   ││
     │  │  │  Høst / Vinter           │   ││
     │  │  │  [ Rekalibrér ]          │   ││
     │  │  └──────────────────────────┘   ││
-    │  │                                 ││
+    │  └─────────────────────────────────┘│
+    │                                     │
+    │  ┌─────────────────────────────────┐│
+    │  │  FAVORITT-ANTREKK           3   ││
+    │  │  [thumb][thumb][thumb][ + ]     ││
+    │  └─────────────────────────────────┘│
+    │                                     │
+    │  ┌─────────────────────────────────┐│
+    │  │  IMPORTKILDER                   ││
+    │  │  📧 E-post          Koblet      ││
+    │  │  🟠 Zalando         Koble til   ││
+    │  │  🟡 Boozt           Koble til   ││
     │  └─────────────────────────────────┘│
     │                                     │
     │  ┌─────────────────────────────────┐│
     │  │  INNSTILLINGER                  ││
-    │  │                                 ││
-    │  │  Om CORET                    →  ││
-    │  │  ─────────────────────────────  ││
-    │  │  Pro-oppgradering            →  ││
-    │  │  ─────────────────────────────  ││
+    │  │  Varsler                     →  ││
+    │  │  Eksporter data              →  ││
+    │  │  Personvern                  →  ││
+    │  │  Om CORET              v1.0  →  ││
     │  │  Tilbakestill profil         →  ││
     │  └─────────────────────────────────┘│
     │                                     │
     │  ┌─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─┐│
-    │  │  CORET v1.0                    ││
-    │  │  Ditt garderobe-operativsystem ││
+    │  │  CORET                          ││
+    │  │  Ditt garderobe-operativsystem  ││
     │  └─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─┘│
     │                                     │
-    │  ┌───┬───┬───┬───┬───┐             │
-    │  │ ◻ │ ◻ │ ◻ │ ◻ │ ● │  ← Profile │
-    │  └───┴───┴───┴───┴───┘             │
+    │  ┌─────────┬─────────┬─────────┐   │
+    │  │ Wardrobe │ Studio  │ Discover│   │
+    │  └─────────┴─────────┴─────────┘   │
     └─────────────────────────────────────┘
 ```
 
@@ -243,7 +263,51 @@ Recalibration suggestion appears when:
 
 ---
 
-## Section 3 — Settings
+## Section 3 — Favorite Fits
+
+Horizontal scrollable carousel of the user's saved favorite outfits.
+
+### Layout
+
+```
+┌─────────────────────────────────────┐
+│  FAVORITT-ANTREKK                3  │
+│                                     │
+│  [thumb][thumb][thumb][ + ]         │
+│   name    name    name   Legg til   │
+└─────────────────────────────────────┘
+```
+
+- Each thumbnail: 82×106pt, rounded 10pt, outfit color blobs + emoji overlay
+- Active (currently viewed): gold border
+- "+" card: dashed border, opens outfit selection
+- Max visible in scroll: ~3.5 cards
+
+---
+
+## Section 4 — Import Sources
+
+Connected data sources for garment import.
+
+### Layout
+
+```
+┌─────────────────────────────────────┐
+│  IMPORTKILDER                       │
+│                                     │
+│  📧  E-post     12 plagg   Koblet   │
+│  🟠  Zalando    Auto     Koble til  │
+│  🟡  Boozt      Auto     Koble til  │
+└─────────────────────────────────────┘
+```
+
+- Connected sources: green "Koblet" badge
+- Available sources: muted "Koble til" button
+- Future: add more retail integrations
+
+---
+
+## Section 5 — Settings
 
 System settings. Minimal.
 
@@ -253,11 +317,15 @@ System settings. Minimal.
 ┌─────────────────────────────────────┐
 │  INNSTILLINGER                      │
 │                                     │
-│  Om CORET                        →  │
+│  🔔  Varsler                     →  │
 │  ─────────────────────────────────  │
-│  Pro-oppgradering                →  │  ← hidden in V1 (no paywall)
+│  📊  Eksporter data              →  │
 │  ─────────────────────────────────  │
-│  Tilbakestill profil             →  │
+│  🔒  Personvern                  →  │
+│  ─────────────────────────────────  │
+│  ℹ   Om CORET              v1.0 →  │
+│  ─────────────────────────────────  │
+│  ⟳   Tilbakestill profil        →  │  ← destructive color
 └─────────────────────────────────────┘
 ```
 
@@ -265,8 +333,10 @@ System settings. Minimal.
 
 | Row | Action | Notes |
 |-----|--------|-------|
+| Varsler | Push → Notification prefs | Milestone alerts, season reminders |
+| Eksporter data | Push → Export screen | JSON/CSV wardrobe export |
+| Personvern | Push → Privacy settings | Data handling info |
 | Om CORET | Push → About screen | Version, tagline, credits |
-| Pro-oppgradering | Push → Pro screen | NOT in V1 launch. Hidden until V1.5. |
 | Tilbakestill profil | Alert → Confirmation | Destructive. Full data wipe. |
 
 ### About CORET Screen (Push)
@@ -338,21 +408,25 @@ Below settings section:
 
 ## Visual System
 
-- Background: Warm Dark Taupe (#2F2A26)
-- Section cards: Stone (#E7E2DA), 20pt radius, 16–20pt padding
-- Section labels: 11pt uppercase, letter-spacing 2px, textMuted
-- Archetype SVGs: same silhouette icons as onboarding
-- Recalibration card: inner card within season section, accent-tinted border
-- Settings rows: standard list pattern, right-aligned chevron, cardDivider between rows
-- Destructive button: #7A3E3E for reset confirmation
-- CTA buttons: accent (#2F4A3C) for recalibration and save
+- Background: Dark (#1a1714), body (#0E0C0A)
+- Section cards: Glass effect — rgba(34,31,26,0.85), blur(20px), 18pt radius
+- Section labels: 9pt uppercase, letter-spacing 2.5px, text-4 (#4a4540)
+- Archetype badges: gold-soft background for primary, subtle grey for secondary
+- Recalibration card: gold-tinted inner card with pulsing accent dot, left gold bar
+- Settings rows: standard list pattern, right-aligned chevron, gradient dividers
+- Destructive row: red (#B4705A) text for "Tilbakestill profil"
+- Accent buttons: gold-tinted background + border for recalibration
+- Ambient blobs: subtle gold + green, blurred, behind content
+- Fonts: DM Sans (body) + Instrument Serif (headings, names)
 
 ---
 
 ## Data Ownership
 
-Profile tab **owns** `UserProfile`.
-Profile tab **reads** `SeasonalRecommendation` (from SeasonalEngine).
+Profile screen **owns** `UserProfile` (style_context, archetype, season).
+Profile screen **reads** `SeasonalRecommendation` (from SeasonalEngine).
+Profile screen **reads** garment count, favorite outfits, import source status.
+Backend: `GET/PUT /api/profile` for style_context + archetype persistence.
 
 ### State Update Triggers from Profile
 
@@ -386,9 +460,8 @@ No confirmation beyond the warning — user has full control.
 
 ## What This Wireframe Does NOT Cover
 
-- Avatar or profile picture (not a social profile)
+- Avatar or profile picture (not a social profile — initials monogram used instead)
 - Username or display name (not needed for V1)
-- Export/import data (future consideration)
-- Notification preferences (no push notifications in V1)
-- Theme customization (single theme in V1)
+- Theme customization (single dark theme in V1)
 - Location permissions flow (handled by OS, not CORET UI)
+- Pro-oppgradering (hidden until V1.5, no paywall in V1)

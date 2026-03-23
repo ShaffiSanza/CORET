@@ -41,7 +41,7 @@ CORET/
 │   ├── OPPORTUNITIES_UPGRADES.md
 │   ├── strategy/          Feature roadmap
 │   └── archive/           Superseded v1 specs (historical)
-├── engine/                ← V2 Swift package: COREEngine (285/285 tests)
+├── engine/                ← V2 Swift package: COREEngine (387/387 tests)
 │   └── Sources/COREEngine/
 │       ├── Models/        Garment.swift (incl. WearLog), Scoring.swift, Identity.swift
 │       ├── Engines/       CohesionEngine, ClarityEngine, ScoreProjector,
@@ -64,10 +64,14 @@ CORET/
 │   │                        wardrobe_io (import validation)
 │   │                        discover_feed (feed generation, bookmarks, actions, seen tracking)
 │   │                        shopify_client (Shopify Admin API, pagination, rate limiting, style inference)
+│   │                        shopify_oauth (OAuth flow, state+nonce+TTL, scope verification)
 │   │                        ghost_catalog (brand registry, product sync, gap-to-product matching, brand grid)
+│   │                        product_enricher (3-layer enrichment: defaults → heuristics → overrides)
+│   │                        outfit_graph (outfit network analysis)
+│   │                        security_logger (webhook HMAC, security event logging)
 │   │                        user_profile (style_context + archetype, JSON persistence)
-│   ├── routers/           pipeline.py, garments.py, wardrobe.py, outfits.py, wear.py, discover.py, brands.py, profile.py
-│   ├── tests/             pytest test suite (212 tests)
+│   ├── routers/           pipeline.py, garments.py, wardrobe.py, outfits.py, wear.py, discover.py, brands.py, profile.py, auth.py
+│   ├── tests/             pytest test suite (247 tests)
 │   ├── data/              Runtime storage: garments.json, outfits.json, wear_logs.json, images/ (gitignored)
 │   └── v1_5/              Archived services (receipt_parser) for future release
 ├── moodboard/             ← Visual references for UI (HTML + wireframe .md files)
@@ -86,13 +90,13 @@ NOT reference for: prices, brand names, social features, shopping UI, lifestyle 
 
 | Package | Tests | Status |
 |---------|-------|--------|
-| engine/ (V2 — ACTIVE) | 353/353 | ✅ All passing |
-| backend/ (Python/FastAPI) | 212/212 | ✅ All passing |
+| engine/ (V2 — ACTIVE) | 387/387 | ✅ All passing |
+| backend/ (Python/FastAPI) | 247/247 | ✅ All passing |
 | archive/core-v1/ (V1 — ARCHIVED) | 218/218 | ✅ All passing |
 
 **V2 engines:** CohesionEngine (70), ClarityEngine (23), ScoreProjector (22), IdentityResolver (15), KeyGarmentResolver (21), MilestoneTracker (38), SeasonalEngineV2 (26), OptimizeEngineV2 (19), BehaviouralEngine (27), SimilarityEngine (18), DailyOutfitScorer (9), BestOutfitFinder (8), NetworkUnlockCalculator (10), DailyOutfitEngine (13), StyleDirectionEngine (14), Models (18).
 
-**Backend test breakdown:** health (3), color_extraction (21), image_polish (3), image_normalize (10), image_storage (5), product_search (3), barcode_lookup (3), metadata_extractor (4), wardrobe_io (13), garments CRUD (11), wardrobe_analysis (34), outfits (7), wear+clarity (10), discover (32), outfit_graph (8), shopify (25), style_context (20).
+**Backend test breakdown:** health (3), color_extraction (21), image_polish (3), image_normalize (10), image_storage (5), product_search (3), barcode_lookup (3), metadata_extractor (4), wardrobe_io (13), garments CRUD (11), wardrobe_analysis (34), outfits (7), wear+clarity (10), discover (35), outfit_graph (8), shopify (25), shopify_oauth (21), security (10), style_context (20).
 
 Build commands:
 ```
@@ -110,11 +114,11 @@ SwiftUI and SwiftData require Mac + Xcode. Development machine is Arch Linux. En
 1. Open Xcode, add `ios/` files to iOS target
 2. Import `engine/COREEngine` as local Swift package
 3. Build and wire SwiftUI views to ViewModels
-4. Connect to backend API (45 endpoints ready)
+4. Connect to backend API (49 endpoints ready)
 5. Camera capture → `POST /api/garments/{id}/image` → real garment photos
 6. Studio ViewModel → engine scoring via EngineCoordinator
 
-**Backend API overview (45 endpoints):**
+**Backend API overview (49 endpoints):**
 ```
 # Pipeline (5)
 POST /api/product-search, /api/barcode-lookup, /api/extract-colors
@@ -143,10 +147,14 @@ POST /api/discover/bookmark, DELETE /api/discover/bookmark/{id}
 GET /api/discover/bookmarks
 POST /api/discover/action, GET /api/discover/stats
 
-# Brand Partners / Shopify (7)
+# Brand Partners / Shopify (8)
 POST /api/brands/register, GET /api/brands, GET /api/brands/{id}
 DELETE /api/brands/{id}, POST /api/brands/{id}/sync
-GET /api/brands/{id}/products, POST /api/brands/webhook
+GET /api/brands/{id}/products, GET /api/brands/{id}/preview
+POST /api/brands/webhook
+
+# Shopify OAuth (2)
+GET /api/auth/shopify, GET /api/auth/shopify/callback
 
 # User Profile (2)
 GET/PUT /api/profile (style_context, archetype)
