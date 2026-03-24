@@ -149,6 +149,7 @@ struct CORETheme {
     let text: Color
     let text2: Color
     let text3: Color
+    let text3Fixed: Color  // Contrast-safe version of text3 (≥4.5:1 on bg)
     let text4: Color
 
     static let dark = CORETheme(
@@ -161,6 +162,7 @@ struct CORETheme {
         text: .coretTextDark,
         text2: .coretText2Dark,
         text3: .coretText3Dark,
+        text3Fixed: .coretText3Dark, // Already high contrast on dark bg
         text4: .coretText4Dark
     )
 
@@ -174,6 +176,7 @@ struct CORETheme {
         text: .coretText,
         text2: .coretText2,
         text3: .coretText3,
+        text3Fixed: Color(hex: "6B5E4A"), // Darker than text3 — meets 4.5:1 on FDFAF6
         text4: .coretText4
     )
 }

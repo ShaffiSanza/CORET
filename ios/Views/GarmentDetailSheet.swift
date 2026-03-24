@@ -53,8 +53,9 @@ struct GarmentDetailSheet: View {
                 Circle()
                     .fill(theme.surface)
                     .frame(width: 100, height: 100)
-                Text(emoji)
-                    .font(.system(size: 48))
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(garmentColor)
+                    .frame(width: 52, height: 60)
             }
 
             // Key badge
@@ -212,14 +213,9 @@ struct GarmentDetailSheet: View {
             .background(Capsule().fill(theme.surface))
     }
 
-    private var emoji: String {
-        switch garment.baseGroup {
-        case .tee, .shirt, .knit, .hoodie: "\u{1F455}"
-        case .blazer, .coat: "\u{1F9E5}"
-        case .jeans, .chinos, .trousers, .shorts: "\u{1F456}"
-        case .skirt: "\u{1FA73}"
-        case .sneakers, .boots, .loafers, .sandals: "\u{1F45F}"
-        case .belt, .scarf, .cap, .bag: "\u{1F45C}"
-        }
+    private var garmentColor: Color {
+        let hex = garment.dominantColor
+        guard !hex.isEmpty, hex != "#000000" else { return theme.surface }
+        return Color(hex: String(hex.dropFirst()))
     }
 }

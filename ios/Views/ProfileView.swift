@@ -6,7 +6,7 @@ struct ProfileView: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
+        ScrollView {
             VStack(spacing: COREDesign.spacing) {
                 avatarSection
                 identitySection
@@ -16,7 +16,8 @@ struct ProfileView: View {
                 settingsSection
             }
             .padding(.horizontal, COREDesign.horizontalPadding)
-            .padding(.bottom, 120)
+            .padding(.top, 12)
+            .padding(.bottom, 100)
         }
         .background(theme.bg)
         .task { viewModel.sync() }
@@ -27,7 +28,7 @@ struct ProfileView: View {
     @ViewBuilder
     private var avatarSection: some View {
         VStack(spacing: 10) {
-            // Avatar circle
+            // Avatar circle — 60pt
             Circle()
                 .fill(
                     LinearGradient(
@@ -36,17 +37,17 @@ struct ProfileView: View {
                         endPoint: .bottomTrailing
                     )
                 )
-                .frame(width: 80, height: 80)
+                .frame(width: 60, height: 60)
                 .overlay {
                     Text(viewModel.primaryArchetype.rawValue.prefix(1).uppercased())
-                        .font(.instrumentSerif(32))
+                        .font(.instrumentSerif(26))
                         .foregroundStyle(theme.text)
                 }
 
-            // Identity label
+            // Identity label — 26pt
             if !viewModel.identityLabel.isEmpty {
                 Text(viewModel.identityLabel)
-                    .font(.instrumentSerif(22))
+                    .font(.instrumentSerif(26))
                     .foregroundStyle(theme.text)
             }
 
@@ -66,6 +67,8 @@ struct ProfileView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Profil: \(viewModel.identityLabel)")
     }
 
     // MARK: - Identity
@@ -76,15 +79,17 @@ struct ProfileView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Strukturell Identitet")
                     .font(.dmSans(13, weight: .semibold))
-                    .foregroundStyle(theme.text3)
+                    .foregroundStyle(theme.text3Fixed)
 
                 Text(identity.prose)
                     .font(.dmSans(14))
                     .foregroundStyle(theme.text2)
+                    .lineLimit(nil)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(COREDesign.spacing)
             .glassCard()
+            .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 2)
         }
     }
 
@@ -93,9 +98,9 @@ struct ProfileView: View {
     @ViewBuilder
     private var archetypeSelector: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Primær Arketype")
+            Text("Prim\u{00E6}r Arketype")
                 .font(.dmSans(13, weight: .semibold))
-                .foregroundStyle(theme.text3)
+                .foregroundStyle(theme.text3Fixed)
 
             HStack(spacing: 10) {
                 ForEach(Archetype.allCases, id: \.self) { arch in
@@ -106,6 +111,7 @@ struct ProfileView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(COREDesign.spacing)
         .glassCard()
+        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 2)
     }
 
     @ViewBuilder
@@ -124,6 +130,7 @@ struct ProfileView: View {
                         .fill(isSelected ? theme.gold : theme.surface)
                 }
         }
+        .accessibilityLabel("\(archetypeLabel(archetype))\(isSelected ? ", valgt" : "")")
     }
 
     // MARK: - Season
@@ -134,7 +141,7 @@ struct ProfileView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Sesong-dekning")
                     .font(.dmSans(13, weight: .semibold))
-                    .foregroundStyle(theme.text3)
+                    .foregroundStyle(theme.text3Fixed)
 
                 HStack(spacing: 12) {
                     seasonBar("V\u{00E5}r", score: coverage.springScore)
@@ -153,7 +160,9 @@ struct ProfileView: View {
                         }
                         .font(.dmSans(13, weight: .medium))
                         .foregroundStyle(theme.gold)
+                        .frame(minHeight: 44)
                     }
+                    .accessibilityLabel("Rekalibrér garderobe for sesong")
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -167,7 +176,7 @@ struct ProfileView: View {
         VStack(spacing: 4) {
             Text(label)
                 .font(.dmSans(10))
-                .foregroundStyle(theme.text3)
+                .foregroundStyle(theme.text3Fixed)
 
             GeometryReader { geo in
                 RoundedRectangle(cornerRadius: 3)
@@ -185,6 +194,8 @@ struct ProfileView: View {
                 .foregroundStyle(theme.text2)
         }
         .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(Int(score * 100)) prosent")
     }
 
     // MARK: - Milestones
@@ -193,9 +204,9 @@ struct ProfileView: View {
     private var milestonesSection: some View {
         if !viewModel.milestones.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Milepæler")
+                Text("Milep\u{00E6}ler")
                     .font(.dmSans(13, weight: .semibold))
-                    .foregroundStyle(theme.text3)
+                    .foregroundStyle(theme.text3Fixed)
 
                 ForEach(viewModel.milestones.suffix(5)) { milestone in
                     HStack(spacing: 10) {
@@ -211,6 +222,7 @@ struct ProfileView: View {
                                 .foregroundStyle(theme.text3)
                         }
                     }
+                    .accessibilityElement(children: .combine)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -264,6 +276,7 @@ struct ProfileView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
         }
+        .accessibilityLabel(label)
     }
 
     // MARK: - Helpers

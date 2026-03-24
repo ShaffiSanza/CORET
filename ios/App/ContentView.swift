@@ -47,13 +47,12 @@ struct ContentView: View {
                 }
             }
 
-            // Floating nav node
             floatingNav(theme: theme)
         }
         .environment(\.theme, theme)
     }
 
-    // MARK: - Floating Nav (matches moodboard: coret-nav-system.html)
+    // MARK: - Floating Nav (4 tabs)
 
     @ViewBuilder
     private func floatingNav(theme: CORETheme) -> some View {
@@ -115,6 +114,7 @@ struct ContentView: View {
             .frame(maxWidth: .infinity)
             .scaleEffect(isActive ? 1.05 : 1)
         }
+        .accessibilityLabel(label)
     }
 
     private func bootstrap() async {

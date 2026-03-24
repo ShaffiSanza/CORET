@@ -5,6 +5,8 @@ struct DiscoverView: View {
     @Bindable var viewModel: DiscoverViewModel
     @Environment(\.theme) private var theme
     @State private var dragOffset: CGSize = .zero
+    @State private var actionTrigger: Int = 0
+    @State private var hasSeenFirstCard = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -12,6 +14,8 @@ struct DiscoverView: View {
             cardStack
         }
         .background(theme.bg)
+        .safeAreaPadding(.top)
+        .sensoryFeedback(.impact(weight: .light), trigger: actionTrigger)
         .task { await viewModel.loadFeed() }
     }
 
@@ -44,6 +48,8 @@ struct DiscoverView: View {
                     }
                 }
         }
+        .accessibilityLabel("Modus: \(label)")
+        .accessibilityAddTraits(viewModel.mode == mode ? .isSelected : [])
     }
 
     // MARK: - Card Stack
@@ -58,6 +64,8 @@ struct DiscoverView: View {
             ZStack {
                 cardView(card)
                     .offset(y: dragOffset.height)
+                    .rotationEffect(.degrees(dragOffset.width * 0.01))
+                    .opacity(1.0 - abs(dragOffset.height) / 500.0)
                     .gesture(swipeGesture)
                     .animation(.spring(response: 0.4, dampingFraction: 0.75), value: dragOffset)
 
@@ -78,15 +86,20 @@ struct DiscoverView: View {
                 .overlay {
                     // Score watermark
                     Text("\(Int(card.strength * 100))")
-                        .font(.instrumentSerif(120))
+                        .font(.instrumentSerif(140))
                         .foregroundStyle(theme.text.opacity(0.04))
                 }
 
-            // Outfit garments
-            VStack(spacing: 6) {
+            // Outfit garments — colored circles
+            VStack(spacing: 10) {
                 ForEach(card.garments.prefix(4)) { garment in
-                    Text(garmentEmoji(garment))
-                        .font(.system(size: 32))
+                    Circle()
+                        .fill(cardGarmentColor(garment))
+                        .frame(width: 52, height: 52)
+                        .overlay {
+                            Circle()
+                                .stroke(theme.bg.opacity(0.2), lineWidth: 1)
+                        }
                 }
             }
             .frame(maxHeight: .infinity)
@@ -97,18 +110,7 @@ struct DiscoverView: View {
                     .font(.instrumentSerif(22))
                     .foregroundStyle(theme.text)
 
-                HStack(spacing: 8) {
-                    feedTypeBadge(card.feedType)
-
-                    if let score = card.score.explanation {
-                        Text(score.headline)
-                            .font(.dmSans(12))
-                            .foregroundStyle(theme.text3)
-                            .lineLimit(1)
-                    }
-                }
-
-                // Missing piece
+                // Missing piece ABOVE FI reason text
                 if let missing = card.missingPiece {
                     HStack(spacing: 6) {
                         Image(systemName: "plus.circle.dashed")
@@ -122,6 +124,30 @@ struct DiscoverView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .strokeBorder(theme.gold.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [4]))
                     }
+                }
+
+                HStack(spacing: 8) {
+                    feedTypeBadge(card.feedType)
+
+                    if let score = card.score.explanation {
+                        Text(score.headline)
+                            .font(.dmSans(12))
+                            .foregroundStyle(theme.text3)
+                            .lineLimit(1)
+                    }
+                }
+
+                // Swipe hint — only on first card
+                if !hasSeenFirstCard {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.up")
+                            .font(.system(size: 10))
+                        Text("Swipe for neste")
+                            .font(.dmSans(11))
+                    }
+                    .foregroundStyle(theme.text4)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 4)
                 }
             }
             .padding(20)
@@ -156,9 +182,21 @@ struct DiscoverView: View {
     @ViewBuilder
     private var actionButtons: some View {
         VStack(spacing: 16) {
-            actionButton(icon: "heart", color: theme.sage) { viewModel.like() }
-            actionButton(icon: "bookmark", color: theme.gold) { viewModel.hook() }
-            actionButton(icon: "hand.thumbsdown", color: theme.text3) { viewModel.pass() }
+            actionButton(icon: "heart", color: theme.sage) {
+                actionTrigger += 1
+                viewModel.like()
+                hasSeenFirstCard = true
+            }
+            actionButton(icon: "bookmark", color: theme.gold) {
+                actionTrigger += 1
+                viewModel.hook()
+                hasSeenFirstCard = true
+            }
+            actionButton(icon: "hand.thumbsdown", color: theme.text3) {
+                actionTrigger += 1
+                viewModel.pass()
+                hasSeenFirstCard = true
+            }
         }
         .padding(.trailing, 12)
         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -173,6 +211,7 @@ struct DiscoverView: View {
                 .frame(width: 48, height: 48)
                 .background(Circle().fill(.ultraThinMaterial))
         }
+        .accessibilityLabel(actionLabel(icon))
     }
 
     @ViewBuilder
@@ -192,6 +231,8 @@ struct DiscoverView: View {
             Spacer()
         }
         .padding(.horizontal, 40)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Ingen antrekk enn\u{00E5}. Legg til plagg i garderoben for \u{00E5} se antrekk her.")
     }
 
     // MARK: - Swipe Gesture
@@ -203,20 +244,26 @@ struct DiscoverView: View {
             }
             .onEnded { value in
                 if value.translation.height < -100 {
+                    actionTrigger += 1
+                    hasSeenFirstCard = true
                     withAnimation { viewModel.swipeUp() }
                 }
                 dragOffset = .zero
             }
     }
 
-    private func garmentEmoji(_ garment: Garment) -> String {
-        switch garment.baseGroup {
-        case .tee, .shirt, .knit, .hoodie: "\u{1F455}"
-        case .blazer, .coat: "\u{1F9E5}"
-        case .jeans, .chinos, .trousers, .shorts: "\u{1F456}"
-        case .skirt: "\u{1FA73}"
-        case .sneakers, .boots, .loafers, .sandals: "\u{1F45F}"
-        case .belt, .scarf, .cap, .bag: "\u{1F45C}"
+    private func cardGarmentColor(_ garment: Garment) -> Color {
+        let hex = garment.dominantColor
+        guard !hex.isEmpty, hex != "#000000" else { return theme.surface }
+        return Color(hex: String(hex.dropFirst()))
+    }
+
+    private func actionLabel(_ icon: String) -> String {
+        switch icon {
+        case "heart": "Lik antrekk"
+        case "bookmark": "Lagre antrekk"
+        case "hand.thumbsdown": "Hopp over"
+        default: icon
         }
     }
 }
