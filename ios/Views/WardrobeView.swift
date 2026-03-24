@@ -130,7 +130,7 @@ struct WardrobeView: View {
                     Spacer()
 
                     Button {
-                        // TODO: navigate to suggestions
+                        showAddSheet = true
                     } label: {
                         Text("Se forslag \u{2192}")
                             .font(.dmSans(11, weight: .medium))

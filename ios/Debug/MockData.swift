@@ -41,6 +41,11 @@ enum MockData {
             g("White Minimalist Sneakers", .shoes, .sneakers, .none,     .neutral, "#F0EDE8", key: false, fav: false, date: monthAgo),
             g("Brown Chelsea Boots",      .shoes, .boots,    .none,      .warm,    "#5A3020", key: false, fav: false, date: weekAgo),
             g("Black Derby Shoes",        .shoes, .loafers,  .none,      .neutral, "#1A1A1E", key: false, fav: false, date: weekAgo),
+
+            // ═══ ACCESSORIES (3) ═══
+            g("Brown Leather Belt",       .accessory, .belt,   .none,      .warm,    "#5A3820", key: false, fav: false, date: monthAgo),
+            g("Grey Wool Scarf",          .accessory, .scarf,  .none,      .neutral, "#7A7A7A", key: false, fav: false, date: weekAgo),
+            g("Black Canvas Bag",         .accessory, .bag,    .none,      .neutral, "#2A2A2E", key: false, fav: false, date: dayAgo),
         ]
     }
 
