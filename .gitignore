@@ -6,3 +6,8 @@ __pycache__/
 backend/data/brand_secrets.json
 docs/archive/
 moodboard/archive/
+
+# Xcode build artifacts
+build/
+*.xcuserdata/
+DerivedData/
