@@ -62,6 +62,7 @@ final class WardrobeViewModel {
         }
     }
 
+    var profile: UserProfile { coordinator.profile() }
     var isEmpty: Bool { garments.isEmpty }
     var garmentCount: Int { garments.count }
     var clarityScore: Double { claritySnapshot?.score ?? 0 }
@@ -91,6 +92,10 @@ final class WardrobeViewModel {
     }
 
     // MARK: - Simulation
+
+    func projectionForAdding(_ garment: Garment) -> ProjectionResult {
+        coordinator.projectAdding(garment)
+    }
 
     func projectionForRemoving(_ garment: Garment) -> ProjectionResult {
         coordinator.projectRemoving(garment)

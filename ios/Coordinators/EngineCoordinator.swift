@@ -180,6 +180,22 @@ final class EngineCoordinator: ObservableObject {
     func clarityHistory() -> [ClaritySnapshot] { fetchClarityHistory() }
     func milestones() -> [Milestone] { latestMilestones }
 
+    func bestOutfit() -> RankedOutfit? {
+        let garments = fetchGarments()
+        guard !garments.isEmpty else { return nil }
+        let profile = fetchOrCreateProfile()
+        return BestOutfitFinder.findBest(items: garments, profile: profile, count: 1).first
+    }
+
+    func primaryGap() -> StructuralGap? {
+        latestGapResult?.gaps.first
+    }
+
+    func logWear(garmentID: UUID) async {
+        // Persistence for wear logs — lightweight, no full recompute
+        // TODO: persist WearLog to SwiftData when WearLogEntity is added
+    }
+
     func seasonalRecommendation() -> SeasonalRecommendationV2? {
         let profileEntity = fetchOrCreateProfileEntity()
         guard let lat = profileEntity.latitude, let _ = profileEntity.longitude else { return nil }
