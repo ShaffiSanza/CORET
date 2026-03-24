@@ -16,13 +16,13 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 /* Outfit card */
 .outfit-card{
   position:absolute;inset:0;display:flex;flex-direction:column;
-  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .4s;will-change:transform;
+  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .4s;will-change:transform,opacity;
 }
-.outfit-card.exiting{transform:translateY(-100%);opacity:0}
-.outfit-card.entering{transform:translateY(100%);opacity:0}
-.outfit-card.active{transform:translateY(0);opacity:1}
+.outfit-card.exiting{transform:translateY(-100%) rotate(-3deg);opacity:0}
+.outfit-card.entering{transform:translateY(100%) rotate(2deg);opacity:0}
+.outfit-card.active{transform:translateY(0) rotate(0deg);opacity:1}
 
-/* Dynamic bg — cinematisk */
+/* Dynamic bg */
 .oc-bg{position:absolute;inset:0;pointer-events:none;z-index:0;transition:all 1s ease}
 .oc-blob{position:absolute;border-radius:50%;filter:blur(140px)}
 .oc-b1{width:450px;height:450px;top:-20%;left:-35%;animation:obf 12s ease-in-out infinite alternate}
@@ -30,7 +30,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 .oc-b3{width:200px;height:200px;top:40%;left:20%;animation:obf 11s ease-in-out infinite alternate}
 @keyframes obf{0%{transform:scale(1);opacity:.10}100%{transform:scale(1.2);opacity:.20}}
 
-/* Score watermark */
+/* Score watermark — 220px at 3.5% opacity */
 .score-watermark{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   font-family:'Instrument Serif',serif;font-size:220px;font-weight:400;
@@ -68,7 +68,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 /* Garment item */
 .oc-item{transition:all .4s cubic-bezier(.16,1,.3,1);position:relative;display:flex;align-items:center;justify-content:center}
 .oc-item svg{filter:drop-shadow(0 20px 50px rgba(0,0,0,.5)) drop-shadow(0 6px 14px rgba(0,0,0,.3))}
-/* Stack order: outer(1) → upper(2) → lower(3) → shoes(4) */
+/* Stack order: outer(1) -> upper(2) -> lower(3) -> shoes(4) */
 .oc-item:nth-child(1){z-index:4}
 .oc-item:nth-child(2){z-index:3;margin-top:-8px;transform:scale(.96)}
 .oc-item:nth-child(3){z-index:2;margin-top:-6px;transform:scale(.92)}
@@ -94,6 +94,19 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 .action-label{font-size:7px;letter-spacing:.5px;color:rgba(255,255,255,.12);text-transform:uppercase}
 .action-circle svg{stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 
+/* Haptic pulse animation for first card action buttons */
+@keyframes hapticPulse{
+  0%{transform:scale(1)}
+  15%{transform:scale(1.08)}
+  30%{transform:scale(1)}
+  45%{transform:scale(1.05)}
+  60%{transform:scale(1)}
+  100%{transform:scale(1)}
+}
+.action-btn.pulse-hint .action-circle{
+  animation:hapticPulse 2.5s ease-in-out 1s 2;
+}
+
 /* Like action */
 .action-btn.like .action-circle{color:rgba(255,255,255,.2)}
 .action-btn.like.liked .action-circle{color:rgba(201,169,110,.7);background:rgba(201,169,110,.08);border-color:rgba(201,169,110,.15);box-shadow:0 0 20px rgba(201,169,110,.1)}
@@ -104,6 +117,30 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 
 /* Pass action */
 .action-btn.pass .action-circle{color:rgba(255,255,255,.12)}
+
+/* Missing piece — gold dashed border */
+.oc-missing{
+  position:relative;z-index:3;padding:0 24px;margin-bottom:8px;
+}
+.oc-missing-box{
+  border:1px dashed rgba(201,169,110,.3);border-radius:10px;
+  padding:10px 14px;background:rgba(201,169,110,.03);
+}
+.oc-missing-label{
+  font-size:8px;letter-spacing:1.2px;text-transform:uppercase;
+  color:rgba(201,169,110,.4);margin-bottom:6px;
+}
+.oc-missing-product{
+  font-size:12px;color:rgba(201,169,110,.55);line-height:1.4;
+}
+.oc-missing-brand{
+  font-size:9px;color:rgba(201,169,110,.3);margin-top:2px;
+}
+.oc-missing-link{
+  font-size:9px;color:rgba(201,169,110,.5);text-decoration:none;
+  letter-spacing:.5px;display:inline-block;margin-top:4px;
+  border-bottom:1px solid rgba(201,169,110,.15);padding-bottom:1px;
+}
 
 /* Bottom info panel */
 .oc-bottom{
@@ -175,7 +212,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0908;color:#EAE5DE;display:f
 </div>
 
 <script>
-// ═══ GARMENT DATA (owned only — no ghosts in V1) ═══
+// === GARMENT DATA (owned only — no ghosts in V1) ===
 const G={
   outer:[
     {svg:`<svg width="150" height="112" viewBox="0 0 160 120" fill="none"><path d="M40 15C40 8 120 8 120 15L128 40C128 44 152 48 158 55V95C158 102 148 108 138 108H128V112C128 118 40 118 40 112V108H28C18 108 8 102 8 95V55C14 48 32 44 32 40L40 15Z" fill="#4A2028" opacity=".9"/></svg>`,n:'Burgundy Jakke',b:'COS',c:[340,60,20],cat:'outer'},
@@ -199,6 +236,26 @@ const G={
   ]
 };
 
+// Ghost/missing piece suggestions for rotation cards
+const GHOST_SUGGESTIONS=[
+  {product:'Hvit Oxford Skjorte',brand:'COS',cat:'base'},
+  {product:'Gra Ull Bukser',brand:'Arket',cat:'lower'},
+  {product:'Camel Frakk',brand:'Massimo Dutti',cat:'outer'},
+  {product:'Brun Lerskjorte',brand:'Zara',cat:'base'},
+  {product:'Mork Navy Vest',brand:'COS',cat:'base'},
+  {product:'Chelsea Boots',brand:'Red Wing',cat:'shoes'},
+];
+
+// FI (Fashion Intelligence) reasons
+const FI_REASONS=[
+  'Fargeharmoni styrker kohesjon med +4',
+  'Tre noytrale + ett statement = balanse',
+  'Sesongriktig: host-vinter palette',
+  'Silhuett-kontrast gir visuell dybde',
+  'Materialblanding tilforer tekstur',
+  'Strukturelt komplett: alle lag dekket',
+];
+
 const MAX_CARDS=20;
 const cats=['outer','base','lower','shoes'];
 let idx=0, hintShown=false;
@@ -217,7 +274,7 @@ function hslAvg(combo){
   return[h/4,s/4,l/4];
 }
 
-// ═══ SCROLL DOTS ═══
+// === SCROLL DOTS ===
 function buildScrollDots(){
   const total=Math.min(MAX_CARDS,10); // show max 10 dots
   let html='';
@@ -232,7 +289,7 @@ function updateScrollDots(){
   dots.forEach((d,i)=>{d.classList.toggle('active',i===dotIdx)});
 }
 
-// ═══ TOGGLE ═══
+// === TOGGLE ===
 function setMode(mode){
   currentMode=mode;
   document.querySelectorAll('.oc-toggle-btn').forEach(b=>{
@@ -254,14 +311,36 @@ function buildCard(combo,index,type,isFirst){
   card.className='outfit-card '+(index===0?'active':'entering');
 
   const badgeClass=type==='rotation'?'rotation-tag':'owned-tag';
-  const hintHtml=(!hintShown)?`<div class="swipe-hint">&uarr; Swipe for neste</div>`:'';
+  const pulseClass=isFirst?'pulse-hint':'';
+
+  // Swipe hint only on first card
+  const hintHtml=(!hintShown)?`<div class="swipe-hint">Swipe for neste</div>`:'';
   if(!hintShown) hintShown=true;
 
   // Outfit name from garment types
   const outfitName=combo.map(g=>g.n.split(' ').pop()).join(' + ');
   // Brand line
-  const brands=[...new Set(combo.map(g=>g.b))].join(' &middot; ');
+  const brands=[...new Set(combo.map(g=>g.b))].join(' / ');
 
+  // FI reason
+  const fiReason=pick(FI_REASONS);
+
+  // Missing piece section (for rotation cards or randomly on ~40% of owned cards)
+  let missingHtml='';
+  if(type==='rotation' || Math.random()<0.4){
+    const ghost=pick(GHOST_SUGGESTIONS);
+    missingHtml=`
+      <div class="oc-missing">
+        <div class="oc-missing-box">
+          <div class="oc-missing-label">Du mangler bare:</div>
+          <div class="oc-missing-product">${ghost.product}</div>
+          <div class="oc-missing-brand">${ghost.brand}</div>
+          <a class="oc-missing-link" href="#" onclick="event.stopPropagation();event.preventDefault()">Se mer</a>
+        </div>
+      </div>`;
+  }
+
+  // Hierarchy: outfit visual -> score watermark -> missing piece -> FI reason -> tags -> swipe hint
   card.innerHTML=`
     <div class="oc-bg">
       <div class="oc-blob oc-b1" style="background:hsla(${aH},${aS+15}%,${Math.max(aL-5,5)}%,.12)"></div>
@@ -280,28 +359,29 @@ function buildCard(combo,index,type,isFirst){
       </div>
     </div>
     <div class="oc-actions">
-      <div class="action-btn like" onclick="event.stopPropagation();toggleLike(this)">
+      <div class="action-btn like ${pulseClass}" onclick="event.stopPropagation();toggleLike(this)">
         <div class="action-circle lg"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
         <span class="action-label">Like</span>
       </div>
-      <div class="action-btn hook" onclick="event.stopPropagation();bookmarkOutfit(this)">
+      <div class="action-btn hook ${pulseClass}" onclick="event.stopPropagation();bookmarkOutfit(this)">
         <div class="action-circle lg"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L4 7v13l8-5 8 5V7z"/></svg></div>
         <span class="action-label">Hook</span>
       </div>
-      <div class="action-btn pass" onclick="event.stopPropagation();nextCard()">
+      <div class="action-btn pass ${pulseClass}" onclick="event.stopPropagation();nextCard()">
         <div class="action-circle sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
         <span class="action-label">Pass</span>
       </div>
     </div>
+    ${missingHtml}
     <div class="oc-bottom">
       <div class="oc-brand-line">${brands}</div>
-      <div class="oc-outfit-name">${outfitName}</div>
+      <div class="oc-outfit-name">${fiReason}</div>
       <div class="oc-tags">
         ${combo.map(g=>`<span class="oc-tag ${badgeClass}">${g.n}</span>`).join('')}
       </div>
       ${hintHtml}
     </div>
-    <div class="save-flash" id="sf-${index}"><span>Lagret &#10003;</span></div>
+    <div class="save-flash" id="sf-${index}"><span>Lagret</span></div>
   `;
 
   // Update scroll dots after render
@@ -309,35 +389,53 @@ function buildCard(combo,index,type,isFirst){
 
   // Swipe up = next, swipe right = save
   let startX=0,startY=0,currentX=0,currentY=0,dragging=false;
-  card.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;dragging=true},{passive:true});
+  card.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;currentX=startX;currentY=startY;dragging=true},{passive:true});
   card.addEventListener('touchmove',e=>{
     if(!dragging)return;currentX=e.touches[0].clientX;currentY=e.touches[0].clientY;
     const dx=currentX-startX,dy=currentY-startY;
-    if(Math.abs(dy)>Math.abs(dx)&&dy<0) card.style.transform=`translateY(${dy*0.5}px)`;
-    else if(dx>0) card.style.transform=`translateX(${dx*0.4}px) rotate(${dx*0.02}deg)`;
+    if(Math.abs(dy)>Math.abs(dx)&&dy<0){
+      card.style.transition='none';
+      card.style.transform=`translateY(${dy*0.5}px) rotate(${dy*0.02}deg)`;
+      card.style.opacity=Math.max(0.3,1+dy/400);
+    }
+    else if(dx>0){
+      card.style.transition='none';
+      card.style.transform=`translateX(${dx*0.4}px) rotate(${dx*0.04}deg)`;
+      card.style.opacity=Math.max(0.4,1-dx/500);
+    }
   },{passive:true});
   card.addEventListener('touchend',()=>{
     if(!dragging)return;dragging=false;
     const dx=currentX-startX,dy=currentY-startY;
     if(dy<-80&&Math.abs(dy)>Math.abs(dx)){nextCard();return}
     if(dx>100){saveOutfit(card,index);return}
-    card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)';
+    card.style.transition='transform .4s cubic-bezier(.16,1,.3,1), opacity .4s';
+    card.style.transform='translateY(0) rotate(0deg)';card.style.opacity='1';
   });
-  card.addEventListener('mousedown',e=>{startX=e.clientX;startY=e.clientY;dragging=true});
+  card.addEventListener('mousedown',e=>{startX=e.clientX;startY=e.clientY;currentX=startX;currentY=startY;dragging=true});
   card.addEventListener('mousemove',e=>{
     if(!dragging)return;currentX=e.clientX;currentY=e.clientY;
     const dx=currentX-startX,dy=currentY-startY;
-    if(Math.abs(dy)>Math.abs(dx)&&dy<0){card.style.transition='none';card.style.transform=`translateY(${dy*0.5}px)`}
-    else if(dx>0){card.style.transition='none';card.style.transform=`translateX(${dx*0.4}px) rotate(${dx*0.02}deg)`}
+    if(Math.abs(dy)>Math.abs(dx)&&dy<0){
+      card.style.transition='none';
+      card.style.transform=`translateY(${dy*0.5}px) rotate(${dy*0.02}deg)`;
+      card.style.opacity=Math.max(0.3,1+dy/400);
+    }
+    else if(dx>0){
+      card.style.transition='none';
+      card.style.transform=`translateX(${dx*0.4}px) rotate(${dx*0.04}deg)`;
+      card.style.opacity=Math.max(0.4,1-dx/500);
+    }
   });
   card.addEventListener('mouseup',()=>{
     if(!dragging)return;dragging=false;
     const dx=currentX-startX,dy=currentY-startY;
     if(dy<-80&&Math.abs(dy)>Math.abs(dx)){nextCard();return}
     if(dx>100){saveOutfit(card,index);return}
-    card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)';
+    card.style.transition='transform .4s cubic-bezier(.16,1,.3,1), opacity .4s';
+    card.style.transform='translateY(0) rotate(0deg)';card.style.opacity='1';
   });
-  card.addEventListener('mouseleave',()=>{if(dragging){dragging=false;card.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';card.style.transform='translateY(0)'}});
+  card.addEventListener('mouseleave',()=>{if(dragging){dragging=false;card.style.transition='transform .4s cubic-bezier(.16,1,.3,1), opacity .4s';card.style.transform='translateY(0) rotate(0deg)';card.style.opacity='1'}});
 
   return card;
 }
@@ -358,7 +456,7 @@ function buildEndCard(){
   return card;
 }
 
-// ═══ LIKE (per outfit now via action button) ═══
+// === LIKE (per outfit now via action button) ===
 function toggleLike(el){
   const isLiked=el.classList.toggle('liked');
   const circle=el.querySelector('.action-circle');
@@ -371,7 +469,7 @@ function toggleLike(el){
   }
 }
 
-// ═══ BOOKMARK / HOOK ═══
+// === BOOKMARK / HOOK ===
 function bookmarkOutfit(el){
   const isSaved=el.classList.toggle('saved');
   const circle=el.querySelector('.action-circle');
@@ -384,16 +482,17 @@ function bookmarkOutfit(el){
   }
 }
 
-// ═══ SAVE (swipe right) ═══
+// === SAVE (swipe right) ===
 function saveOutfit(card,index){
   const flash=card.querySelector('.save-flash');
   flash.classList.add('visible');
-  card.style.transition='transform .5s cubic-bezier(.16,1,.3,1)';
+  card.style.transition='transform .5s cubic-bezier(.16,1,.3,1), opacity .4s';
   card.style.transform='translateX(120%) rotate(8deg)';
+  card.style.opacity='0.3';
   setTimeout(()=>{card.remove();nextCard()},500);
 }
 
-// ═══ NAVIGATION ═══
+// === NAVIGATION ===
 const container=document.getElementById('container');
 let currentCard=null;
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CORET — Profile</title>
+<title>CORET — Profile (Tab 4)</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -17,7 +17,7 @@ body {
   min-height: 100vh;
 }
 
-/* ═══ PAGE HEADER ═══ */
+/* === PAGE HEADER === */
 .page-head { text-align: center; margin-bottom: 48px; }
 .page-tag {
   font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
@@ -31,7 +31,7 @@ body {
 .page-title em { font-style: italic; color: #C9A96E; }
 .page-sub { font-size: 13px; color: #6B625C; margin-top: 8px; max-width: 500px; line-height: 1.6; }
 
-/* ═══ PHONES ROW ═══ */
+/* === PHONES ROW === */
 .phones {
   display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
   align-items: flex-start; margin-bottom: 56px;
@@ -42,7 +42,7 @@ body {
   color: #6B625C; margin-top: 16px;
 }
 
-/* ═══ PHONE SHELL ═══ */
+/* === PHONE SHELL === */
 .phone {
   width: 320px;
   height: 692px;
@@ -59,7 +59,7 @@ body {
   to { opacity:1; transform:translateY(0) scale(1); }
 }
 
-/* ═══ DARK PHONE ═══ */
+/* === DARK PHONE === */
 .phone.dark {
   background: #1a1714;
   box-shadow:
@@ -73,16 +73,17 @@ body {
 .phone.dark .amb-b { background: rgba(122,154,110,0.06); }
 
 .phone.dark .sb { color: #6B625C; }
-.phone.dark .hdr-back { color: rgba(201,169,110,0.55); }
 .phone.dark .hdr-title { color: #EAE5DE; }
-.phone.dark .hdr-gear { color: #4a4540; }
 
 .phone.dark .glass {
   background: rgba(34,31,26,0.85);
   border: 1px solid rgba(255,255,255,0.04);
   box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.02);
 }
-.phone.dark .sec-label { color: #4a4540; }
+.phone.dark .glass.elevated {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(255,255,255,0.02);
+}
+.phone.dark .sec-label { color: #6B625C; }
 .phone.dark .ctx-avatar {
   background: linear-gradient(135deg, rgba(201,169,110,0.15), rgba(122,154,110,0.10));
   border-color: rgba(201,169,110,0.12);
@@ -90,51 +91,23 @@ body {
 }
 .phone.dark .ctx-name { color: #EAE5DE; }
 .phone.dark .ctx-sub { color: #6B625C; }
+.phone.dark .id-prose { color: #6B625C; }
 .phone.dark .tag { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); color: #6B625C; }
 .phone.dark .tag.gold { background: rgba(201,169,110,0.10); border-color: rgba(201,169,110,0.10); color: rgba(201,169,110,0.55); }
 
-.phone.dark .arch-badge.primary { background: rgba(201,169,110,0.10); border-color: rgba(201,169,110,0.12); }
-.phone.dark .arch-badge.primary svg { stroke: #C9A96E; }
-.phone.dark .arch-badge.secondary { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); }
-.phone.dark .arch-badge.secondary svg { stroke: #6B625C; }
-.phone.dark .arch-role { color: #4a4540; }
-.phone.dark .arch-name { color: #EAE5DE; }
-.phone.dark .arch-desc { color: #6B625C; }
-.phone.dark .arch-arrow { color: #4a4540; }
-.phone.dark .change-btn { color: rgba(201,169,110,0.55); }
+.phone.dark .arch-chip { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); color: #6B625C; }
+.phone.dark .arch-chip.primary { background: rgba(201,169,110,0.10); border-color: rgba(201,169,110,0.12); color: #C9A96E; }
 
-.phone.dark .season-name { color: #EAE5DE; }
-.phone.dark .season-label { color: #4a4540; }
-.phone.dark .season-region { color: #6B625C; }
-.phone.dark .recal-card {
-  background: rgba(201,169,110,0.04);
-  border-color: rgba(201,169,110,0.08);
-}
-.phone.dark .recal-card::before { background: rgba(201,169,110,0.55); }
-.phone.dark .recal-dot { background: #C9A96E; }
-.phone.dark .recal-title { color: #B0A99E; }
-.phone.dark .recal-body { color: #6B625C; }
-.phone.dark .recal-suggest { color: #EAE5DE; }
-.phone.dark .recal-btn {
-  color: #C9A96E; background: rgba(201,169,110,0.08);
-  border-color: rgba(201,169,110,0.15);
-}
+.phone.dark .season-label-text { color: #6B625C; }
+.phone.dark .bar-name { color: #B0A99E; }
+.phone.dark .bar-track { background: rgba(255,255,255,0.05); }
+.phone.dark .bar-fill { background: #C9A96E; }
+.phone.dark .bar-fill.sage { background: #7A9A6E; }
+.phone.dark .bar-pct { color: #6B625C; }
 
-.phone.dark .fits-title { color: #4a4540; }
-.phone.dark .fits-count { color: #4a4540; }
-.phone.dark .fit-thumb { border-color: #2e2a22; }
-.phone.dark .fit-item.active .fit-thumb { border-color: rgba(201,169,110,0.35); }
-.phone.dark .fit-name { color: #4a4540; }
-.phone.dark .fit-item.active .fit-name { color: rgba(201,169,110,0.55); }
-.phone.dark .fit-add-thumb { border-color: #3a3530; }
-.phone.dark .fit-add-icon { color: #4a4540; }
-.phone.dark .fit-add-text { color: #4a4540; }
-
-.phone.dark .imp-icon { background: rgba(255,255,255,0.03); }
-.phone.dark .imp-name { color: #B0A99E; }
-.phone.dark .imp-desc { color: #4a4540; }
-.phone.dark .imp-status.connected { background: rgba(122,154,110,0.10); color: #7A9A6E; }
-.phone.dark .imp-status.available { background: rgba(255,255,255,0.03); color: #6B625C; }
+.phone.dark .mile-row { color: #B0A99E; }
+.phone.dark .mile-star { color: #C9A96E; }
+.phone.dark .mile-date { color: #4a4540; }
 
 .phone.dark .set-icon { color: #4a4540; }
 .phone.dark .set-name { color: #B0A99E; }
@@ -153,8 +126,10 @@ body {
 }
 .phone.dark .tab-i { color: #4a4540; }
 .phone.dark .tab-l { color: #4a4540; }
+.phone.dark .tab.active .tab-i { color: #C9A96E; }
+.phone.dark .tab.active .tab-l { color: #C9A96E; }
 
-/* ═══ LIGHT PHONE ═══ */
+/* === LIGHT PHONE === */
 .phone.light {
   background: #fdfaf6;
   box-shadow:
@@ -167,79 +142,52 @@ body {
 .phone.light .amb-b { background: rgba(90,138,94,0.04); }
 
 .phone.light .sb { color: #8a7d68; }
-.phone.light .hdr-back { color: rgba(184,134,11,0.55); }
 .phone.light .hdr-title { color: #18140c; }
-.phone.light .hdr-gear { color: #b0a590; }
 
 .phone.light .glass {
   background: rgba(255,255,255,0.7);
   border: 1px solid rgba(30,20,5,0.07);
   box-shadow: 0 4px 20px rgba(30,20,5,0.06), inset 0 0 0 1px rgba(255,255,255,0.5);
 }
-.phone.light .sec-label { color: #b0a590; }
+.phone.light .glass.elevated {
+  box-shadow: 0 4px 20px rgba(30,20,5,0.08), 0 2px 8px rgba(30,20,5,0.06), inset 0 0 0 1px rgba(255,255,255,0.5);
+}
+.phone.light .sec-label { color: #6B5E4A; }
 .phone.light .ctx-avatar {
   background: linear-gradient(135deg, rgba(184,134,11,0.10), rgba(90,138,94,0.08));
   border-color: rgba(184,134,11,0.15);
   color: rgba(184,134,11,0.65);
 }
 .phone.light .ctx-name { color: #18140c; }
-.phone.light .ctx-sub { color: #8a7d68; }
-.phone.light .tag { background: rgba(30,20,5,0.03); border-color: rgba(30,20,5,0.07); color: #8a7d68; }
+.phone.light .ctx-sub { color: #6B5E4A; }
+.phone.light .id-prose { color: #6B5E4A; }
+.phone.light .tag { background: rgba(30,20,5,0.03); border-color: rgba(30,20,5,0.07); color: #6B5E4A; }
 .phone.light .tag.gold { background: rgba(184,134,11,0.08); border-color: rgba(184,134,11,0.12); color: rgba(184,134,11,0.70); }
 
-.phone.light .arch-badge.primary { background: rgba(184,134,11,0.08); border-color: rgba(184,134,11,0.12); }
-.phone.light .arch-badge.primary svg { stroke: #b8860b; }
-.phone.light .arch-badge.secondary { background: rgba(30,20,5,0.03); border-color: rgba(30,20,5,0.07); }
-.phone.light .arch-badge.secondary svg { stroke: #8a7d68; }
-.phone.light .arch-role { color: #b0a590; }
-.phone.light .arch-name { color: #18140c; }
-.phone.light .arch-desc { color: #8a7d68; }
-.phone.light .arch-arrow { color: #b0a590; }
-.phone.light .change-btn { color: rgba(184,134,11,0.65); }
+.phone.light .arch-chip { background: rgba(30,20,5,0.03); border-color: rgba(30,20,5,0.07); color: #6B5E4A; }
+.phone.light .arch-chip.primary { background: rgba(184,134,11,0.08); border-color: rgba(184,134,11,0.12); color: #b8860b; }
 
-.phone.light .season-name { color: #18140c; }
-.phone.light .season-label { color: #b0a590; }
-.phone.light .season-region { color: #8a7d68; }
-.phone.light .recal-card {
-  background: rgba(184,134,11,0.04);
-  border-color: rgba(184,134,11,0.10);
-}
-.phone.light .recal-card::before { background: rgba(184,134,11,0.50); }
-.phone.light .recal-dot { background: #b8860b; }
-.phone.light .recal-title { color: #5a5040; }
-.phone.light .recal-body { color: #8a7d68; }
-.phone.light .recal-suggest { color: #18140c; }
-.phone.light .recal-btn {
-  color: #b8860b; background: rgba(184,134,11,0.06);
-  border-color: rgba(184,134,11,0.15);
-}
+.phone.light .season-label-text { color: #6B5E4A; }
+.phone.light .bar-name { color: #18140c; }
+.phone.light .bar-track { background: rgba(30,20,5,0.06); }
+.phone.light .bar-fill { background: #b8860b; }
+.phone.light .bar-fill.sage { background: #5a8a5e; }
+.phone.light .bar-pct { color: #6B5E4A; }
 
-.phone.light .fits-title { color: #b0a590; }
-.phone.light .fits-count { color: #b0a590; }
-.phone.light .fit-thumb { border-color: rgba(30,20,5,0.07); }
-.phone.light .fit-item.active .fit-thumb { border-color: rgba(184,134,11,0.35); }
-.phone.light .fit-name { color: #b0a590; }
-.phone.light .fit-item.active .fit-name { color: rgba(184,134,11,0.65); }
-.phone.light .fit-add-thumb { border-color: rgba(30,20,5,0.10); }
-.phone.light .fit-add-icon { color: #b0a590; }
-.phone.light .fit-add-text { color: #b0a590; }
+.phone.light .mile-row { color: #18140c; }
+.phone.light .mile-star { color: #b8860b; }
+.phone.light .mile-date { color: #6B5E4A; }
 
-.phone.light .imp-icon { background: rgba(30,20,5,0.03); }
-.phone.light .imp-name { color: #5a5040; }
-.phone.light .imp-desc { color: #b0a590; }
-.phone.light .imp-status.connected { background: rgba(90,138,94,0.09); color: #5a8a5e; }
-.phone.light .imp-status.available { background: rgba(30,20,5,0.03); color: #8a7d68; }
-
-.phone.light .set-icon { color: #b0a590; }
-.phone.light .set-name { color: #5a5040; }
-.phone.light .set-val { color: #b0a590; }
-.phone.light .set-arrow { color: #b0a590; }
+.phone.light .set-icon { color: #6B5E4A; }
+.phone.light .set-name { color: #18140c; }
+.phone.light .set-val { color: #6B5E4A; }
+.phone.light .set-arrow { color: #6B5E4A; }
 .phone.light .set-row.destructive .set-name { color: #a05040; }
 
 .phone.light .divider { background: linear-gradient(to right, transparent, rgba(30,20,5,0.06), transparent); }
 
-.phone.light .footer-brand { color: #b0a590; }
-.phone.light .footer-sub { color: #b0a590; }
+.phone.light .footer-brand { color: #6B5E4A; }
+.phone.light .footer-sub { color: #6B5E4A; }
 
 .phone.light .tab-bar {
   background: linear-gradient(transparent, rgba(253,250,246,0.95) 25%);
@@ -247,8 +195,10 @@ body {
 }
 .phone.light .tab-i { color: #b0a590; }
 .phone.light .tab-l { color: #b0a590; }
+.phone.light .tab.active .tab-i { color: #b8860b; }
+.phone.light .tab.active .tab-l { color: #b8860b; }
 
-/* ═══ SHARED LAYOUT ═══ */
+/* === SHARED LAYOUT === */
 .ambient {
   position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
 }
@@ -270,24 +220,17 @@ body {
 }
 
 .hdr {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: center;
   padding: 6px 18px 12px; position: relative; z-index: 10;
-}
-.hdr-back {
-  font-size: 12px; cursor: pointer; background: none; border: none;
-  font-family: inherit; display: flex; align-items: center; gap: 3px;
 }
 .hdr-title {
   font-family: 'Instrument Serif', serif; font-size: 16px; letter-spacing: 0.5px;
-}
-.hdr-gear {
-  font-size: 14px; cursor: pointer; background: none; border: none;
 }
 
 .scroll {
   position: relative; z-index: 5;
   height: calc(100% - 118px);
-  overflow-y: auto; padding-bottom: 16px;
+  overflow-y: auto; padding-bottom: 72px;
 }
 .scroll::-webkit-scrollbar { display: none; }
 
@@ -305,15 +248,15 @@ body {
   padding: 14px 14px 0;
 }
 
-/* ═══ STYLE CONTEXT ═══ */
+/* === IDENTITY SECTION === */
 .ctx-row {
   display: flex; align-items: center; gap: 12px; padding: 14px;
 }
 .ctx-avatar {
-  width: 48px; height: 48px; border-radius: 50%;
+  width: 36px; height: 36px; border-radius: 50%;
   border-width: 1.5px; border-style: solid;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Instrument Serif', serif; font-size: 16px;
+  font-family: 'Instrument Serif', serif; font-size: 12px;
   flex-shrink: 0; position: relative; overflow: hidden;
 }
 .ctx-avatar::after {
@@ -322,155 +265,61 @@ body {
 }
 .ctx-info { flex: 1; }
 .ctx-name {
-  font-family: 'Instrument Serif', serif; font-size: 17px; line-height: 1.2; margin-bottom: 1px;
+  font-family: 'Instrument Serif', serif; font-size: 20px; line-height: 1.2; margin-bottom: 1px;
 }
 .ctx-sub { font-size: 10px; }
 
-.tags { display: flex; gap: 5px; flex-wrap: wrap; padding: 0 14px 12px; }
+.tags { display: flex; gap: 5px; flex-wrap: wrap; padding: 0 14px 6px; }
 .tag {
   font-size: 8.5px; letter-spacing: 0.5px; padding: 3px 8px;
   border-radius: 100px; border-width: 1px; border-style: solid;
 }
 
-/* ═══ IDENTITY ═══ */
-.id-card { padding: 10px 14px 14px; }
-
-.arch-row {
-  display: flex; align-items: center; gap: 10px; padding: 9px 0;
+.id-prose {
+  font-size: 10px; line-height: 1.6; padding: 0 14px 14px;
+  word-wrap: break-word; overflow-wrap: break-word; white-space: normal;
 }
-.arch-row + .arch-row { padding-top: 10px; }
+
+/* === ARCHETYPE SECTION === */
+.arch-chips {
+  display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 14px 14px;
+}
+.arch-chip {
+  padding: 7px 14px; border-radius: 100px;
+  border-width: 1px; border-style: solid;
+  font-size: 10px; letter-spacing: 0.5px; cursor: pointer;
+  font-family: inherit;
+  background: none;
+}
+
+/* === SEASON BARS === */
+.season-content { padding: 10px 14px 14px; }
+.season-bar-row {
+  display: flex; align-items: center; gap: 8px; padding: 5px 0;
+}
+.bar-name { font-size: 9px; width: 56px; flex-shrink: 0; }
+.bar-track {
+  flex: 1; height: 6px; border-radius: 3px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.bar-pct { font-size: 8px; width: 28px; text-align: right; flex-shrink: 0; }
+
+/* === MILESTONES === */
+.mile-content { padding: 10px 14px 14px; }
+.mile-row {
+  display: flex; align-items: center; gap: 8px; padding: 6px 0;
+  font-size: 10px;
+}
+.mile-star { font-size: 12px; flex-shrink: 0; }
+.mile-text { flex: 1; }
+.mile-date { font-size: 8px; flex-shrink: 0; }
 
 .divider { height: 1px; }
 
-.arch-badge {
-  width: 36px; height: 36px; border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; border-width: 1px; border-style: solid;
-}
-.arch-badge svg { width: 20px; height: 20px; fill: none; stroke-width: 1.5; }
-
-.arch-info { flex: 1; }
-.arch-role { font-size: 8px; letter-spacing: 1.3px; text-transform: uppercase; margin-bottom: 1px; }
-.arch-name { font-family: 'Instrument Serif', serif; font-size: 14px; line-height: 1.2; }
-.arch-desc { font-size: 9.5px; margin-top: 1px; }
-.arch-arrow { font-size: 12px; flex-shrink: 0; }
-
-.change-btn {
-  display: flex; align-items: center; justify-content: center;
-  margin-top: 10px; padding: 7px 0; font-size: 10px; letter-spacing: 0.7px;
-  cursor: pointer; background: none; border: none; font-family: inherit; width: 100%;
-}
-
-/* ═══ SEASON ═══ */
-.season-content { padding: 10px 14px 14px; }
-.season-current {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;
-}
-.season-mode { display: flex; align-items: center; gap: 7px; }
-.season-icon { font-size: 16px; opacity: 0.7; }
-.season-label { font-size: 8px; letter-spacing: 1.3px; text-transform: uppercase; }
-.season-name { font-family: 'Instrument Serif', serif; font-size: 14px; }
-.season-region { font-size: 10px; text-align: right; }
-.season-region span { font-size: 8px; }
-
-.recal-card {
-  margin-top: 12px; padding: 12px;
-  border-radius: 10px; border-width: 1px; border-style: solid;
-  position: relative; overflow: hidden;
-}
-.recal-card::before {
-  content: ''; position: absolute; top: 0; left: 0;
-  width: 2.5px; height: 100%; border-radius: 2px;
-}
-.recal-head { display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
-.recal-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-.recal-title { font-size: 10px; font-weight: 500; }
-.recal-body { font-size: 10px; line-height: 1.5; margin-bottom: 8px; padding-left: 11px; }
-.recal-suggest {
-  font-family: 'Instrument Serif', serif; font-size: 13px; display: block; margin-top: 1px;
-}
-.recal-btn {
-  margin-left: 11px; padding: 5px 14px; font-size: 9px; letter-spacing: 0.8px;
-  text-transform: uppercase; border-radius: 7px; cursor: pointer;
-  font-family: inherit; border-width: 1px; border-style: solid;
-}
-
-/* ═══ FAVORITE FITS ═══ */
-.fits-head {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 14px 8px;
-}
-.fits-title { font-size: 8px; letter-spacing: 2.2px; text-transform: uppercase; }
-.fits-count { font-size: 9px; }
-
-.fits-scroll {
-  display: flex; gap: 7px; overflow-x: auto; padding: 0 14px 12px;
-}
-.fits-scroll::-webkit-scrollbar { display: none; }
-
-.fit-item { width: 68px; flex-shrink: 0; cursor: pointer; }
-
-.fit-thumb {
-  width: 68px; height: 88px; border-radius: 9px; overflow: hidden;
-  position: relative; border-width: 1.5px; border-style: solid;
-  margin-bottom: 4px; transition: border-color 0.3s;
-}
-.fit-bg { position: absolute; inset: 0; overflow: hidden; }
-.fit-bg .blob {
-  position: absolute; border-radius: 50%; filter: blur(16px);
-  animation: fitBreathe 5s ease-in-out infinite alternate;
-}
-@keyframes fitBreathe {
-  0% { opacity: 0.45; transform: scale(1); }
-  100% { opacity: 0.65; transform: scale(1.1); }
-}
-.fit-emojis {
-  position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 1px; font-size: 13px; z-index: 1;
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.35));
-}
-.fit-name {
-  font-family: 'Instrument Serif', serif; font-style: italic;
-  font-size: 9px; text-align: center; white-space: nowrap;
-  overflow: hidden; text-overflow: ellipsis;
-}
-
-.fit-add { width: 68px; flex-shrink: 0; }
-.fit-add-thumb {
-  width: 68px; height: 88px;
-  border-width: 1.5px; border-style: dashed;
-  border-radius: 9px; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 4px;
-  cursor: pointer; margin-bottom: 4px;
-}
-.fit-add-icon { font-size: 16px; opacity: 0.4; }
-.fit-add-text { font-size: 7px; text-align: center; line-height: 1.3; }
-
-/* ═══ IMPORTS ═══ */
-.imp-content { padding: 10px 14px 12px; }
-.imp-row { display: flex; align-items: center; gap: 9px; padding: 8px 0; }
-.imp-row + .imp-row { padding-top: 9px; }
-.imp-icon {
-  width: 28px; height: 28px; border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; flex-shrink: 0;
-}
-.imp-info { flex: 1; }
-.imp-name { font-size: 11px; font-weight: 500; }
-.imp-desc { font-size: 9px; margin-top: 1px; }
-.imp-status {
-  font-size: 8px; padding: 2px 8px; border-radius: 4px;
-  flex-shrink: 0; letter-spacing: 0.3px;
-}
-
-/* ═══ SETTINGS ═══ */
+/* === SETTINGS === */
 .set-content { padding: 2px 0; }
 .set-row {
   display: flex; align-items: center; gap: 10px;
@@ -482,7 +331,7 @@ body {
 .set-val { font-size: 9px; }
 .set-arrow { font-size: 11px; margin-left: 2px; }
 
-/* ═══ FOOTER ═══ */
+/* === FOOTER === */
 .prof-footer { text-align: center; padding: 8px 18px 6px; }
 .footer-brand {
   font-family: 'Instrument Serif', serif;
@@ -490,7 +339,7 @@ body {
 }
 .footer-sub { font-size: 8px; opacity: 0.3; }
 
-/* ═══ TAB BAR ═══ */
+/* === TAB BAR === */
 .tab-bar {
   position: absolute; bottom: 0; left: 0; right: 0;
   height: 58px;
@@ -504,8 +353,10 @@ body {
 }
 .tab-i { font-size: 15px; opacity: 0.3; }
 .tab-l { font-size: 7.5px; letter-spacing: 0.7px; text-transform: uppercase; }
+.tab.active .tab-i { opacity: 1; }
+.tab.active .tab-l { font-weight: 600; }
 
-/* ═══ NOTES ═══ */
+/* === NOTES === */
 .notes {
   max-width: 680px; margin: 0 auto;
   display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
@@ -527,17 +378,17 @@ body {
 
 <!-- Page header -->
 <div class="page-head">
-  <div class="page-tag">Profile</div>
+  <div class="page-tag">Profile &mdash; Tab 4</div>
   <h1 class="page-title">Your <em>Control Panel</em></h1>
-  <div class="page-sub">Identity, season, imports, settings &mdash; same structure, two expressions</div>
+  <div class="page-sub">Identity, archetype, season, milestones, settings &mdash; Profile is now Tab 4</div>
 </div>
 
 <!-- Two phones side by side -->
 <div class="phones">
 
-  <!-- ═══════════════════════════════════
+  <!-- ===================================
        DARK MODE
-  ═══════════════════════════════════ -->
+  =================================== -->
   <div class="pw">
     <div class="phone dark">
       <div class="ambient">
@@ -545,205 +396,122 @@ body {
         <div class="amb-blob amb-b"></div>
       </div>
 
-      <div class="sb"><span>9:41</span><span style="font-size:10px">●●●● 5G ▊</span></div>
+      <div class="sb"><span>9:41</span><span style="font-size:10px">&#9679;&#9679;&#9679;&#9679; 5G &#9612;</span></div>
 
       <div class="hdr">
-        <button class="hdr-back">‹ Tilbake</button>
         <span class="hdr-title">Profil</span>
-        <button class="hdr-gear">⚙</button>
       </div>
 
       <div class="scroll">
 
-        <!-- Style Context -->
-        <div class="glass">
+        <!-- 1. Identity -->
+        <div class="glass elevated">
+          <div class="sec-label">Strukturell Identitet</div>
           <div class="ctx-row">
-            <div class="ctx-avatar">S·W</div>
+            <div class="ctx-avatar">S-W</div>
             <div class="ctx-info">
-              <div class="ctx-name">Structured · Warm</div>
+              <div class="ctx-name">Structured - Warm</div>
               <div class="ctx-sub">Medlem siden januar 2026</div>
             </div>
           </div>
           <div class="tags">
             <span class="tag gold">Tailored</span>
             <span class="tag gold">Smart Casual</span>
-            <span class="tag">Vår / Sommer</span>
-            <span class="tag">Oslo</span>
             <span class="tag">42 plagg</span>
           </div>
+          <div class="id-prose">Garderoben din har en tydelig strukturell retning med vekt pa rene linjer og intensjonelle valg. Varm fargepalett dominerer.</div>
         </div>
 
-        <!-- Structural Identity -->
-        <div class="glass">
-          <div class="sec-label">Strukturell identitet</div>
-          <div class="id-card">
-            <div class="arch-row">
-              <div class="arch-badge primary">
-                <svg viewBox="0 0 24 24"><path d="M12 2L8 6v3l-4 2v5l4 2v2h8v-2l4-2v-5l-4-2V6l-4-4z"/></svg>
-              </div>
-              <div class="arch-info">
-                <div class="arch-role">Primær</div>
-                <div class="arch-name">Tailored</div>
-                <div class="arch-desc">Rene linjer. Intensjonell.</div>
-              </div>
-              <span class="arch-arrow">›</span>
-            </div>
-            <div class="divider"></div>
-            <div class="arch-row">
-              <div class="arch-badge secondary">
-                <svg viewBox="0 0 24 24"><path d="M12 3L9 6v2.5L5 10v5l4 1.5V19h6v-2.5l4-1.5v-5l-4-1.5V6l-3-3z"/></svg>
-              </div>
-              <div class="arch-info">
-                <div class="arch-role">Sekundær</div>
-                <div class="arch-name">Smart Casual</div>
-                <div class="arch-desc">Kontrollert balanse.</div>
-              </div>
-              <span class="arch-arrow">›</span>
-            </div>
-            <button class="change-btn">Endre retning</button>
+        <!-- 2. Archetype -->
+        <div class="glass elevated">
+          <div class="sec-label">Primaer Arketype</div>
+          <div class="arch-chips">
+            <button class="arch-chip primary">Tailored</button>
+            <button class="arch-chip">Smart Casual</button>
+            <button class="arch-chip">Minimalist</button>
           </div>
         </div>
 
-        <!-- Season -->
+        <!-- 3. Season Coverage -->
         <div class="glass">
-          <div class="sec-label">Sesong</div>
+          <div class="sec-label">Sesong-dekning</div>
           <div class="season-content">
-            <div class="season-current">
-              <div class="season-mode">
-                <span class="season-icon">☀</span>
-                <div>
-                  <div class="season-label">Nåværende modus</div>
-                  <div class="season-name">Vår / Sommer</div>
-                </div>
-              </div>
-              <div class="season-region">Oslo<br><span>Sist: 14. feb</span></div>
+            <div class="season-bar-row">
+              <span class="bar-name">Var</span>
+              <div class="bar-track"><div class="bar-fill" style="width:72%"></div></div>
+              <span class="bar-pct">72%</span>
             </div>
-            <div class="recal-card">
-              <div class="recal-head">
-                <div class="recal-dot"></div>
-                <div class="recal-title">Sesongskifte oppdaget</div>
-              </div>
-              <div class="recal-body">
-                Posisjonen din antyder:
-                <span class="recal-suggest">Høst / Vinter</span>
-              </div>
-              <button class="recal-btn">Rekalibrér</button>
+            <div class="season-bar-row">
+              <span class="bar-name">Sommer</span>
+              <div class="bar-track"><div class="bar-fill sage" style="width:58%"></div></div>
+              <span class="bar-pct">58%</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Favorite Fits -->
-        <div class="glass">
-          <div class="fits-head">
-            <span class="fits-title">Favoritt-antrekk</span>
-            <span class="fits-count">3</span>
-          </div>
-          <div class="fits-scroll">
-            <div class="fit-item active">
-              <div class="fit-thumb">
-                <div class="fit-bg">
-                  <div class="blob" style="width:50px;height:50px;background:#5C3D1E;top:5%;left:0;opacity:0.5"></div>
-                  <div class="blob" style="width:40px;height:40px;background:#2C3E50;bottom:5%;right:0;opacity:0.35"></div>
-                </div>
-                <div class="fit-emojis">🧥👔👖</div>
-              </div>
-              <div class="fit-name">Vinterstruktur</div>
+            <div class="season-bar-row">
+              <span class="bar-name">Host</span>
+              <div class="bar-track"><div class="bar-fill" style="width:85%"></div></div>
+              <span class="bar-pct">85%</span>
             </div>
-            <div class="fit-item">
-              <div class="fit-thumb">
-                <div class="fit-bg">
-                  <div class="blob" style="width:50px;height:50px;background:#1A2A40;top:5%;left:0;opacity:0.5"></div>
-                  <div class="blob" style="width:40px;height:40px;background:#7A9AB0;bottom:5%;right:0;opacity:0.35"></div>
-                </div>
-                <div class="fit-emojis">👕👖👟</div>
-              </div>
-              <div class="fit-name">Sommerlett</div>
-            </div>
-            <div class="fit-item">
-              <div class="fit-thumb">
-                <div class="fit-bg">
-                  <div class="blob" style="width:50px;height:50px;background:#2A3520;top:5%;left:0;opacity:0.5"></div>
-                  <div class="blob" style="width:40px;height:40px;background:#1A1A1A;bottom:5%;right:0;opacity:0.35"></div>
-                </div>
-                <div class="fit-emojis">🧥🧶👖</div>
-              </div>
-              <div class="fit-name">Mørk Street</div>
-            </div>
-            <div class="fit-add">
-              <div class="fit-add-thumb">
-                <span class="fit-add-icon">+</span>
-                <span class="fit-add-text">Legg til</span>
-              </div>
+            <div class="season-bar-row">
+              <span class="bar-name">Vinter</span>
+              <div class="bar-track"><div class="bar-fill sage" style="width:44%"></div></div>
+              <span class="bar-pct">44%</span>
             </div>
           </div>
         </div>
 
-        <!-- Imports -->
+        <!-- 4. Milestones -->
         <div class="glass">
-          <div class="sec-label">Importkilder</div>
-          <div class="imp-content">
-            <div class="imp-row">
-              <div class="imp-icon">📧</div>
-              <div class="imp-info">
-                <div class="imp-name">E-post</div>
-                <div class="imp-desc">12 plagg via Gmail</div>
-              </div>
-              <span class="imp-status connected">Koblet</span>
+          <div class="sec-label">Milepaler</div>
+          <div class="mile-content">
+            <div class="mile-row">
+              <span class="mile-star">&#9733;</span>
+              <span class="mile-text">Forste plagg lagt til</span>
+              <span class="mile-date">Jan 2026</span>
             </div>
-            <div class="divider"></div>
-            <div class="imp-row">
-              <div class="imp-icon">🟠</div>
-              <div class="imp-info">
-                <div class="imp-name">Zalando</div>
-                <div class="imp-desc">Automatisk import</div>
-              </div>
-              <span class="imp-status available">Koble til</span>
+            <div class="mile-row">
+              <span class="mile-star">&#9733;</span>
+              <span class="mile-text">10 antrekk registrert</span>
+              <span class="mile-date">Feb 2026</span>
             </div>
-            <div class="divider"></div>
-            <div class="imp-row">
-              <div class="imp-icon">🟡</div>
-              <div class="imp-info">
-                <div class="imp-name">Boozt</div>
-                <div class="imp-desc">Automatisk import</div>
-              </div>
-              <span class="imp-status available">Koble til</span>
+            <div class="mile-row">
+              <span class="mile-star">&#9733;</span>
+              <span class="mile-text">Cohesion over 70</span>
+              <span class="mile-date">Mar 2026</span>
+            </div>
+            <div class="mile-row">
+              <span class="mile-star">&#9733;</span>
+              <span class="mile-text">Full sesong-dekning</span>
+              <span class="mile-date">Mar 2026</span>
             </div>
           </div>
         </div>
 
         <!-- Settings -->
         <div class="glass">
-          <div class="sec-label">Innstillinger</div>
           <div class="set-content">
             <div class="set-row">
-              <span class="set-icon">🔔</span>
-              <span class="set-name">Varsler</span>
-              <span class="set-arrow">›</span>
-            </div>
-            <div class="divider"></div>
-            <div class="set-row">
-              <span class="set-icon">📊</span>
+              <span class="set-icon" style="font-style:normal">&#8599;</span>
               <span class="set-name">Eksporter data</span>
-              <span class="set-arrow">›</span>
+              <span class="set-arrow">&#8250;</span>
             </div>
             <div class="divider"></div>
             <div class="set-row">
-              <span class="set-icon">🔒</span>
+              <span class="set-icon" style="font-style:normal">&#9670;</span>
               <span class="set-name">Personvern</span>
-              <span class="set-arrow">›</span>
+              <span class="set-arrow">&#8250;</span>
             </div>
             <div class="divider"></div>
             <div class="set-row">
-              <span class="set-icon">ℹ</span>
+              <span class="set-icon" style="font-style:normal">&#9432;</span>
               <span class="set-name">Om CORET</span>
               <span class="set-val">v1.0</span>
-              <span class="set-arrow">›</span>
+              <span class="set-arrow">&#8250;</span>
             </div>
             <div class="divider"></div>
             <div class="set-row destructive">
-              <span class="set-icon">⟳</span>
-              <span class="set-name">Tilbakestill profil</span>
-              <span class="set-arrow">›</span>
+              <span class="set-icon" style="font-style:normal">&#8635;</span>
+              <span class="set-name">Nullstill profil</span>
+              <span class="set-arrow">&#8250;</span>
             </div>
           </div>
         </div>
@@ -756,17 +524,18 @@ body {
       </div>
 
       <div class="tab-bar">
-        <div class="tab"><span class="tab-i">▦</span><span class="tab-l">Wardrobe</span></div>
-        <div class="tab"><span class="tab-i">✦</span><span class="tab-l">Studio</span></div>
-        <div class="tab"><span class="tab-i">◎</span><span class="tab-l">Discover</span></div>
+        <div class="tab"><span class="tab-i">&#9638;</span><span class="tab-l">Wardrobe</span></div>
+        <div class="tab"><span class="tab-i">&#10022;</span><span class="tab-l">Studio</span></div>
+        <div class="tab"><span class="tab-i">&#9678;</span><span class="tab-l">Discover</span></div>
+        <div class="tab active"><span class="tab-i">&#9673;</span><span class="tab-l">Profil</span></div>
       </div>
     </div>
     <div class="ptag">Dark mode</div>
   </div>
 
-  <!-- ═══════════════════════════════════
+  <!-- ===================================
        LIGHT MODE
-  ═══════════════════════════════════ -->
+  =================================== -->
   <div class="pw">
     <div class="phone light">
       <div class="ambient">
@@ -774,205 +543,122 @@ body {
         <div class="amb-blob amb-b"></div>
       </div>
 
-      <div class="sb"><span>9:41</span><span style="font-size:10px">●●●● 5G ▊</span></div>
+      <div class="sb"><span>9:41</span><span style="font-size:10px">&#9679;&#9679;&#9679;&#9679; 5G &#9612;</span></div>
 
       <div class="hdr">
-        <button class="hdr-back">‹ Tilbake</button>
         <span class="hdr-title">Profil</span>
-        <button class="hdr-gear">⚙</button>
       </div>
 
       <div class="scroll">
 
-        <!-- Style Context -->
-        <div class="glass">
+        <!-- 1. Identity -->
+        <div class="glass elevated">
+          <div class="sec-label">Strukturell Identitet</div>
           <div class="ctx-row">
-            <div class="ctx-avatar">S·W</div>
+            <div class="ctx-avatar">S-W</div>
             <div class="ctx-info">
-              <div class="ctx-name">Structured · Warm</div>
+              <div class="ctx-name">Structured - Warm</div>
               <div class="ctx-sub">Medlem siden januar 2026</div>
             </div>
           </div>
           <div class="tags">
             <span class="tag gold">Tailored</span>
             <span class="tag gold">Smart Casual</span>
-            <span class="tag">Vår / Sommer</span>
-            <span class="tag">Oslo</span>
             <span class="tag">42 plagg</span>
           </div>
+          <div class="id-prose">Garderoben din har en tydelig strukturell retning med vekt pa rene linjer og intensjonelle valg. Varm fargepalett dominerer.</div>
         </div>
 
-        <!-- Structural Identity -->
-        <div class="glass">
-          <div class="sec-label">Strukturell identitet</div>
-          <div class="id-card">
-            <div class="arch-row">
-              <div class="arch-badge primary">
-                <svg viewBox="0 0 24 24"><path d="M12 2L8 6v3l-4 2v5l4 2v2h8v-2l4-2v-5l-4-2V6l-4-4z"/></svg>
-              </div>
-              <div class="arch-info">
-                <div class="arch-role">Primær</div>
-                <div class="arch-name">Tailored</div>
-                <div class="arch-desc">Rene linjer. Intensjonell.</div>
-              </div>
-              <span class="arch-arrow">›</span>
-            </div>
-            <div class="divider"></div>
-            <div class="arch-row">
-              <div class="arch-badge secondary">
-                <svg viewBox="0 0 24 24"><path d="M12 3L9 6v2.5L5 10v5l4 1.5V19h6v-2.5l4-1.5v-5l-4-1.5V6l-3-3z"/></svg>
-              </div>
-              <div class="arch-info">
-                <div class="arch-role">Sekundær</div>
-                <div class="arch-name">Smart Casual</div>
-                <div class="arch-desc">Kontrollert balanse.</div>
-              </div>
-              <span class="arch-arrow">›</span>
-            </div>
-            <button class="change-btn">Endre retning</button>
+        <!-- 2. Archetype -->
+        <div class="glass elevated">
+          <div class="sec-label">Primaer Arketype</div>
+          <div class="arch-chips">
+            <button class="arch-chip primary">Tailored</button>
+            <button class="arch-chip">Smart Casual</button>
+            <button class="arch-chip">Minimalist</button>
           </div>
         </div>
 
-        <!-- Season -->
+        <!-- 3. Season Coverage -->
         <div class="glass">
-          <div class="sec-label">Sesong</div>
+          <div class="sec-label">Sesong-dekning</div>
           <div class="season-content">
-            <div class="season-current">
-              <div class="season-mode">
-                <span class="season-icon">☀</span>
-                <div>
-                  <div class="season-label">Nåværende modus</div>
-                  <div class="season-name">Vår / Sommer</div>
-                </div>
-              </div>
-              <div class="season-region">Oslo<br><span>Sist: 14. feb</span></div>
+            <div class="season-bar-row">
+              <span class="bar-name">Var</span>
+              <div class="bar-track"><div class="bar-fill" style="width:72%"></div></div>
+              <span class="bar-pct">72%</span>
             </div>
-            <div class="recal-card">
-              <div class="recal-head">
-                <div class="recal-dot"></div>
-                <div class="recal-title">Sesongskifte oppdaget</div>
-              </div>
-              <div class="recal-body">
-                Posisjonen din antyder:
-                <span class="recal-suggest">Høst / Vinter</span>
-              </div>
-              <button class="recal-btn">Rekalibrér</button>
+            <div class="season-bar-row">
+              <span class="bar-name">Sommer</span>
+              <div class="bar-track"><div class="bar-fill sage" style="width:58%"></div></div>
+              <span class="bar-pct">58%</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Favorite Fits -->
-        <div class="glass">
-          <div class="fits-head">
-            <span class="fits-title">Favoritt-antrekk</span>
-            <span class="fits-count">3</span>
-          </div>
-          <div class="fits-scroll">
-            <div class="fit-item active">
-              <div class="fit-thumb">
-                <div class="fit-bg">
-                  <div class="blob" style="width:50px;height:50px;background:#5C3D1E;top:5%;left:0;opacity:0.35"></div>
-                  <div class="blob" style="width:40px;height:40px;background:#2C3E50;bottom:5%;right:0;opacity:0.25"></div>
-                </div>
-                <div class="fit-emojis">🧥👔👖</div>
-              </div>
-              <div class="fit-name">Vinterstruktur</div>
+            <div class="season-bar-row">
+              <span class="bar-name">Host</span>
+              <div class="bar-track"><div class="bar-fill" style="width:85%"></div></div>
+              <span class="bar-pct">85%</span>
             </div>
-            <div class="fit-item">
-              <div class="fit-thumb">
-                <div class="fit-bg">
-                  <div class="blob" style="width:50px;height:50px;background:#1A2A40;top:5%;left:0;opacity:0.35"></div>
-                  <div class="blob" style="width:40px;height:40px;background:#7A9AB0;bottom:5%;right:0;opacity:0.25"></div>
-                </div>
-                <div class="fit-emojis">👕👖👟</div>
-              </div>
-              <div class="fit-name">Sommerlett</div>
-            </div>
-            <div class="fit-item">
-              <div class="fit-thumb">
-                <div class="fit-bg">
-                  <div class="blob" style="width:50px;height:50px;background:#2A3520;top:5%;left:0;opacity:0.35"></div>
-                  <div class="blob" style="width:40px;height:40px;background:#1A1A1A;bottom:5%;right:0;opacity:0.25"></div>
-                </div>
-                <div class="fit-emojis">🧥🧶👖</div>
-              </div>
-              <div class="fit-name">Mørk Street</div>
-            </div>
-            <div class="fit-add">
-              <div class="fit-add-thumb">
-                <span class="fit-add-icon">+</span>
-                <span class="fit-add-text">Legg til</span>
-              </div>
+            <div class="season-bar-row">
+              <span class="bar-name">Vinter</span>
+              <div class="bar-track"><div class="bar-fill sage" style="width:44%"></div></div>
+              <span class="bar-pct">44%</span>
             </div>
           </div>
         </div>
 
-        <!-- Imports -->
+        <!-- 4. Milestones -->
         <div class="glass">
-          <div class="sec-label">Importkilder</div>
-          <div class="imp-content">
-            <div class="imp-row">
-              <div class="imp-icon">📧</div>
-              <div class="imp-info">
-                <div class="imp-name">E-post</div>
-                <div class="imp-desc">12 plagg via Gmail</div>
-              </div>
-              <span class="imp-status connected">Koblet</span>
+          <div class="sec-label">Milepaler</div>
+          <div class="mile-content">
+            <div class="mile-row">
+              <span class="mile-star">&#9733;</span>
+              <span class="mile-text">Forste plagg lagt til</span>
+              <span class="mile-date">Jan 2026</span>
             </div>
-            <div class="divider"></div>
-            <div class="imp-row">
-              <div class="imp-icon">🟠</div>
-              <div class="imp-info">
-                <div class="imp-name">Zalando</div>
-                <div class="imp-desc">Automatisk import</div>
-              </div>
-              <span class="imp-status available">Koble til</span>
+            <div class="mile-row">
+              <span class="mile-star">&#9733;</span>
+              <span class="mile-text">10 antrekk registrert</span>
+              <span class="mile-date">Feb 2026</span>
             </div>
-            <div class="divider"></div>
-            <div class="imp-row">
-              <div class="imp-icon">🟡</div>
-              <div class="imp-info">
-                <div class="imp-name">Boozt</div>
-                <div class="imp-desc">Automatisk import</div>
-              </div>
-              <span class="imp-status available">Koble til</span>
+            <div class="mile-row">
+              <span class="mile-star">&#9733;</span>
+              <span class="mile-text">Cohesion over 70</span>
+              <span class="mile-date">Mar 2026</span>
+            </div>
+            <div class="mile-row">
+              <span class="mile-star">&#9733;</span>
+              <span class="mile-text">Full sesong-dekning</span>
+              <span class="mile-date">Mar 2026</span>
             </div>
           </div>
         </div>
 
         <!-- Settings -->
         <div class="glass">
-          <div class="sec-label">Innstillinger</div>
           <div class="set-content">
             <div class="set-row">
-              <span class="set-icon">🔔</span>
-              <span class="set-name">Varsler</span>
-              <span class="set-arrow">›</span>
-            </div>
-            <div class="divider"></div>
-            <div class="set-row">
-              <span class="set-icon">📊</span>
+              <span class="set-icon" style="font-style:normal">&#8599;</span>
               <span class="set-name">Eksporter data</span>
-              <span class="set-arrow">›</span>
+              <span class="set-arrow">&#8250;</span>
             </div>
             <div class="divider"></div>
             <div class="set-row">
-              <span class="set-icon">🔒</span>
+              <span class="set-icon" style="font-style:normal">&#9670;</span>
               <span class="set-name">Personvern</span>
-              <span class="set-arrow">›</span>
+              <span class="set-arrow">&#8250;</span>
             </div>
             <div class="divider"></div>
             <div class="set-row">
-              <span class="set-icon">ℹ</span>
+              <span class="set-icon" style="font-style:normal">&#9432;</span>
               <span class="set-name">Om CORET</span>
               <span class="set-val">v1.0</span>
-              <span class="set-arrow">›</span>
+              <span class="set-arrow">&#8250;</span>
             </div>
             <div class="divider"></div>
             <div class="set-row destructive">
-              <span class="set-icon">⟳</span>
-              <span class="set-name">Tilbakestill profil</span>
-              <span class="set-arrow">›</span>
+              <span class="set-icon" style="font-style:normal">&#8635;</span>
+              <span class="set-name">Nullstill profil</span>
+              <span class="set-arrow">&#8250;</span>
             </div>
           </div>
         </div>
@@ -985,9 +671,10 @@ body {
       </div>
 
       <div class="tab-bar">
-        <div class="tab"><span class="tab-i">▦</span><span class="tab-l">Wardrobe</span></div>
-        <div class="tab"><span class="tab-i">✦</span><span class="tab-l">Studio</span></div>
-        <div class="tab"><span class="tab-i">◎</span><span class="tab-l">Discover</span></div>
+        <div class="tab"><span class="tab-i">&#9638;</span><span class="tab-l">Wardrobe</span></div>
+        <div class="tab"><span class="tab-i">&#10022;</span><span class="tab-l">Studio</span></div>
+        <div class="tab"><span class="tab-i">&#9678;</span><span class="tab-l">Discover</span></div>
+        <div class="tab active"><span class="tab-i">&#9673;</span><span class="tab-l">Profil</span></div>
       </div>
     </div>
     <div class="ptag">Light mode</div>
@@ -998,38 +685,34 @@ body {
 <!-- Design notes -->
 <div class="notes">
   <div class="note">
-    <div class="note-t">Design tokens</div>
+    <div class="note-t">Profile is Tab 4</div>
     <div class="note-b">
-      Uses the <strong>exact same token system</strong> as Wardrobe, Studio, and Discover.
-      Dark: warm blacks + gold (#C9A96E). Light: cream + darker gold (#b8860b).
-      Glass cards, gradient dividers, ambient blobs.
+      Profile is now a <strong>full tab</strong>, not a floating sheet. No dismiss button.
+      Tab bar shows 4 tabs with Profil highlighted. Same scroll behavior as other tabs.
     </div>
   </div>
   <div class="note">
-    <div class="note-t">Navigation</div>
+    <div class="note-t">4 Sections</div>
     <div class="note-b">
-      Profile is <strong>not a tab</strong> &mdash; accessed via menu icon on any screen.
-      "Tilbake" returns to previous tab. Tab bar shows 3 tabs, none highlighted.
-      Same tab bar component across all screens.
+      <strong>1.</strong> Identity (avatar 60pt + label 26pt + tags + wrapping prose)<br>
+      <strong>2.</strong> Archetype (3 chip buttons, primary highlighted)<br>
+      <strong>3.</strong> Season (4 vertical progress bars)<br>
+      <strong>4.</strong> Milestones (star list with dates)
     </div>
   </div>
   <div class="note">
-    <div class="note-t">Content hierarchy</div>
+    <div class="note-t">Elevation + Contrast</div>
     <div class="note-b">
-      <strong>1.</strong> Style Context hero (identity at a glance)<br>
-      <strong>2.</strong> Structural Identity (archetype editor)<br>
-      <strong>3.</strong> Season (with recalibration)<br>
-      <strong>4.</strong> Favorite Fits (outfit showcase)<br>
-      <strong>5.</strong> Import Sources (data connections)<br>
-      <strong>6.</strong> Settings (system config)
+      Identity and Archetype cards use <strong>elevated shadow</strong> (0.08 opacity).
+      All section labels use <strong>#6B5E4A</strong> for contrast-fixed text3.
+      No emoji anywhere in the UI.
     </div>
   </div>
   <div class="note">
-    <div class="note-t">Backend API</div>
+    <div class="note-t">Settings</div>
     <div class="note-b">
-      <strong>GET/PUT /api/profile</strong> &mdash; style_context + archetype.
-      Season recalibration triggers full engine recompute.
-      Archetype changes recompute Cohesion + Optimize.
+      4 rows: <strong>Eksporter data, Personvern, Om CORET, Nullstill profil</strong>.
+      Bottom padding accounts for tab bar safe area (72px).
     </div>
   </div>
 </div>
