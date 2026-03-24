@@ -6,11 +6,13 @@ import COREEngine
 actor APIClient {
     static let shared = APIClient()
 
-    // DEBUG: localhost for dev, RELEASE: Railway production
+    // DEBUG: localhost for dev (no key), RELEASE: Railway production
     #if DEBUG
     var baseURL: URL = URL(string: "http://localhost:8000")!
+    var apiKey: String? = nil
     #else
     var baseURL: URL = URL(string: "https://coret-production.up.railway.app")!
+    var apiKey: String? = "cSXuH600eubsPm8syVUXfyiIvZAaLguvnAh0KqvcZ7g"
     #endif
 
     private let session: URLSession
@@ -27,6 +29,13 @@ actor APIClient {
 
     func setBaseURL(_ url: URL) {
         baseURL = url
+    }
+
+    /// Apply auth header to all requests
+    private func applyAuth(_ request: inout URLRequest) {
+        if let apiKey {
+            request.setValue(apiKey, forHTTPHeaderField: "X-API-Key")
+        }
     }
 
     // MARK: - Product Search
@@ -52,6 +61,7 @@ actor APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        applyAuth(&request)
         request.httpBody = try encoder.encode(["query": query])
         let (data, _) = try await session.data(for: request)
         return try decoder.decode(ProductSearchResponse.self, from: data)
@@ -79,6 +89,7 @@ actor APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        applyAuth(&request)
         request.httpBody = try encoder.encode(["barcode": barcode])
         let (data, _) = try await session.data(for: request)
         return try decoder.decode(BarcodeLookupResponse.self, from: data)
@@ -122,6 +133,7 @@ actor APIClient {
 
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        applyAuth(&request)
 
         var body = Data()
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
@@ -167,6 +179,7 @@ actor APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        applyAuth(&request)
         request.httpBody = try encoder.encode(ImportRequest(garments: garments))
         let (data, _) = try await session.data(for: request)
         return try decoder.decode(ImportResponse.self, from: data)
@@ -189,6 +202,7 @@ actor APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        applyAuth(&request)
         let body = DiscoverActionRequest(
             action: action,
             garmentIds: garmentIds.map(\.uuidString)
@@ -212,6 +226,7 @@ actor APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        applyAuth(&request)
         let body = BookmarkRequest(
             garmentIds: garmentIds.map(\.uuidString),
             outfitName: outfitName
@@ -243,6 +258,7 @@ actor APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        applyAuth(&request)
         var body: [String: String] = ["product_title": productTitle]
         if let brand { body["brand"] = brand }
         request.httpBody = try encoder.encode(body)
