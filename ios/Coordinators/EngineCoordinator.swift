@@ -169,6 +169,9 @@ final class EngineCoordinator: ObservableObject {
         latestJourney = nil
         latestMomentum = nil
         latestMilestones = []
+
+        // Re-seed mock data and recompute
+        await recompute()
     }
 
     // MARK: - What-If Simulation (no persistence side effects)
