@@ -154,7 +154,7 @@ struct StudioView: View {
                     .foregroundStyle(theme.text2)
                 Spacer()
                 if let garment {
-                    Text(garment.name ?? garment.baseGroup.rawValue.capitalized)
+                    Text(garment.name.isEmpty ? garment.baseGroup.rawValue.capitalized : garment.name)
                         .font(.dmSans(13))
                         .foregroundStyle(theme.text)
                 } else {
@@ -182,7 +182,7 @@ struct StudioView: View {
         .onLongPressGesture(minimumDuration: .infinity, pressing: { pressing in
             pressedSlot = pressing ? category : nil
         }, perform: {})
-        .accessibilityLabel("\(label): \(garment?.name ?? garment?.baseGroup.rawValue.capitalized ?? "Ikke valgt")")
+        .accessibilityLabel("\(label): \(garment.map { $0.name.isEmpty ? $0.baseGroup.rawValue.capitalized : $0.name } ?? "Ikke valgt")")
     }
 
     private func slotColor(_ garment: Garment) -> Color {

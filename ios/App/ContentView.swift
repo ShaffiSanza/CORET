@@ -7,6 +7,10 @@ struct ContentView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var selectedTab: Tab = .wardrobe
     @State private var coordinator: EngineCoordinator?
+    @State private var wardrobeVM: WardrobeViewModel?
+    @State private var studioVM: StudioViewModel?
+    @State private var discoverVM: DiscoverViewModel?
+    @State private var profileVM: ProfileViewModel?
 
     enum Tab: String, CaseIterable {
         case wardrobe, studio, discover, profile
@@ -14,8 +18,8 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if let coordinator {
-                mainContent(coordinator: coordinator)
+            if coordinator != nil {
+                mainContent
             } else {
                 ZStack {
                     Color.coretBgDark.ignoresSafeArea()
@@ -28,7 +32,7 @@ struct ContentView: View {
     }
 
     @ViewBuilder
-    private func mainContent(coordinator: EngineCoordinator) -> some View {
+    private var mainContent: some View {
         let theme = colorScheme == .dark ? CORETheme.dark : CORETheme.light
 
         ZStack(alignment: .bottom) {
@@ -37,13 +41,13 @@ struct ContentView: View {
             Group {
                 switch selectedTab {
                 case .wardrobe:
-                    WardrobeView(viewModel: WardrobeViewModel(coordinator: coordinator))
+                    if let vm = wardrobeVM { WardrobeView(viewModel: vm) }
                 case .studio:
-                    StudioView(viewModel: StudioViewModel(coordinator: coordinator))
+                    if let vm = studioVM { StudioView(viewModel: vm) }
                 case .discover:
-                    DiscoverView(viewModel: DiscoverViewModel(coordinator: coordinator))
+                    if let vm = discoverVM { DiscoverView(viewModel: vm) }
                 case .profile:
-                    ProfileView(viewModel: ProfileViewModel(coordinator: coordinator))
+                    if let vm = profileVM { ProfileView(viewModel: vm) }
                 }
             }
 
@@ -120,6 +124,10 @@ struct ContentView: View {
     private func bootstrap() async {
         let coord = EngineCoordinator(modelContext: modelContext)
         await coord.recompute()
+        wardrobeVM = WardrobeViewModel(coordinator: coord)
+        studioVM = StudioViewModel(coordinator: coord)
+        discoverVM = DiscoverViewModel(coordinator: coord)
+        profileVM = ProfileViewModel(coordinator: coord)
         coordinator = coord
     }
 }

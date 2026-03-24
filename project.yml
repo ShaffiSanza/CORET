@@ -21,6 +21,7 @@ targets:
       - path: ios/Persistence
       - path: ios/Coordinators
       - path: ios/Design
+      - path: ios/Debug
     dependencies:
       - package: COREEngine
     settings:

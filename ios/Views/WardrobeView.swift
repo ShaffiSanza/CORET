@@ -122,7 +122,7 @@ struct WardrobeView: View {
                             .font(.dmSans(14, weight: .medium))
                             .foregroundStyle(theme.text)
 
-                        Text("Ville l\u{00F8}ftet \(gap.projectedComboGain) outfits")
+                        Text("Ville l\u{00F8}ftet \(gap.suggestions.count) outfits")
                             .font(.dmSans(11))
                             .foregroundStyle(theme.text3Fixed)
                     }
@@ -152,7 +152,7 @@ struct WardrobeView: View {
                         )
                 }
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("Du mangler \(gap.title). Ville l\u{00F8}ftet \(gap.projectedComboGain) outfits.")
+                .accessibilityLabel("Du mangler \(gap.title). Ville l\u{00F8}ftet \(gap.suggestions.count) outfits.")
             }
         }
     }

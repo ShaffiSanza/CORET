@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01A2A9837D9724157F47923C /* UserProfileEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2655D3C0A79CBDBBD00A4CB3 /* UserProfileEntity.swift */; };
 		097984889CA95580B8C78E10 /* GarmentDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF1B3925AAF3416A71A70C /* GarmentDetailSheet.swift */; };
+		20088D3EF795D89C371DD208 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6143F11FA0599579C89E96 /* MockData.swift */; };
 		383D9F37A98CEAA0256AB269 /* SavedOutfitEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0700B94D600943E67FEC3D9 /* SavedOutfitEntity.swift */; };
 		3C8D42928BF87348B6CFBB77 /* SwiftDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6A26F957108D8667A0F40D /* SwiftDataStack.swift */; };
 		4FDF949558CEE73AA767D6AD /* COREEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 136501B6F5629A56AFCFDA9D /* COREEngine */; };
@@ -44,6 +45,7 @@
 		59BDF4ACFF336B57970C0E48 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5B3F18451F7BE9B0C97717D4 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		5C1C6FE29286AFCF5FB6F5DD /* MilestoneEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestoneEntity.swift; sourceTree = "<group>"; };
+		5D6143F11FA0599579C89E96 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		5E6A26F957108D8667A0F40D /* SwiftDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataStack.swift; sourceTree = "<group>"; };
 		635989B726B924609DC0E65D /* CORETApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CORETApp.swift; sourceTree = "<group>"; };
 		70FF1B3925AAF3416A71A70C /* GarmentDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarmentDetailSheet.swift; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 			children = (
 				A85A7E717DDCC6C1730922CC /* App */,
 				9600D8CEE3E4F1DEDEBE8F63 /* Coordinators */,
+				F8E811CDE2D70A2E026A237B /* Debug */,
 				12B600144822F9507A7EC5DB /* Design */,
 				554EBECCD1D00CDAF20A84E7 /* Packages */,
 				4BD3602744294BFB12BAEDF5 /* Persistence */,
@@ -171,6 +174,15 @@
 			path = ios/App;
 			sourceTree = "<group>";
 		};
+		F8E811CDE2D70A2E026A237B /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				5D6143F11FA0599579C89E96 /* MockData.swift */,
+			);
+			name = Debug;
+			path = ios/Debug;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -246,6 +258,7 @@
 				097984889CA95580B8C78E10 /* GarmentDetailSheet.swift in Sources */,
 				9772923A5512C4E8BCDB488B /* GarmentEntity.swift in Sources */,
 				F0E47DF3650FD4182CB93D9F /* MilestoneEntity.swift in Sources */,
+				20088D3EF795D89C371DD208 /* MockData.swift in Sources */,
 				F7E2BB4A29897A48FE1F0C9B /* ProfileView.swift in Sources */,
 				C7CD0CACD8C108334D663BAD /* ProfileViewModel.swift in Sources */,
 				383D9F37A98CEAA0256AB269 /* SavedOutfitEntity.swift in Sources */,
