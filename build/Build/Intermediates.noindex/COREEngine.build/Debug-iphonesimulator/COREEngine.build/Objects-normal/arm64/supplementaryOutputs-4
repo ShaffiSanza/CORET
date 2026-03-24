@@ -1,0 +1,23 @@
+{
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/NetworkUnlockCalculator.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/NetworkUnlockCalculator.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/NetworkUnlockCalculator.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/NetworkUnlockCalculator.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/NetworkUnlockCalculator.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/NetworkUnlockCalculator.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/OptimizeEngineV2.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/OptimizeEngineV2.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/OptimizeEngineV2.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/OptimizeEngineV2.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/OptimizeEngineV2.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/OptimizeEngineV2.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/ScoreProjector.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoreProjector.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoreProjector.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoreProjector.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoreProjector.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoreProjector.swiftdeps"
+  }
+}

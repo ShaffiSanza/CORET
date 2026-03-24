@@ -1,0 +1,145 @@
+{
+  "variables": {
+    "jacket": "jakken",
+    "coat": "frakken",
+    "blazer": "blazeren",
+    "hoodie": "hoodien",
+    "tee": "t-skjorten",
+    "shirt": "skjorten",
+    "knit": "strikken",
+    "jeans": "jeansen",
+    "chinos": "chinosen",
+    "trousers": "buksene",
+    "shorts": "shortsen",
+    "sneakers": "sneakerne",
+    "boots": "bootsene",
+    "loafers": "loaferne",
+    "sandals": "sandalene",
+    "belt": "beltet",
+    "scarf": "skjerfet",
+    "cap": "capsen",
+    "bag": "vesken",
+    "tailored": "tailored",
+    "smartCasual": "smart casual",
+    "street": "street"
+  },
+  "fallback": "Vi har ikke en forklaring for denne regelen enda.",
+  "messages": {
+    "sil_top_heavy": {
+      "headline": "Mye volum oppe og nede — outfiten mister formen sin.",
+      "fix": "Prov en smalere bukse for a balansere {dominant_piece}."
+    },
+    "sil_contrast_ideal": {
+      "headline": "Perfekt kontrast — romslig overdel mot smal underdel gir et sterkt uttrykk.",
+      "positive": "Sterk silhuett-kontrast"
+    },
+    "sil_all_fitted": {
+      "headline": "Alt sitter tett — rent og ryddig, men mangler litt spenning.",
+      "fix": "Prov en oversized jakke eller ustrukturert blazer for a bryte den stramme linjen."
+    },
+    "sil_bottom_heavy": {
+      "headline": "Smal oppe, vidt nede — et bevisst og selvsikkert valg.",
+      "positive": "Sterk editorial proporsjoner"
+    },
+    "color_warm_cool_clash": {
+      "headline": "Varme og kalde toner kjemper mot hverandre.",
+      "fix": "Prov et noeytralt plagg mellom dem — svart, hvit eller gra demper konflikten."
+    },
+    "color_warm_cool_bridged": {
+      "headline": "Varme og kalde toner motes, men det noeytrale plagget binder det sammen.",
+      "positive": "Godt balansert fargekontrast"
+    },
+    "color_monochrome": {
+      "headline": "Helhetlig fargefoolelse — rolig og gjennomtenkt.",
+      "fix": "Prov en burgunder genser eller oliven jakke for a bryte den monokrome paletten."
+    },
+    "color_low_contrast": {
+      "headline": "Alt er i samme toneleie — kan bli litt flatt.",
+      "fix": "Prov en hvit tee under eller moerke sko for a skape kontrast i dybden."
+    },
+    "theory_statement_piece": {
+      "headline": "Du har ett sterkt plagg som eier outfiten — resten stoetter opp uten a konkurrere.",
+      "positive": "Statement-plagg godt balansert"
+    },
+    "theory_competing_statements": {
+      "headline": "To sterke plagg konkurrerer om oppmerksomheten.",
+      "fix": "Prov en enkel tee eller skjorte i stedet for det ene statement-plagget for a la det andre skinne."
+    },
+    "theory_three_piece_rule": {
+      "headline": "Tre lag gir dybde og gjoer outfiten mer sammensatt.",
+      "positive": "Godt lagdelt outfit"
+    },
+    "theory_minimal": {
+      "headline": "Rent og minimalistisk — faerre plagg, sterkere uttrykk.",
+      "positive": "Rent minimalistisk uttrykk"
+    },
+    "arch_tailored_mismatch": {
+      "headline": "Profilen din er {archetype}, men {clashing_piece} trekker i en annen retning.",
+      "fix": "Prov en strikk i stedet for {clashing_piece} eller loafers i stedet for sneakers for a matche stilen din."
+    },
+    "arch_street_refined": {
+      "headline": "Du mikser street med dressplagg — kan funke som et bevisst valg.",
+      "positive": "Modig stil-miks"
+    },
+    "arch_perfect_match": {
+      "headline": "Outfiten treffer stilen din presist — alt henger sammen.",
+      "positive": "Perfekt arketype-match"
+    },
+    "trend_oversized_accepted": {
+      "headline": "Oversized er et sterkt uttrykk akkurat na.",
+      "positive": "Tidsriktig silhuett"
+    },
+    "trend_wide_leg_current": {
+      "headline": "Vide bukser er et tidsriktig valg.",
+      "positive": "Tidsriktig silhuett"
+    },
+    "depth_all_dark": {
+      "headline": "Alt er moerkt — outfiten mangler dybde og kontrast.",
+      "fix": "Prov en hvit eller lysegra tee under jakken for a apne opp uttrykket."
+    },
+    "depth_all_light": {
+      "headline": "Veldig lyst — kan virke vasket ut uten et anker.",
+      "fix": "Prov et moerkt belte eller moerke sko for a gi outfiten et anker."
+    },
+    "depth_navy_black_clash": {
+      "headline": "Navy og sort sammen ser utilsiktet ut — de er for like til a kontrastere.",
+      "fix": "Prov a bytte det ene til koksgra eller rent sort for renere linjer."
+    },
+    "season_coat_shorts": {
+      "headline": "Ytterjakke og shorts gir blandet sesong-signal.",
+      "fix": "Prov en lang bukse med jakken, eller dropp jakken for en lettere overdel."
+    },
+    "season_heavy_top_light_bottom": {
+      "headline": "Tung jakke over lette shorts — vektbalansen er skjev.",
+      "fix": "Prov en lettere jakke som en bomberjakke eller overshirt for bedre balanse."
+    },
+    "shoe_sneakers_tailored": {
+      "headline": "Sneakers under blazer skaper et formalitetsgap.",
+      "fix": "Prov loafers eller chelsea boots for a matche blazerens niva."
+    },
+    "shoe_boots_shorts": {
+      "headline": "Boots og shorts er en bevisst statement-combo.",
+      "positive": "Modig sko-valg"
+    },
+    "shoe_loafers_hoodie": {
+      "headline": "Loafers og hoodie er en high-low miks — kan funke som et bevisst valg.",
+      "fix": "Prov en strikk i stedet for hoodien for a matche loafernes eleganse."
+    },
+    "shoe_formal_with_street": {
+      "headline": "Formelle sko med street-profil — skoene trekker i en annen retning.",
+      "fix": "Prov sneakers eller boots som matcher street-stilen din."
+    },
+    "acc_watch_polish": {
+      "headline": "Beltet gir et polert smart casual-uttrykk.",
+      "positive": "Polert detalj"
+    },
+    "acc_scarf_editorial": {
+      "headline": "Skjerfet gir en gjennomtenkt detalj som loefter uttrykket.",
+      "positive": "Editorial detalj"
+    },
+    "acc_bag_completes": {
+      "headline": "Vesken fullender outfiten — det lille ekstra som viser at du har tenkt helheten.",
+      "positive": "Komplett look"
+    }
+  }
+}

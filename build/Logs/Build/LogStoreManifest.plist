@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>12</integer>
+	<key>logs</key>
+	<dict>
+		<key>F1ECF2AE-5A78-43F5-A169-16F04047D4C3</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>F1ECF2AE-5A78-43F5-A169-16F04047D4C3.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>7</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>CORET project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>CORET</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project CORET with scheme CORET</string>
+			<key>timeStartedRecording</key>
+			<real>796080404.65722704</real>
+			<key>timeStoppedRecording</key>
+			<real>796080407.91505897</real>
+			<key>title</key>
+			<string>Building project CORET with scheme CORET</string>
+			<key>uniqueIdentifier</key>
+			<string>F1ECF2AE-5A78-43F5-A169-16F04047D4C3</string>
+		</dict>
+		<key>FA831A73-6D20-4D12-BFF0-9731C0AE808A</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>FA831A73-6D20-4D12-BFF0-9731C0AE808A.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>6</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>CORET project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>CORET</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project CORET with scheme CORET</string>
+			<key>timeStartedRecording</key>
+			<real>796079960.63498902</real>
+			<key>timeStoppedRecording</key>
+			<real>796080000.46302903</real>
+			<key>title</key>
+			<string>Building project CORET with scheme CORET</string>
+			<key>uniqueIdentifier</key>
+			<string>FA831A73-6D20-4D12-BFF0-9731C0AE808A</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

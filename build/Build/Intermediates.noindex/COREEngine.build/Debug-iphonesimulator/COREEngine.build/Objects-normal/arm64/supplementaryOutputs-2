@@ -1,0 +1,30 @@
+{
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/ClarityEngine.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ClarityEngine.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ClarityEngine.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ClarityEngine.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ClarityEngine.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ClarityEngine.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/CohesionEngine.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/CohesionEngine.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/CohesionEngine.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/CohesionEngine.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/CohesionEngine.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/CohesionEngine.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/DailyOutfitEngine.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitEngine.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitEngine.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitEngine.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitEngine.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitEngine.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/DailyOutfitScorer.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitScorer.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitScorer.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitScorer.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitScorer.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/DailyOutfitScorer.swiftdeps"
+  }
+}

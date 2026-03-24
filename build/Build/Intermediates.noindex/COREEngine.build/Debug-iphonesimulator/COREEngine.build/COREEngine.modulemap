@@ -1,0 +1,4 @@
+module COREEngine {
+header "COREEngine-Swift.h"
+export *
+}

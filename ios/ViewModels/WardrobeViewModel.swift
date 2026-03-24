@@ -35,6 +35,7 @@ final class WardrobeViewModel {
     var claritySnapshot: ClaritySnapshot?
     var bestOutfit: RankedOutfit?
     var primaryGap: StructuralGap?
+    var gapResult: GapResult?
 
     // MARK: - Dependencies
     private let coordinator: EngineCoordinator
@@ -123,5 +124,6 @@ final class WardrobeViewModel {
         claritySnapshot = coordinator.latestClarity
         bestOutfit = coordinator.bestOutfit()
         primaryGap = coordinator.primaryGap()
+        gapResult = coordinator.latestGapResult
     }
 }

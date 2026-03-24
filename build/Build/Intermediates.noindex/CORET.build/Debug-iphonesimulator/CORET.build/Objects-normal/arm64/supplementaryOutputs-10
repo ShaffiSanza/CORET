@@ -1,0 +1,23 @@
+{
+  "/Users/marcuskopperud/CORET/ios/App/ContentView.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ContentView.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ContentView.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/ios/Design/DesignSystem.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DesignSystem.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DesignSystem.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DesignSystem.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DesignSystem.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DesignSystem.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/ios/Views/DiscoverView.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DiscoverView.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DiscoverView.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DiscoverView.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DiscoverView.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/DiscoverView.swiftdeps"
+  }
+}

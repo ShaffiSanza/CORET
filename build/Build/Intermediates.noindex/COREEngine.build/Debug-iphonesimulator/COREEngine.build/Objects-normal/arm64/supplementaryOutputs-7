@@ -1,0 +1,23 @@
+{
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Fashion/I18nEngine.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/I18nEngine.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/I18nEngine.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/I18nEngine.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/I18nEngine.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/I18nEngine.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Fashion/RulePriorityEngine.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/RulePriorityEngine.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/RulePriorityEngine.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/RulePriorityEngine.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/RulePriorityEngine.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/RulePriorityEngine.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Helpers/ScoringHelpers.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoringHelpers.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoringHelpers.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoringHelpers.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoringHelpers.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/ScoringHelpers.swiftdeps"
+  }
+}

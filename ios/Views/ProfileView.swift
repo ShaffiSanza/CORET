@@ -4,33 +4,22 @@ import COREEngine
 struct ProfileView: View {
     @Bindable var viewModel: ProfileViewModel
     @Environment(\.theme) private var theme
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: COREDesign.spacing) {
-                    avatarSection
-                    identitySection
-                    archetypeSelector
-                    seasonSection
-                    milestonesSection
-                    settingsSection
-                }
-                .padding(.horizontal, COREDesign.horizontalPadding)
-                .padding(.bottom, 40)
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: COREDesign.spacing) {
+                avatarSection
+                identitySection
+                archetypeSelector
+                seasonSection
+                milestonesSection
+                settingsSection
             }
-            .background(theme.bg)
-            .navigationTitle("Profil")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Ferdig") { dismiss() }
-                        .foregroundStyle(theme.gold)
-                }
-            }
-            .task { viewModel.sync() }
+            .padding(.horizontal, COREDesign.horizontalPadding)
+            .padding(.bottom, 120)
         }
+        .background(theme.bg)
+        .task { viewModel.sync() }
     }
 
     // MARK: - Avatar

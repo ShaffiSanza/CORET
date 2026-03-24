@@ -1,0 +1,145 @@
+{
+  "variables": {
+    "jacket": "jacket",
+    "coat": "coat",
+    "blazer": "blazer",
+    "hoodie": "hoodie",
+    "tee": "tee",
+    "shirt": "shirt",
+    "knit": "knit sweater",
+    "jeans": "jeans",
+    "chinos": "chinos",
+    "trousers": "trousers",
+    "shorts": "shorts",
+    "sneakers": "sneakers",
+    "boots": "boots",
+    "loafers": "loafers",
+    "sandals": "sandals",
+    "belt": "belt",
+    "scarf": "scarf",
+    "cap": "cap",
+    "bag": "bag",
+    "tailored": "tailored",
+    "smartCasual": "smart casual",
+    "street": "street"
+  },
+  "fallback": "We don't have an explanation for this rule yet.",
+  "messages": {
+    "sil_top_heavy": {
+      "headline": "A lot of volume on top and bottom — the outfit loses its shape.",
+      "fix": "Try slimmer trousers to balance your {dominant_piece}."
+    },
+    "sil_contrast_ideal": {
+      "headline": "Perfect contrast — a roomy top against a slim bottom creates a strong look.",
+      "positive": "Strong silhouette contrast"
+    },
+    "sil_all_fitted": {
+      "headline": "Everything fits close — clean and tidy, but lacks some tension.",
+      "fix": "Try an oversized jacket or unstructured blazer to break the tight line."
+    },
+    "sil_bottom_heavy": {
+      "headline": "Slim on top, wide below — a deliberate and confident choice.",
+      "positive": "Strong editorial proportions"
+    },
+    "color_warm_cool_clash": {
+      "headline": "Warm and cool tones are fighting each other.",
+      "fix": "Try a neutral piece between them — black, white or grey softens the conflict."
+    },
+    "color_warm_cool_bridged": {
+      "headline": "Warm and cool tones meet, but the neutral piece ties it together.",
+      "positive": "Well-balanced colour contrast"
+    },
+    "color_monochrome": {
+      "headline": "Consistent colour feel — calm and considered.",
+      "fix": "Try a burgundy sweater or olive jacket to break the monochrome palette."
+    },
+    "color_low_contrast": {
+      "headline": "Everything is in the same tonal range — can feel a bit flat.",
+      "fix": "Try a white tee underneath or dark shoes to create depth contrast."
+    },
+    "theory_statement_piece": {
+      "headline": "You have one bold piece owning the outfit — the rest supports without competing.",
+      "positive": "Statement piece well balanced"
+    },
+    "theory_competing_statements": {
+      "headline": "Two bold pieces are competing for attention.",
+      "fix": "Try a simple tee or shirt instead of one statement piece to let the other shine."
+    },
+    "theory_three_piece_rule": {
+      "headline": "Three layers add depth and make the outfit more composed.",
+      "positive": "Well-layered outfit"
+    },
+    "theory_minimal": {
+      "headline": "Clean and minimal — fewer pieces, stronger expression.",
+      "positive": "Clean minimalist look"
+    },
+    "arch_tailored_mismatch": {
+      "headline": "Your profile is {archetype}, but {clashing_piece} pulls in a different direction.",
+      "fix": "Try a knit instead of {clashing_piece} or loafers instead of sneakers to match your style."
+    },
+    "arch_street_refined": {
+      "headline": "You're mixing street with tailored pieces — can work as a deliberate choice.",
+      "positive": "Bold style mix"
+    },
+    "arch_perfect_match": {
+      "headline": "The outfit hits your style precisely — everything connects.",
+      "positive": "Perfect archetype match"
+    },
+    "trend_oversized_accepted": {
+      "headline": "Oversized is a strong expression right now.",
+      "positive": "On-trend silhouette"
+    },
+    "trend_wide_leg_current": {
+      "headline": "Wide trousers are an on-trend choice.",
+      "positive": "On-trend silhouette"
+    },
+    "depth_all_dark": {
+      "headline": "Everything is dark — the outfit lacks depth and contrast.",
+      "fix": "Try a white or light grey tee under your jacket to open up the look."
+    },
+    "depth_all_light": {
+      "headline": "Very light — can look washed out without an anchor.",
+      "fix": "Try a dark belt or dark shoes to anchor the outfit."
+    },
+    "depth_navy_black_clash": {
+      "headline": "Navy and black together looks unintentional — they're too similar to contrast.",
+      "fix": "Try swapping one for charcoal or pure black for cleaner lines."
+    },
+    "season_coat_shorts": {
+      "headline": "A coat and shorts send mixed season signals.",
+      "fix": "Try full-length trousers with the coat, or swap the coat for a lighter layer."
+    },
+    "season_heavy_top_light_bottom": {
+      "headline": "Heavy jacket over light shorts — the weight balance is off.",
+      "fix": "Try a lighter jacket like a bomber or overshirt for better balance."
+    },
+    "shoe_sneakers_tailored": {
+      "headline": "Sneakers under a blazer create a formality gap.",
+      "fix": "Try loafers or chelsea boots to match the blazer's level."
+    },
+    "shoe_boots_shorts": {
+      "headline": "Boots and shorts — a deliberate statement combo.",
+      "positive": "Bold shoe choice"
+    },
+    "shoe_loafers_hoodie": {
+      "headline": "Loafers and a hoodie is a high-low mix — can work as a deliberate choice.",
+      "fix": "Try a knit instead of the hoodie to match the loafers' elegance."
+    },
+    "shoe_formal_with_street": {
+      "headline": "Formal shoes with a street profile — the shoes pull in a different direction.",
+      "fix": "Try sneakers or boots that match your street style."
+    },
+    "acc_watch_polish": {
+      "headline": "The belt adds a polished smart casual touch.",
+      "positive": "Polished detail"
+    },
+    "acc_scarf_editorial": {
+      "headline": "The scarf adds a considered detail that elevates the look.",
+      "positive": "Editorial detail"
+    },
+    "acc_bag_completes": {
+      "headline": "The bag completes the outfit — the extra touch that shows you've thought about the whole.",
+      "positive": "Complete look"
+    }
+  }
+}

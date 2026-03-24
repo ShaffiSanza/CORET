@@ -1,0 +1,23 @@
+{
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/SeasonalEngineV2.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SeasonalEngineV2.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SeasonalEngineV2.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SeasonalEngineV2.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SeasonalEngineV2.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SeasonalEngineV2.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/SimilarityEngine.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SimilarityEngine.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SimilarityEngine.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SimilarityEngine.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SimilarityEngine.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/SimilarityEngine.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/engine/Sources/COREEngine/Engines/StyleDirectionEngine.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/StyleDirectionEngine.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/StyleDirectionEngine.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/StyleDirectionEngine.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/StyleDirectionEngine.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/COREEngine.build/Debug-iphonesimulator/COREEngine.build/Objects-normal/arm64/StyleDirectionEngine.swiftdeps"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "/Users/marcuskopperud/CORET/ios/Persistence/SavedOutfitEntity.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/SavedOutfitEntity.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/SavedOutfitEntity.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/SavedOutfitEntity.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/SavedOutfitEntity.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/SavedOutfitEntity.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/ios/ViewModels/ProfileViewModel.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileViewModel.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileViewModel.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileViewModel.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileViewModel.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileViewModel.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/ios/Views/ProfileView.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileView.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileView.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileView.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileView.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/ProfileView.swiftdeps"
+  }
+}

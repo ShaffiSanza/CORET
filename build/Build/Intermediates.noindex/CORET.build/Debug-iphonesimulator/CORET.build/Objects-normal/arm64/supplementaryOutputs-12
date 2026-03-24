@@ -1,0 +1,23 @@
+{
+  "/Users/marcuskopperud/CORET/ios/Persistence/GarmentEntity.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentEntity.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentEntity.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentEntity.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentEntity.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentEntity.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/ios/Persistence/MilestoneEntity.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/MilestoneEntity.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/MilestoneEntity.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/MilestoneEntity.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/MilestoneEntity.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/MilestoneEntity.swiftdeps"
+  },
+  "/Users/marcuskopperud/CORET/ios/Views/GarmentDetailSheet.swift" : {
+    "const-values" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentDetailSheet.swiftconstvalues",
+    "dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentDetailSheet.d",
+    "diagnostics" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentDetailSheet.dia",
+    "object" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentDetailSheet.o",
+    "swift-dependencies" : "/Users/marcuskopperud/CORET/build/Build/Intermediates.noindex/CORET.build/Debug-iphonesimulator/CORET.build/Objects-normal/arm64/GarmentDetailSheet.swiftdeps"
+  }
+}

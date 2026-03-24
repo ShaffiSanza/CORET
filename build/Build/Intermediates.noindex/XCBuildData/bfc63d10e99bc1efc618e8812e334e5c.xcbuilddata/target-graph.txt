@@ -1,0 +1,9 @@
+Target dependency graph (4 targets)
+Target 'CORET' in project 'CORET'
+➜ Explicit dependency on target 'COREEngine' in project 'COREEngine'
+Target 'COREEngine' in project 'COREEngine'
+➜ Explicit dependency on target 'COREEngine' in project 'COREEngine'
+➜ Explicit dependency on target 'COREEngine_COREEngine' in project 'COREEngine'
+Target 'COREEngine' in project 'COREEngine'
+➜ Explicit dependency on target 'COREEngine_COREEngine' in project 'COREEngine'
+Target 'COREEngine_COREEngine' in project 'COREEngine' (no dependencies)
