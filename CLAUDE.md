@@ -49,10 +49,14 @@ CORET/
 │       │                  SeasonalEngineV2, OptimizeEngineV2,
 │       │                  BehaviouralEngine, SimilarityEngine
 │       └── Helpers/       ScoringHelpers.swift (internal)
-├── ios/                   ← iOS frontend: SwiftData + ViewModels (requires Mac)
-│   ├── Persistence/       6 SwiftData @Model entities
+├── ios/                   ← iOS frontend: SwiftUI + SwiftData (all views written)
+│   ├── App/               CORETApp.swift, ContentView.swift (4-tab nav)
+│   ├── Views/             WardrobeView, StudioView, DiscoverView, ProfileView, AddGarmentSheet, GarmentDetailSheet
+│   ├── ViewModels/        4 @Observable ViewModels (one per tab)
+│   ├── Persistence/       7 SwiftData @Model entities
 │   ├── Coordinators/      EngineCoordinator.swift
-│   └── ViewModels/        4 @Observable ViewModels (one per tab)
+│   ├── Design/            DesignSystem.swift (tokens, typography, glass card, theme)
+│   └── Debug/             MockData.swift (18 real Shopify products for simulator)
 ├── backend/               ← Python/FastAPI backend (full wardrobe platform)
 │   ├── models/            Enums, Pydantic schemas (garment, outfit, wear_log, wardrobe_map, clarity, discover, shopify, profile)
 │   ├── services/          Business logic:
@@ -78,7 +82,7 @@ CORET/
 └── archive/               ← V1 engine (core-v1, 218/218 tests, historical)
 ```
 
-**IA:** 3 tabs: Wardrobe, Studio, Discover. Profile via top-right menu icon (not a tab). Dashboard content distributed into Wardrobe hero block. Evolution removed — Clarity in Wardrobe, Identity in Profile, Milestones as notifications.
+**IA:** 4 tabs: Wardrobe, Studio, Discover, Profile. Dashboard removed — Clarity in Wardrobe Bento hero. Evolution removed — Identity + Milestones in Profile tab. Floating nav with active circle + scale animation.
 
 **Moodboard note — `digico_wardrobe_grid.png`:**
 Reference ONLY for: 2-column grid layout and garment card presentation.
@@ -106,17 +110,30 @@ cd backend && source .venv/bin/activate && python -m pytest tests/ -v
 
 ---
 
-## 4. Current Blocker and Build Order
+## 4. Current Status and Build Order
 
-SwiftUI and SwiftData require Mac + Xcode. Development machine is Arch Linux. Engine layer (engine/) is complete. iOS files (ios/) are written as plain Swift for compilation on Mac. Backend (backend/) runs on Linux.
+All code written on both Arch Linux (engine + backend) and Mac (SwiftUI views). iOS views need Xcode build verification and simulator testing.
 
-**When Mac is available:**
-1. Open Xcode, add `ios/` files to iOS target
-2. Import `engine/COREEngine` as local Swift package
-3. Build and wire SwiftUI views to ViewModels
-4. Connect to backend API (49 endpoints ready)
-5. Camera capture → `POST /api/garments/{id}/image` → real garment photos
-6. Studio ViewModel → engine scoring via EngineCoordinator
+**iOS views written (need Xcode compilation):**
+- CORETApp.swift — entry point + SwiftData container
+- ContentView.swift — 4-tab floating nav with active circle animation
+- WardrobeView.swift — Bento hero, stagger grid, press feedback, gold key borders
+- StudioView.swift — flat lay slots, score pulse, edge-swipe drawer, primary/secondary CTA
+- DiscoverView.swift — swipe rotation+opacity, missing piece above reason, haptics
+- ProfileView.swift — tab 4, avatar 60pt, identity 26pt, elevated sections
+- AddGarmentSheet.swift — form + live projection preview
+- GarmentDetailSheet.swift — role analysis, removal simulation
+- DesignSystem.swift — tokens, typography, glass card, text3Fixed contrast
+- MockData.swift — 18 real Shopify products for simulator
+
+**Next steps (Xcode):**
+1. Open Xcode → create iOS project → add engine/ as local Swift package
+2. Drag all ios/ folders into project (App, Views, ViewModels, Persistence, Coordinators, Design, Debug)
+3. Build → fix any import issues → run on simulator
+4. Verify MockData seeds 18 garments on first launch
+5. Connect to backend API (replace TODO stubs in ViewModels)
+6. Camera capture → `POST /api/garments/{id}/image` → real garment photos
+7. Add custom fonts (Instrument Serif, DM Sans) to Xcode project
 
 **Backend API overview (49 endpoints):**
 ```
