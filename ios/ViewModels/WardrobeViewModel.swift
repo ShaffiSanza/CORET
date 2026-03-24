@@ -3,7 +3,6 @@ import Observation
 import COREEngine
 
 // MARK: - WardrobeFilter
-// Value type used by WardrobeViewModel for filtering the garment grid.
 
 struct WardrobeFilter: Equatable {
     var category: Category?
@@ -18,8 +17,9 @@ struct WardrobeFilter: Equatable {
 }
 
 // MARK: - WardrobeViewModel
-// Manages garment grid state and CRUD operations.
+// Manages garment grid + hero block (Clarity, best outfit, gap).
 // All mutations flow through EngineCoordinator (which triggers recompute).
+// IA: Dashboard removed — Clarity score lives here now.
 
 @MainActor
 @Observable
@@ -30,6 +30,11 @@ final class WardrobeViewModel {
     var filter: WardrobeFilter = WardrobeFilter()
     var keyGarmentIDs: Set<UUID> = []
     var isLoading: Bool = false
+
+    // Hero block state (was Dashboard)
+    var claritySnapshot: ClaritySnapshot?
+    var bestOutfit: RankedOutfit?
+    var primaryGap: StructuralGap?
 
     // MARK: - Dependencies
     private let coordinator: EngineCoordinator
@@ -46,8 +51,6 @@ final class WardrobeViewModel {
             if let category = filter.category, garment.category != category { return false }
             if let silhouette = filter.silhouette, garment.silhouette != silhouette { return false }
             if filter.archetype != nil {
-                // Filter by archetype affinity: only show garments with affinity ≥ 0.5
-                // for the selected archetype
                 guard let archetype = filter.archetype else { return true }
                 let affinity = CohesionEngine.archetypeAffinity(
                     baseGroup: garment.baseGroup,
@@ -60,6 +63,9 @@ final class WardrobeViewModel {
     }
 
     var isEmpty: Bool { garments.isEmpty }
+    var garmentCount: Int { garments.count }
+    var clarityScore: Double { claritySnapshot?.score ?? 0 }
+    var clarityBand: ClarityBand { claritySnapshot?.band ?? .fragmentert }
 
     // MARK: - CRUD
 
@@ -84,14 +90,12 @@ final class WardrobeViewModel {
         sync()
     }
 
-    // MARK: - Simulation (no persistence side effects)
+    // MARK: - Simulation
 
-    /// Returns projected impact of removing a garment — used for delete confirmation alert.
     func projectionForRemoving(_ garment: Garment) -> ProjectionResult {
         coordinator.projectRemoving(garment)
     }
 
-    /// Biggest clarity impact component for a removal warning message.
     func removalWarning(for garment: Garment) -> String {
         let projection = projectionForRemoving(garment)
         let delta = projection.clarityDelta
@@ -109,5 +113,10 @@ final class WardrobeViewModel {
             items: garments,
             profile: coordinator.profile()
         ))
+
+        // Hero block
+        claritySnapshot = coordinator.latestClarity
+        bestOutfit = coordinator.bestOutfit()
+        primaryGap = coordinator.primaryGap()
     }
 }

@@ -1,102 +1,118 @@
 # CORET – Continue
 Last updated: 2026-03-23
 
-## Completed This Session (22-23 Mars 2026)
-
-### Dag 1 (22. mars) — Backend + Discover + Shopify
-- [x] Discover moodboard visual upgrade (TikTok-style actions, score watermark, scroll dots, 70/30+Full toggle)
-- [x] Discover feed backend: 7030 + full modes, tag filter, style_context, brand_id
-- [x] Discover bookmarks, action logging (like/pass/hook), seen-cards tracking
-- [x] Shopify Admin API client: async httpx, pagination, rate limiting, style inference
-- [x] Ghost catalog: brand registry, product sync + cache, gap-to-product matching, brand grid
-- [x] Brand-rom i Full Discover: GET /api/discover/brands → brand grid → brand-filtered feed
-- [x] User profile: GET/PUT /api/profile (style_context + archetype)
-- [x] Style context: menswear/womenswear/unisex/fluid ghost-plagg filtering
-- [x] 9 backend-forbedringer: sync cooldown, full-mode scoring, hook auto-bookmark, seen tracking, outfit dedup, reason generation, onboarding guard
-- [x] Dark theme moodboard + light theme moodboard
-- [x] Brand pitch (Nilah) med SVG mockup, premium HTML
-- [x] UGC/Discover roadmap låst i feature_roadmap_v1.md
-- [x] Full audit: docs synced med faktisk kodebase
-
-### Dag 2 (23. mars) — Fashion Intelligence + Security + Shopify Live
-- [x] Fashion Intelligence System: 29 JSON-regler, 9 moduler, FashionTheoryEngine + RulePriorityEngine + ExplanationEngine
-- [x] i18n system: semantic tokens + templates (no.json + en.json), variable injection, locale fallback
-- [x] Nye regler: color_depth (3), season_logic (2), shoe_matching (4), accessory_boost (3)
-- [x] Security hardening: tokens ut av brands.json, security headers (HSTS/CSP/XSS), input validation (max_length + strip), webhook HMAC, security logger
-- [x] Shopify OAuth: state+nonce+TTL, scope verification, token binding, preview tokens, idempotency, rate limit per shop
-- [x] Strict auth mode: auth_type per brand (oauth/client_credentials), AuthError (ingen silent fallback), brand.status = auth_failed/active
-- [x] Product Enrichment Layer: 3-lags system (category defaults → title heuristics → manual overrides), read-time, raw cache urørt
-- [x] Shopify test-butikk live: bdsxrs-cz.myshopify.com, 18 produkter synket via Client Credentials Grant
-- [x] Preview outfits generert: SAFE=90, CORE=76, UPGRADE=86 (+10), ASPIRATIONAL=89, WILDCARD=75
-- [x] Missing piece felt: "siste plagget som fullfører outfiten" på DiscoverCard
-- [x] Studio moodboard upgraded: atelier grid, SVG icons, deeper shadows
-- [x] Architecture map fullstendig oppdatert og verifisert
-- [x] Seed script: backend/scripts/seed_test_store.py (18 test-plagg via Admin API)
-
-### Session 3 (23. mars) — Profile Perfeksjonering + Security Audit
-- [x] Profile moodboard fullstendig omskrevet: 6 seksjoner (context, identity, season, fits, imports, settings)
-- [x] Profile light+dark side-by-side moodboard (matcher design system)
-- [x] Profile wireframe oppdatert: 3 tabs + meny-navigasjon, alle seksjoner dokumentert
-- [x] Full security audit: 31 funn (5 CRITICAL, 7 HIGH, 11 MEDIUM, 8 LOW)
-- [x] Alle 31 funn fikset og verifisert (248/248 tester passerer)
-  - Path traversal: UUID-validering + resolve() i image_storage
-  - Webhook HMAC: base64 + reject ved manglende secret
-  - Hardkodet fallback-secret fjernet
-  - SSRF: shopify_domain validering (*.myshopify.com)
-  - Image upload: content-type + magic bytes validering
-  - File locking: fcntl + atomic writes i alle JSON stores
-  - Input validation: enum-typer, Pydantic constraints overalt
-  - Rate limiter: memory eviction, X-Forwarded-For support
-  - Error sanitering: generic meldinger til klient
-
-## Build Status
+## Status
 ```
-engine (V2): 387/387 passing (17 suites + Fashion Intelligence)
-backend: 248/248 passing (45 endpoints, security hardened)
-archive/core-v1 (V1): 218/218 passing (archived)
-ios/: NOT compilable on Linux — requires Mac + Xcode
-Total: 853 tester, 0 feil
+Engine:    387/387 ✅ (17 suites + Fashion Intelligence)
+Backend:   248/248 ✅ (49 endpoints, security hardened)
+Shopify:   LIVE — bdsxrs-cz.myshopify.com, 18 products synced
+iOS:       ViewModels + Persistence READY — Views NOT built yet
+Total:     853 tester, 0 feil
 ```
 
-## In Progress
-Nothing interrupted.
+## What Is Ready (DO NOT rebuild)
+- Engine: 17 engines + Fashion Intelligence (29 rules, i18n)
+- Backend: 49 endpoints, strict auth, 31 security vulns fixed
+- Shopify: Client Credentials Grant, Product Enrichment Layer
+- ViewModels: WardrobeVM, StudioVM, DiscoverVM, ProfileVM (all updated)
+- Persistence: 6 SwiftData entities + EngineCoordinator
+- Moodboards: 13 HTML files defining exact UI
 
-## Next Session Prompt
+## What Needs Building (Xcode on Mac)
+
+### STEP 1: Create Xcode Project
+1. Open Xcode → New Project → iOS App → "CORET"
+2. Interface: SwiftUI, Language: Swift
+3. File → Add Package Dependencies → Add Local → select `engine/` folder
+4. Drag `ios/` files into project:
+   - Persistence/ (6 files)
+   - Coordinators/ (1 file)
+   - ViewModels/ (4 files)
+5. Build → fix any import issues
+
+### STEP 2: ContentView.swift (Tab Bar)
 ```
-CORET — resuming. Read CLAUDE.md, then CONTINUE.md.
+TabView:
+  Tab 1: WardrobeView — icon: wardrobe
+  Tab 2: StudioView — icon: star
+  Tab 3: DiscoverView — icon: magnifyingglass
+Profile: top-right menu icon (not a tab)
+```
+Reference: moodboard/navigation/coret-nav-system.html
 
-Engine: 387/387 tests (17 engines + Fashion Intelligence).
-Backend: 248/248 tests (45 endpoints, fully security hardened).
-Shopify LIVE: bdsxrs-cz.myshopify.com, 18 products synced.
-Profile moodboard: light+dark, 6 sections, design system aligned.
-Security: 31 vulns fixed (path traversal, HMAC, SSRF, file locking, input validation).
+### STEP 3: WardrobeView.swift (Build First)
+Hero block:
+  - Clarity score (ClarityEngine)
+  - Best outfit today (BestOutfitFinder)
+  - Primary gap (OptimizeEngineV2)
+Filter bar: Category, Archetype, Silhouette
+2-column grid with garment cards
+Gap cards (dashed border)
+(+) FAB → Add Item Sheet
 
-Remaining Arch Linux work:
-- Oppdater Nilah-pitch med "siste plagget"-posisjonering
-- Landing page / waitlist for beta users
-- Cloud image storage (swap local disk → S3/R2)
+Reference: moodboard/wardrobe/coret-wardrobe-v4.html
+ViewModel: WardrobeViewModel.swift (ready)
 
-When Mac is available:
-- SwiftUI views (moodboards → SwiftUI)
-- missing_piece UI: "Du mangler bare denne vesken"
-- EngineCoordinator → Discover ViewModel
-- TestFlight beta
+### STEP 4: StudioView.swift
+Flat lay canvas with garment slots
+Side drawer for accessories (grip tab)
+Live score (Flyt/Farger/Balanse bars)
+Archetype pill + "Bruk i dag" CTA
+Surprise button
+
+Reference: moodboard/studio/coret-studio.html
+ViewModel: StudioViewModel.swift (ready)
+
+### STEP 5: DiscoverView.swift
+70/30 + Full toggle
+Full-screen swipe cards
+Right-side actions (Like/Hook/Pass)
+Score watermark
+Bottom info panel (brands, outfit name, tags)
+Missing piece highlight
+Brand grid (Full mode)
+
+Reference: moodboard/discover/coret-discover.html
+ViewModel: DiscoverViewModel.swift (ready)
+
+### STEP 6: Connect to Backend
+Backend runs on Railway or localhost.
+Base URL: configure in app settings.
+All endpoints documented in CLAUDE.md.
+
+## Color Tokens (SwiftUI)
+```swift
+extension Color {
+    // Light theme
+    static let bg     = Color(hex: "FDFAF6")
+    static let surface = Color(hex: "F5F0E8")
+    static let gold   = Color(hex: "B8860B")
+    static let sage   = Color(hex: "5A8A5E")
+    static let text   = Color(hex: "18140C")
+    static let text2  = Color(hex: "5A5040")
+    static let text3  = Color(hex: "8A7D68")
+
+    // Dark theme
+    static let bgDark     = Color(hex: "0E0C0A")
+    static let surfaceDark = Color(hex: "1A1714")
+    static let goldDark   = Color(hex: "C9A96E")
+}
 ```
 
-## Decisions Made
-- Shopify Admin REST API (not Storefront) — gives full product access
-- Products cached locally as JSON per brand — avoids repeated API calls
-- Ghost catalog tries live products first, falls back to placeholder
-- Tokens ALDRI i brands.json — ENV first, brand_secrets.json fallback (gitignored)
-- Strict auth: auth_type per brand (oauth | client_credentials), ingen silent fallback
-- AuthError on failure (aldri tom liste), ConfigError on missing creds
-- brand.status = "auth_failed" on 401, "active" on successful sync
-- Client Credentials Grant for test-butikk (auto 24h token)
-- Product Enrichment Layer: 3-lags (defaults → heuristics → overrides), read-time, raw cache urørt
-- Webhook HMAC validation (raw body, timing-safe), security headers (HSTS preload, CSP)
-- Fashion Intelligence: 29 regler i JSON, i18n med semantic tokens (no/en), locale fallback
-- UGC: aldri egen tab/modus. Injiseres i 70/30 feed i V2 kun hvis thresholds. Låst mars 2026.
-- Full Discover: V1 = brand-rom. V3 = algoritmisk feed.
-- Pris: i data (missing_piece.price), men IKKE i feed-UI. SwiftUI bestemmer visning.
-- Sett-støtte (tracksuit/co-ord): V1.5, ikke nå. Missing piece = single items only.
-- Missing piece: present KUN med nøyaktig 1 ghost + user owns >= 2 items
+## Typography
+- Titles: Instrument Serif (add to project fonts)
+- Body: DM Sans (add to project fonts)
+- Fallback: system fonts until custom fonts added
+
+## Key Architecture Rules
+- ViewModels NEVER call engines directly — only through EngineCoordinator
+- All public types: Codable, Sendable
+- Engine is pure functions, no state
+- SwiftData is local-first, no cloud sync in V1
+
+## Decisions Locked
+- 3 tabs: Wardrobe, Studio, Discover. Profile via menu icon.
+- Missing piece: show on ghost cards, price hidden in feed (show on tap)
+- Style context: invisible to user, controls ghost filtering
+- UGC: never a tab, V2 injection only with thresholds
+- Fashion Intelligence: 29 rules, i18n (no/en), ExplanationResult on OutfitScore
