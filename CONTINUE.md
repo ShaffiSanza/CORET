@@ -85,6 +85,9 @@ Already implemented — see ios/Design/DesignSystem.swift
 - UGC: never a tab, V2 injection only with thresholds
 - Fashion Intelligence: 29 rules, i18n (no/en), ExplanationResult on OutfitScore
 
+## Skills
+See [`docs/SKILLS.md`](docs/SKILLS.md) — 10 skills installed (security, UI/UX, design).
+
 ## Environment Notes (this Mac)
 - Swift 6.2.4 installed via swiftly (not Xcode toolchain)
 - Python 3.12 in backend/.venv
