@@ -12,6 +12,7 @@
 		20088D3EF795D89C371DD208 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6143F11FA0599579C89E96 /* MockData.swift */; };
 		383D9F37A98CEAA0256AB269 /* SavedOutfitEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0700B94D600943E67FEC3D9 /* SavedOutfitEntity.swift */; };
 		3C8D42928BF87348B6CFBB77 /* SwiftDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6A26F957108D8667A0F40D /* SwiftDataStack.swift */; };
+		4EB3116AA523B4A4BA01FCB0 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A43261CBBDB22641658EEEC /* APIClient.swift */; };
 		4FDF949558CEE73AA767D6AD /* COREEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 136501B6F5629A56AFCFDA9D /* COREEngine */; };
 		50CC9E3F197767899615E688 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0CEBB9F97EFE3898F2AA014 /* DiscoverViewModel.swift */; };
 		53E2B817D068C64A5DAA5E5E /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99F6A3FA875CF0EEC0FD7D8 /* DiscoverView.swift */; };
@@ -21,13 +22,17 @@
 		92C7F53B1F1C5A428CC4B4EA /* AddGarmentSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E804ECD2958BB2AD0D489 /* AddGarmentSheet.swift */; };
 		9772923A5512C4E8BCDB488B /* GarmentEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045375CDA5828FBD92470F20 /* GarmentEntity.swift */; };
 		98186C86059A8EA013BFA9AC /* ClaritySnapshotEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321C7D91C2B56642EF8E4DA1 /* ClaritySnapshotEntity.swift */; };
+		A5A75645F9E6165607BC118C /* ProductSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184EE584E5F1F25E396833CD /* ProductSearchSheet.swift */; };
 		A8AE1FEF3BCFEC8C074BBBFF /* TypeAliases.swift in Sources */ = {isa = PBXBuildFile; fileRef = C852B991F90F94C3B6CECCDB /* TypeAliases.swift */; };
 		B9D04FD9B54ED8FEFDB576C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BDF4ACFF336B57970C0E48 /* ContentView.swift */; };
 		C05AE4C78A84DD4453C4EE46 /* WardrobeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8B82644A8987E059A159FD /* WardrobeView.swift */; };
 		C438CD5A5834151542DE1212 /* EngineCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51475E0D71E7328B782C53B /* EngineCoordinator.swift */; };
 		C7CD0CACD8C108334D663BAD /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3F18451F7BE9B0C97717D4 /* ProfileViewModel.swift */; };
+		C85DED2646E182B3454537E4 /* BarcodeScannerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF344BED7B5EB97C296A791 /* BarcodeScannerSheet.swift */; };
 		D52A3ECF09D27910E4B9384D /* WardrobeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD8BA0936492B9F60C880D9 /* WardrobeViewModel.swift */; };
 		E67606D2904DB80FF0751BDE /* CORETApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 635989B726B924609DC0E65D /* CORETApp.swift */; };
+		E957060F8CB56D4AC99E9319 /* CameraCaptureSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8289E769E8AEBB6C0A1DEB /* CameraCaptureSheet.swift */; };
+		E9F3A87D831DF6EB26C97CF2 /* ImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F566D9F3D8509D07D34240AA /* ImportSheet.swift */; };
 		F0E47DF3650FD4182CB93D9F /* MilestoneEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C6FE29286AFCF5FB6F5DD /* MilestoneEntity.swift */; };
 		F7E2BB4A29897A48FE1F0C9B /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B5AF488CE92F5BBB1CDDAA /* ProfileView.swift */; };
 		FF441DD9C2763651AD1138FE /* StudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D5333276D4402FE2F53A69 /* StudioView.swift */; };
@@ -35,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		045375CDA5828FBD92470F20 /* GarmentEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarmentEntity.swift; sourceTree = "<group>"; };
+		184EE584E5F1F25E396833CD /* ProductSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductSearchSheet.swift; sourceTree = "<group>"; };
 		22779D7A785BB6B13BFB1F6D /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		264CE3E6D17AB2B9C96F70EA /* CORET.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CORET.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2655D3C0A79CBDBBD00A4CB3 /* UserProfileEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileEntity.swift; sourceTree = "<group>"; };
@@ -49,15 +55,19 @@
 		5E6A26F957108D8667A0F40D /* SwiftDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataStack.swift; sourceTree = "<group>"; };
 		635989B726B924609DC0E65D /* CORETApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CORETApp.swift; sourceTree = "<group>"; };
 		70FF1B3925AAF3416A71A70C /* GarmentDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarmentDetailSheet.swift; sourceTree = "<group>"; };
+		7A43261CBBDB22641658EEEC /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		7BF344BED7B5EB97C296A791 /* BarcodeScannerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerSheet.swift; sourceTree = "<group>"; };
 		8B8B82644A8987E059A159FD /* WardrobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeView.swift; sourceTree = "<group>"; };
 		8C5E804ECD2958BB2AD0D489 /* AddGarmentSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGarmentSheet.swift; sourceTree = "<group>"; };
 		B0700B94D600943E67FEC3D9 /* SavedOutfitEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedOutfitEntity.swift; sourceTree = "<group>"; };
 		BAD8BA0936492B9F60C880D9 /* WardrobeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeViewModel.swift; sourceTree = "<group>"; };
 		C852B991F90F94C3B6CECCDB /* TypeAliases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeAliases.swift; sourceTree = "<group>"; };
 		C99F6A3FA875CF0EEC0FD7D8 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
+		CA8289E769E8AEBB6C0A1DEB /* CameraCaptureSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureSheet.swift; sourceTree = "<group>"; };
 		D44A9283EBB8D9E314B40AD6 /* engine */ = {isa = PBXFileReference; lastKnownFileType = folder; name = engine; path = engine; sourceTree = SOURCE_ROOT; };
 		E0CEBB9F97EFE3898F2AA014 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		E51475E0D71E7328B782C53B /* EngineCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineCoordinator.swift; sourceTree = "<group>"; };
+		F566D9F3D8509D07D34240AA /* ImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSheet.swift; sourceTree = "<group>"; };
 		F8B5AF488CE92F5BBB1CDDAA /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,6 +99,7 @@
 				9600D8CEE3E4F1DEDEBE8F63 /* Coordinators */,
 				F8E811CDE2D70A2E026A237B /* Debug */,
 				12B600144822F9507A7EC5DB /* Design */,
+				A6F0DABB60FE911BCF85BBC2 /* Networking */,
 				554EBECCD1D00CDAF20A84E7 /* Packages */,
 				4BD3602744294BFB12BAEDF5 /* Persistence */,
 				6899358B8B83A21A238363F0 /* ViewModels */,
@@ -136,8 +147,12 @@
 			isa = PBXGroup;
 			children = (
 				8C5E804ECD2958BB2AD0D489 /* AddGarmentSheet.swift */,
+				7BF344BED7B5EB97C296A791 /* BarcodeScannerSheet.swift */,
+				CA8289E769E8AEBB6C0A1DEB /* CameraCaptureSheet.swift */,
 				C99F6A3FA875CF0EEC0FD7D8 /* DiscoverView.swift */,
 				70FF1B3925AAF3416A71A70C /* GarmentDetailSheet.swift */,
+				F566D9F3D8509D07D34240AA /* ImportSheet.swift */,
+				184EE584E5F1F25E396833CD /* ProductSearchSheet.swift */,
 				F8B5AF488CE92F5BBB1CDDAA /* ProfileView.swift */,
 				56D5333276D4402FE2F53A69 /* StudioView.swift */,
 				8B8B82644A8987E059A159FD /* WardrobeView.swift */,
@@ -161,6 +176,15 @@
 			);
 			name = Coordinators;
 			path = ios/Coordinators;
+			sourceTree = "<group>";
+		};
+		A6F0DABB60FE911BCF85BBC2 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				7A43261CBBDB22641658EEEC /* APIClient.swift */,
+			);
+			name = Networking;
+			path = ios/Networking;
 			sourceTree = "<group>";
 		};
 		A85A7E717DDCC6C1730922CC /* App */ = {
@@ -246,8 +270,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EB3116AA523B4A4BA01FCB0 /* APIClient.swift in Sources */,
 				92C7F53B1F1C5A428CC4B4EA /* AddGarmentSheet.swift in Sources */,
+				C85DED2646E182B3454537E4 /* BarcodeScannerSheet.swift in Sources */,
 				E67606D2904DB80FF0751BDE /* CORETApp.swift in Sources */,
+				E957060F8CB56D4AC99E9319 /* CameraCaptureSheet.swift in Sources */,
 				98186C86059A8EA013BFA9AC /* ClaritySnapshotEntity.swift in Sources */,
 				B9D04FD9B54ED8FEFDB576C1 /* ContentView.swift in Sources */,
 				8D03B5329D5ADCD57597EF39 /* DesignSystem.swift in Sources */,
@@ -257,8 +284,10 @@
 				C438CD5A5834151542DE1212 /* EngineCoordinator.swift in Sources */,
 				097984889CA95580B8C78E10 /* GarmentDetailSheet.swift in Sources */,
 				9772923A5512C4E8BCDB488B /* GarmentEntity.swift in Sources */,
+				E9F3A87D831DF6EB26C97CF2 /* ImportSheet.swift in Sources */,
 				F0E47DF3650FD4182CB93D9F /* MilestoneEntity.swift in Sources */,
 				20088D3EF795D89C371DD208 /* MockData.swift in Sources */,
+				A5A75645F9E6165607BC118C /* ProductSearchSheet.swift in Sources */,
 				F7E2BB4A29897A48FE1F0C9B /* ProfileView.swift in Sources */,
 				C7CD0CACD8C108334D663BAD /* ProfileViewModel.swift in Sources */,
 				383D9F37A98CEAA0256AB269 /* SavedOutfitEntity.swift in Sources */,
@@ -403,6 +432,8 @@
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = CORET;
+				INFOPLIST_KEY_NSCameraUsageDescription = "CORET trenger kamera for å ta bilde av plagg";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CORET trenger tilgang for å velge bilder av plagg";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -425,6 +456,8 @@
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = CORET;
+				INFOPLIST_KEY_NSCameraUsageDescription = "CORET trenger kamera for å ta bilde av plagg";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CORET trenger tilgang for å velge bilder av plagg";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
