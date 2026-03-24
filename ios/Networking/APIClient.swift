@@ -172,6 +172,54 @@ actor APIClient {
         return try decoder.decode(ImportResponse.self, from: data)
     }
 
+    // MARK: - Discover Actions
+
+    struct DiscoverActionRequest: Codable {
+        let action: String          // "like", "pass", "hook"
+        let garmentIds: [String]
+
+        enum CodingKeys: String, CodingKey {
+            case action
+            case garmentIds = "garment_ids"
+        }
+    }
+
+    func discoverAction(action: String, garmentIds: [UUID]) async throws {
+        let url = baseURL.appendingPathComponent("api/discover/action")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body = DiscoverActionRequest(
+            action: action,
+            garmentIds: garmentIds.map(\.uuidString)
+        )
+        request.httpBody = try encoder.encode(body)
+        _ = try await session.data(for: request)
+    }
+
+    struct BookmarkRequest: Codable {
+        let garmentIds: [String]
+        let outfitName: String?
+
+        enum CodingKeys: String, CodingKey {
+            case garmentIds = "garment_ids"
+            case outfitName = "outfit_name"
+        }
+    }
+
+    func discoverBookmark(garmentIds: [UUID], outfitName: String?) async throws {
+        let url = baseURL.appendingPathComponent("api/discover/bookmark")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body = BookmarkRequest(
+            garmentIds: garmentIds.map(\.uuidString),
+            outfitName: outfitName
+        )
+        request.httpBody = try encoder.encode(body)
+        _ = try await session.data(for: request)
+    }
+
     // MARK: - Extract Metadata (for barcode/search enrichment)
 
     struct MetadataResponse: Codable {

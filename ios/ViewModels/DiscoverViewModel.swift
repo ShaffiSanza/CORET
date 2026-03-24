@@ -105,20 +105,25 @@ final class DiscoverViewModel {
 
     func like() {
         guard let card = currentCard else { return }
-        // TODO: POST /api/discover/action {action: "like", card_id: ...}
+        let ids = card.garments.map(\.id)
+        Task { try? await APIClient.shared.discoverAction(action: "like", garmentIds: ids) }
         swipeUp()
     }
 
     func pass() {
         guard let card = currentCard else { return }
-        // TODO: POST /api/discover/action {action: "pass", card_id: ...}
+        let ids = card.garments.map(\.id)
+        Task { try? await APIClient.shared.discoverAction(action: "pass", garmentIds: ids) }
         swipeUp()
     }
 
     func hook() {
         guard let card = currentCard else { return }
-        // TODO: POST /api/discover/action {action: "hook", card_id: ..., garment_ids: ...}
-        // Hook auto-bookmarks on backend
+        let ids = card.garments.map(\.id)
+        Task {
+            try? await APIClient.shared.discoverAction(action: "hook", garmentIds: ids)
+            try? await APIClient.shared.discoverBookmark(garmentIds: ids, outfitName: card.outfitName)
+        }
         swipeUp()
     }
 
