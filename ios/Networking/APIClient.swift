@@ -6,8 +6,12 @@ import COREEngine
 actor APIClient {
     static let shared = APIClient()
 
-    // Configure via Settings or environment — default localhost for dev
+    // DEBUG: localhost for dev, RELEASE: Railway production
+    #if DEBUG
     var baseURL: URL = URL(string: "http://localhost:8000")!
+    #else
+    var baseURL: URL = URL(string: "https://coret-production.up.railway.app")!
+    #endif
 
     private let session: URLSession
     private let decoder: JSONDecoder
