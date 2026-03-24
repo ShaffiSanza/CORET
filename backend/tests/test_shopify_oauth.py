@@ -118,8 +118,9 @@ def test_preview_token_tampered(with_api_secret):
     tampered = token[:-1] + ("a" if token[-1] != "a" else "b")
     assert validate_preview_token(tampered, "brand-123") is False
 
-def test_preview_token_raises_without_secret():
+def test_preview_token_raises_without_secret(monkeypatch):
     """generate_preview_token should raise when shopify_api_secret is empty."""
+    monkeypatch.setattr(settings, "shopify_api_secret", "")
     with pytest.raises(ValueError, match="shopify_api_secret must be configured"):
         generate_preview_token("brand-123")
 

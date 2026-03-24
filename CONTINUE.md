@@ -26,6 +26,17 @@ Total:     853 tester, 0 feil (engine + backend)
 - [x] Added DesignSystem.swift (color tokens, typography, glass card, theme)
 - [x] Extended EngineCoordinator with bestOutfit(), primaryGap(), logWear()
 - [x] Extended WardrobeViewModel with projectionForAdding(), profile accessor
+- [x] UI/UX Pro Max upgrade: all 4 views audited and improved
+  - Wardrobe: Bento hero, stagger animations, press feedback, gold key borders
+  - Studio: contentTransition on score, edge swipe drawer, removed "Flat Lay" header
+  - Discover: swipe rotation+opacity, missing piece above reason, haptics, swipe hint
+  - Profile: 4th tab (not floating), avatar 60pt, identity 26pt, stronger elevation
+- [x] Zero emoji in all views — replaced with colored rectangles (dominantColor)
+- [x] DesignSystem: added text3Fixed (#6B5E4A, 4.5:1 contrast)
+- [x] ContentView: 4 tabs with floatingNav (active circle + scale animation)
+- [x] MockData.swift: 18 real Shopify products pre-seeded for simulator
+- [x] GarmentDetailSheet: emoji → colored rectangles
+- [x] accessibilityLabel on all interactive elements across all views
 
 ## What Is Ready (DO NOT rebuild)
 - Engine: 17 engines + Fashion Intelligence (29 rules, i18n)
