@@ -88,12 +88,12 @@ struct AddGarmentSheet: View {
     private func buildGarment() -> Garment {
         Garment(
             id: UUID(),
+            name: name.isEmpty ? baseGroup.rawValue.capitalized : name,
             category: category,
             silhouette: silhouette,
             baseGroup: baseGroup,
             temperature: temperature,
-            colorTemperature: colorTemperature,
-            name: name.isEmpty ? baseGroup.rawValue.capitalized : name
+            colorTemperature: colorTemperature
         )
     }
 

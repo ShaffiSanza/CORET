@@ -19,7 +19,7 @@ final class ProfileViewModel {
     var journeySnapshot: JourneySnapshot?
     var seasonalCoverage: SeasonalCoverage?
     var seasonalRecommendation: SeasonalRecommendationV2?
-    var styleDirection: DirectionAnalysis?
+    var styleDirection: StyleDirectionEngine.DirectionAnalysis?
     var isLoading: Bool = false
     var showResetConfirmation: Bool = false
 
@@ -72,7 +72,7 @@ final class ProfileViewModel {
     func setTargetArchetype(_ target: Archetype) {
         let garments = coordinator.garments()
         let profile = coordinator.profile()
-        styleDirection = StyleDirectionEngine.analyze(
+        styleDirection = StyleDirectionEngine.analyzeDirection(
             items: garments,
             profile: profile,
             target: target

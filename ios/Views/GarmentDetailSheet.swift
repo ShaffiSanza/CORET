@@ -157,8 +157,8 @@ struct GarmentDetailSheet: View {
                 Spacer()
                 impactItem(
                     label: "Hull \u{00E5}pnet",
-                    value: "\(projection.gapsOpened)",
-                    isNegative: projection.gapsOpened > 0
+                    value: "\(projection.gapsOpened.count)",
+                    isNegative: !projection.gapsOpened.isEmpty
                 )
             }
         }
