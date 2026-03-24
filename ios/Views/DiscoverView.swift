@@ -7,6 +7,7 @@ struct DiscoverView: View {
     @State private var dragOffset: CGSize = .zero
     @State private var actionTrigger: Int = 0
     @State private var hasSeenFirstCard = false
+    @State private var blobPhase: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -14,7 +15,6 @@ struct DiscoverView: View {
             cardStack
         }
         .background(theme.bg)
-        .safeAreaPadding(.top)
         .sensoryFeedback(.impact(weight: .light), trigger: actionTrigger)
         .task { await viewModel.loadFeed() }
     }
@@ -29,7 +29,8 @@ struct DiscoverView: View {
         }
         .background(Capsule().fill(theme.surface))
         .padding(.horizontal, COREDesign.horizontalPadding)
-        .padding(.vertical, 12)
+        .padding(.top, 16)
+        .padding(.bottom, 8)
     }
 
     @ViewBuilder
@@ -69,48 +70,79 @@ struct DiscoverView: View {
                     .gesture(swipeGesture)
                     .animation(.spring(response: 0.4, dampingFraction: 0.75), value: dragOffset)
 
-                // Side actions
                 actionButtons
+
+                // Scroll dots (left side)
+                if viewModel.cards.count > 1 {
+                    scrollDots
+                }
             }
         } else {
             emptyFeed
         }
     }
 
+    // MARK: - Card View (Glassmorphism + Blobs)
+
     @ViewBuilder
     private func cardView(_ card: DiscoverCard) -> some View {
-        ZStack(alignment: .bottom) {
-            // Background
-            RoundedRectangle(cornerRadius: 28)
-                .fill(theme.surface)
-                .overlay {
-                    // Score watermark
-                    Text("\(Int(card.strength * 100))")
-                        .font(.instrumentSerif(140))
-                        .foregroundStyle(theme.text.opacity(0.04))
-                }
+        let colors = card.garments.prefix(3).map { cardGarmentColor($0) }
 
-            // Outfit garments — colored circles
-            VStack(spacing: 10) {
-                ForEach(card.garments.prefix(4)) { garment in
-                    Circle()
-                        .fill(cardGarmentColor(garment))
-                        .frame(width: 52, height: 52)
-                        .overlay {
+        ZStack(alignment: .bottom) {
+            // Card background with animated blobs
+            RoundedRectangle(cornerRadius: 28)
+                .fill(Color(hex: "0E0C0A"))
+                .overlay {
+                    // Dynamic gradient blobs based on outfit colors
+                    ZStack {
+                        if colors.count > 0 {
                             Circle()
-                                .stroke(theme.bg.opacity(0.2), lineWidth: 1)
+                                .fill(colors[0].opacity(0.15))
+                                .frame(width: 350, height: 350)
+                                .blur(radius: 100)
+                                .offset(x: -60, y: -80)
+                                .scaleEffect(1 + sin(blobPhase) * 0.1)
                         }
+                        if colors.count > 1 {
+                            Circle()
+                                .fill(colors[1].opacity(0.12))
+                                .frame(width: 280, height: 280)
+                                .blur(radius: 100)
+                                .offset(x: 80, y: 100)
+                                .scaleEffect(1 + sin(blobPhase + 2) * 0.1)
+                        }
+                        if colors.count > 2 {
+                            Circle()
+                                .fill(colors[2].opacity(0.10))
+                                .frame(width: 200, height: 200)
+                                .blur(radius: 80)
+                                .offset(x: -20, y: 40)
+                                .scaleEffect(1 + sin(blobPhase + 4) * 0.1)
+                        }
+                    }
+                    .animation(.easeInOut(duration: 6).repeatForever(autoreverses: true), value: blobPhase)
+                    .onAppear { blobPhase = .pi * 2 }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 28))
+
+            // Score watermark — large, semi-transparent
+            Text("\(Int(card.strength * 100))")
+                .font(.instrumentSerif(220))
+                .foregroundStyle(.white.opacity(0.035))
+                .offset(y: -60)
+
+            // Garment stack with depth
+            VStack(spacing: 6) {
+                ForEach(Array(card.garments.prefix(4).enumerated()), id: \.element.id) { index, garment in
+                    garmentOrb(garment, index: index)
                 }
             }
             .frame(maxHeight: .infinity)
+            .padding(.top, 40)
 
-            // Bottom panel
-            VStack(alignment: .leading, spacing: 6) {
-                Text(card.outfitName)
-                    .font(.instrumentSerif(22))
-                    .foregroundStyle(theme.text)
-
-                // Missing piece ABOVE FI reason text
+            // Glass bottom panel
+            VStack(alignment: .leading, spacing: 8) {
+                // Missing piece (above everything)
                 if let missing = card.missingPiece {
                     HStack(spacing: 6) {
                         Image(systemName: "plus.circle.dashed")
@@ -126,40 +158,107 @@ struct DiscoverView: View {
                     }
                 }
 
-                HStack(spacing: 8) {
+                // Outfit name
+                Text(card.outfitName)
+                    .font(.instrumentSerifItalic(22))
+                    .foregroundStyle(.white.opacity(0.45))
+
+                // Tags row
+                HStack(spacing: 6) {
                     feedTypeBadge(card.feedType)
 
-                    if let score = card.score.explanation {
-                        Text(score.headline)
+                    if let explanation = card.score.explanation {
+                        Text(explanation.headline)
                             .font(.dmSans(12))
-                            .foregroundStyle(theme.text3)
+                            .foregroundStyle(.white.opacity(0.2))
                             .lineLimit(1)
                     }
                 }
 
-                // Swipe hint — only on first card
+                // Swipe hint
                 if !hasSeenFirstCard {
                     HStack(spacing: 4) {
                         Image(systemName: "arrow.up")
-                            .font(.system(size: 10))
+                            .font(.system(size: 8))
                         Text("Swipe for neste")
-                            .font(.dmSans(11))
+                            .font(.dmSans(9))
+                            .tracking(1)
+                            .textCase(.uppercase)
                     }
-                    .foregroundStyle(theme.text4)
+                    .foregroundStyle(.white.opacity(0.06))
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 4)
+                    .padding(.top, 6)
                 }
             }
-            .padding(20)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background {
-                RoundedRectangle(cornerRadius: 28)
-                    .fill(.ultraThinMaterial)
+                LinearGradient(
+                    colors: [.clear, Color(hex: "0E0C0A").opacity(0.85), Color(hex: "0E0C0A").opacity(0.95)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: 28))
+        .overlay(
+            RoundedRectangle(cornerRadius: 28)
+                .stroke(.white.opacity(0.04), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.5), radius: 30, y: 10)
         .padding(.horizontal, COREDesign.horizontalPadding)
         .padding(.bottom, 80)
+        .padding(.top, 4)
+    }
+
+    // MARK: - Garment Orb (with depth stacking)
+
+    @ViewBuilder
+    private func garmentOrb(_ garment: Garment, index: Int) -> some View {
+        let color = cardGarmentColor(garment)
+        let scale = 1.0 - Double(index) * 0.04
+
+        Circle()
+            .fill(
+                RadialGradient(
+                    colors: [color.opacity(0.9), color.opacity(0.6), color.opacity(0.3)],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: 30
+                )
+            )
+            .frame(width: 56, height: 56)
+            .overlay {
+                Circle()
+                    .stroke(.white.opacity(0.08), lineWidth: 1)
+            }
+            .shadow(color: color.opacity(0.4), radius: 16, y: 8)
+            .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+            .scaleEffect(scale)
+            .zIndex(Double(4 - index))
+    }
+
+    // MARK: - Scroll Dots
+
+    @ViewBuilder
+    private var scrollDots: some View {
+        VStack(spacing: 6) {
+            ForEach(0..<min(viewModel.cards.count, 8), id: \.self) { index in
+                if index == viewModel.currentIndex {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(theme.gold.opacity(0.5))
+                        .frame(width: 4, height: 14)
+                } else {
+                    Circle()
+                        .fill(.white.opacity(0.08))
+                        .frame(width: 4, height: 4)
+                }
+            }
+        }
+        .padding(.leading, 14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.currentIndex)
     }
 
     @ViewBuilder
@@ -170,48 +269,63 @@ struct DiscoverView: View {
         case .ghost: ("Forslag", Color.coretAmber)
         }
         Text(label)
-            .font(.dmSans(10, weight: .semibold))
-            .foregroundStyle(color)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(Capsule().fill(color.opacity(0.12)))
+            .font(.dmSans(9, weight: .semibold))
+            .foregroundStyle(color.opacity(0.35))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(
+                Capsule()
+                    .fill(color.opacity(0.04))
+                    .overlay(Capsule().stroke(color.opacity(0.06), lineWidth: 1))
+            )
     }
 
-    // MARK: - Actions
+    // MARK: - Actions (TikTok-style right side)
 
     @ViewBuilder
     private var actionButtons: some View {
-        VStack(spacing: 16) {
-            actionButton(icon: "heart", color: theme.sage) {
+        VStack(spacing: 18) {
+            actionButton(icon: "heart", label: "Lik", color: .white.opacity(0.2)) {
                 actionTrigger += 1
                 viewModel.like()
                 hasSeenFirstCard = true
             }
-            actionButton(icon: "bookmark", color: theme.gold) {
+            actionButton(icon: "bookmark", label: "Lagre", color: .white.opacity(0.2)) {
                 actionTrigger += 1
                 viewModel.hook()
                 hasSeenFirstCard = true
             }
-            actionButton(icon: "hand.thumbsdown", color: theme.text3) {
+            actionButton(icon: "hand.thumbsdown", label: "Pass", color: .white.opacity(0.12)) {
                 actionTrigger += 1
                 viewModel.pass()
                 hasSeenFirstCard = true
             }
         }
-        .padding(.trailing, 12)
-        .frame(maxWidth: .infinity, alignment: .trailing)
+        .padding(.trailing, 16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
+        .offset(y: -20)
     }
 
     @ViewBuilder
-    private func actionButton(icon: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func actionButton(icon: String, label: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 20))
-                .foregroundStyle(color)
-                .frame(width: 48, height: 48)
-                .background(Circle().fill(.ultraThinMaterial))
+            VStack(spacing: 3) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .light))
+                    .foregroundStyle(color)
+                    .frame(width: 46, height: 46)
+                    .background(
+                        Circle()
+                            .fill(.white.opacity(0.06))
+                            .overlay(Circle().stroke(.white.opacity(0.06), lineWidth: 1))
+                    )
+                Text(label.uppercased())
+                    .font(.system(size: 7))
+                    .tracking(0.5)
+                    .foregroundStyle(.white.opacity(0.12))
+            }
         }
-        .accessibilityLabel(actionLabel(icon))
+        .accessibilityLabel(label)
     }
 
     @ViewBuilder
@@ -232,7 +346,6 @@ struct DiscoverView: View {
         }
         .padding(.horizontal, 40)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Ingen antrekk enn\u{00E5}. Legg til plagg i garderoben for \u{00E5} se antrekk her.")
     }
 
     // MARK: - Swipe Gesture
@@ -254,16 +367,9 @@ struct DiscoverView: View {
 
     private func cardGarmentColor(_ garment: Garment) -> Color {
         let hex = garment.dominantColor
-        guard !hex.isEmpty, hex != "#000000" else { return theme.surface }
-        return Color(hex: String(hex.dropFirst()))
-    }
-
-    private func actionLabel(_ icon: String) -> String {
-        switch icon {
-        case "heart": "Lik antrekk"
-        case "bookmark": "Lagre antrekk"
-        case "hand.thumbsdown": "Hopp over"
-        default: icon
-        }
+        guard !hex.isEmpty else { return theme.surface }
+        let cleaned = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
+        guard !cleaned.isEmpty else { return theme.surface }
+        return Color(hex: cleaned)
     }
 }
