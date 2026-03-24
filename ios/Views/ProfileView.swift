@@ -173,6 +173,7 @@ struct ProfileView: View {
 
     @ViewBuilder
     private func seasonBar(_ label: String, score: Double) -> some View {
+        let normalized = min(max(score / 100.0, 0), 1) // score is 0-100, normalize to 0-1
         VStack(spacing: 4) {
             Text(label)
                 .font(.dmSans(10))
@@ -183,13 +184,14 @@ struct ProfileView: View {
                     .fill(theme.surface)
                     .overlay(alignment: .bottom) {
                         RoundedRectangle(cornerRadius: 3)
-                            .fill(score > 0.6 ? theme.sage : theme.gold)
-                            .frame(height: geo.size.height * score)
+                            .fill(normalized > 0.6 ? theme.sage : theme.gold)
+                            .frame(height: geo.size.height * normalized)
                     }
+                    .clipShape(RoundedRectangle(cornerRadius: 3))
             }
             .frame(height: 50)
 
-            Text("\(Int(score * 100))")
+            Text("\(Int(score))")
                 .font(.dmSans(10, weight: .medium))
                 .foregroundStyle(theme.text2)
         }

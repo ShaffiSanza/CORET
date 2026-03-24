@@ -351,7 +351,7 @@ struct GarmentCard: View {
                     .font(.dmSans(13, weight: .medium))
                     .foregroundStyle(theme.text)
                     .lineLimit(1)
-                Text(garment.category.rawValue.capitalized)
+                Text(garment.baseGroup.rawValue.capitalized)
                     .font(.dmSans(11))
                     .foregroundStyle(theme.text3)
             }
@@ -373,7 +373,9 @@ struct GarmentCard: View {
 
     private var cardColor: Color {
         let hex = garment.dominantColor
-        guard !hex.isEmpty, hex != "#000000" else { return theme.surface }
-        return Color(hex: String(hex.dropFirst()))
+        guard !hex.isEmpty else { return theme.surface }
+        let cleaned = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
+        guard !cleaned.isEmpty else { return theme.surface }
+        return Color(hex: cleaned)
     }
 }
