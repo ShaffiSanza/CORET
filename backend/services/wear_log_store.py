@@ -6,29 +6,59 @@ Used by BehaviouralEngine for drift detection, rotation analysis,
 and "predict next wear" features.
 """
 
-import fcntl
 import json
+import threading
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
+try:
+    import fcntl
+    _FCNTL_AVAILABLE = True
+except ImportError:
+    _FCNTL_AVAILABLE = False
+
 from models.wear_log import WearLogResponse
 
 STORE_PATH = Path(__file__).parent.parent / "data" / "wear_logs.json"
 
+# Per-path threading locks ensure safety across concurrent requests
+# within the same process regardless of whether fcntl is available.
+_thread_locks: dict[str, threading.Lock] = {}
+_thread_locks_mutex = threading.Lock()
+
+
+def _get_thread_lock(path: Path) -> threading.Lock:
+    key = str(path)
+    with _thread_locks_mutex:
+        if key not in _thread_locks:
+            _thread_locks[key] = threading.Lock()
+        return _thread_locks[key]
+
 
 @contextmanager
 def _file_lock(path: Path):
-    """Acquire an exclusive file lock for read-modify-write operations."""
-    lock_path = path.with_suffix(".lock")
-    lock_file = open(lock_path, "w")
-    try:
-        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
-        yield
-    finally:
-        fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
-        lock_file.close()
+    """Acquire an exclusive lock for read-modify-write operations.
+
+    Uses fcntl.flock on Unix/Linux for cross-process safety, with a
+    threading.Lock always held first to guarantee intra-process safety.
+    Falls back to the threading lock alone when fcntl is unavailable.
+    """
+    thread_lock = _get_thread_lock(path)
+    with thread_lock:
+        if _FCNTL_AVAILABLE:
+            lock_path = path.with_suffix(".lock")
+            lock_file = open(lock_path, "w")
+            try:
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+                yield
+            finally:
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+                lock_file.close()
+        else:
+            # threading.Lock (held above) is sufficient for single-process use.
+            yield
 
 
 def _ensure_store() -> None:
