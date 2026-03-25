@@ -10,7 +10,13 @@ Snapshots are created when:
 Mirrors engine MilestoneTracker's ClaritySnapshot concept.
 """
 
-import fcntl
+import threading
+try:
+    import fcntl
+    _HAS_FCNTL = True
+except ImportError:
+    _HAS_FCNTL = False
+_fallback_lock = threading.Lock()
 import json
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -27,7 +33,15 @@ DELTA_THRESHOLD = 5  # minimum score change to auto-record
 
 @contextmanager
 def _file_lock(path: Path):
-    """Acquire an exclusive file lock for read-modify-write operations."""
+    """Acquire an exclusive file lock. Falls back to threading.Lock if fcntl unavailable."""
+    if not _HAS_FCNTL:
+        _fallback_lock.acquire()
+        try:
+            yield
+        finally:
+            _fallback_lock.release()
+        return
+
     lock_path = path.with_suffix(".lock")
     lock_file = open(lock_path, "w")
     try:
