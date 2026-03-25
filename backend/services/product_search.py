@@ -2,11 +2,10 @@
 CORET Backend - Product Search Service
 
 Soker etter produktbilder via SerpAPI (Google Shopping).
-Tar inn en soketekst (f.eks "Nike Air Force 1") og returnerer
-det beste studiobildet den finner.
+Returnerer flere resultater filtrert til kun klaer/sko/tilbehor.
 
 Bruker: httpx for HTTP-kall, SerpAPI for sok.
-Bildepipeline: Last ned thumbnail -> fjern bakgrunn -> normaliser -> lagre.
+Bildepipeline: Kjoeres kun for valgt produkt, ikke alle sokeresultater.
 """
 
 import logging
@@ -14,96 +13,74 @@ import uuid
 
 import httpx
 from config import settings
+from services.metadata_extractor import extract_metadata
 
 logger = logging.getLogger(__name__)
 
-# SerpAPI-endepunktet vi kaller
 SERPAPI_URL = "https://serpapi.com/search"
 
 
-async def search_product(query: str) -> dict:
+async def search_products(query: str) -> dict:
     """
-    Sok etter et produkt og returner beste studiobilde.
-
-    Parametere:
-        query: Soketekst, f.eks "Nike Air Force 1 white"
+    Sok etter produkter og returner filtrerte resultater (kun klaer).
 
     Returnerer:
         {
-            "image_url": "https://...",
-            "product_title": "Nike Air Force 1 '07",
-            "brand": "Nike",
-            "source_url": "https://...",
+            "results": [
+                {"image_url": "...", "product_title": "...", "brand": "...", "source_url": "..."},
+                ...
+            ],
             "success": True
         }
     """
-    # Sjekk at vi har API-nokkel
     if not settings.serpapi_key:
-        return {
-            "image_url": None,
-            "product_title": None,
-            "brand": None,
-            "source_url": None,
-            "success": False,
-        }
+        return {"results": [], "success": False}
 
-    # Bygg parameterne til SerpAPI
     params = {
         "engine": "google_shopping",
         "q": query,
         "api_key": settings.serpapi_key,
-        "num": 3,
+        "num": 20,
     }
 
-    # Send forsporselen til SerpAPI
     async with httpx.AsyncClient() as client:
         response = await client.get(SERPAPI_URL, params=params, timeout=10.0)
 
-        # Sjekk at SerpAPI svarte OK
         if response.status_code != 200:
-            return {
-                "image_url": None,
-                "product_title": None,
-                "brand": None,
-                "source_url": None,
-                "success": False,
-            }
+            return {"results": [], "success": False}
 
-        # Parse JSON-svaret
         data = response.json()
-        results = data.get("shopping_results", [])
+        raw_results = data.get("shopping_results", [])
 
-        # Ingen treff?
-        if not results:
-            return {
-                "image_url": None,
-                "product_title": None,
-                "brand": None,
-                "source_url": None,
-                "success": False,
-            }
+        if not raw_results:
+            return {"results": [], "success": False}
 
-        # Plukk forste (beste) resultat
-        best = results[0]
-        thumbnail_url = best.get("thumbnail")
+        # Filtrer til kun klaer/sko/tilbehor via metadata extractor
+        filtered = []
+        for item in raw_results:
+            title = item.get("title", "")
+            meta = extract_metadata(title)
+            if meta["success"]:
+                filtered.append({
+                    "image_url": item.get("thumbnail"),
+                    "product_title": title,
+                    "brand": item.get("source"),
+                    "source_url": item.get("link"),
+                })
 
-        # Prosesser bildet gjennom pipeline (bg-fjerning + normalisering)
-        processed_url = None
-        if thumbnail_url:
-            processed_url = await _process_search_image(thumbnail_url)
+            if len(filtered) >= 8:
+                break
 
         return {
-            "image_url": processed_url or thumbnail_url,
-            "product_title": best.get("title"),
-            "brand": best.get("source"),
-            "source_url": best.get("link"),
-            "success": True,
+            "results": filtered,
+            "success": len(filtered) > 0,
         }
 
 
-async def _process_search_image(thumbnail_url: str) -> str | None:
-    """Last ned, fjern bakgrunn, normaliser og lagre et sok-bilde.
+async def process_selected_image(thumbnail_url: str) -> str | None:
+    """Prosesser valgt bilde: last ned, fjern bakgrunn, normaliser, lagre.
 
+    Kalles kun for det ene produktet brukeren velger.
     Returnerer full URL til prosessert bilde, eller None ved feil.
     """
     try:
@@ -111,31 +88,30 @@ async def _process_search_image(thumbnail_url: str) -> str | None:
         from services.image_normalize import normalize_image
         from services.image_storage import save_garment_images, get_image_path
 
-        # Deterministisk UUID fra URL (same URL = same ID, unngaar duplikater)
         image_id = str(uuid.uuid5(uuid.NAMESPACE_URL, thumbnail_url))
 
-        # Sjekk om allerede prosessert
+        # Allerede prosessert?
         if get_image_path(image_id, "display"):
             base = settings.public_url.rstrip("/")
             return f"{base}/api/images/{image_id}/display.png"
 
-        # Last ned thumbnail
+        # Last ned
         async with httpx.AsyncClient() as client:
             resp = await client.get(thumbnail_url, timeout=10.0, follow_redirects=True)
             if resp.status_code != 200:
                 return None
             image_bytes = resp.content
 
-        # Fjern bakgrunn via Photoroom
+        # Fjern bakgrunn
         polish_result = await polish_image(image_bytes)
         source_bytes = polish_result["image_bytes"] if polish_result["success"] else image_bytes
 
-        # Normaliser (sentrer paa transparent canvas, generer varianter)
+        # Normaliser
         norm_result = normalize_image(source_bytes)
         if not norm_result["success"]:
             return None
 
-        # Lagre til disk
+        # Lagre
         storage_result = save_garment_images(image_id, norm_result)
         if not storage_result["success"]:
             return None
@@ -144,5 +120,5 @@ async def _process_search_image(thumbnail_url: str) -> str | None:
         return f"{base}/api/images/{image_id}/display.png"
 
     except Exception as e:
-        logger.warning(f"Search image processing failed: {e}")
+        logger.warning(f"Image processing failed: {e}")
         return None

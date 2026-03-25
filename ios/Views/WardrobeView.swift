@@ -340,18 +340,20 @@ struct GarmentCard: View {
                        let uiImage = UIImage(data: data) {
                         Image(uiImage: uiImage)
                             .resizable()
-                            .scaledToFill()
+                            .scaledToFit()
                             .frame(maxWidth: .infinity)
                             .aspectRatio(0.8, contentMode: .fit)
+                            .background(Color(.systemGray6))
                             .clipShape(RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall))
                     } else if !url.isFileURL {
                         AsyncImage(url: url) { phase in
                             switch phase {
                             case .success(let img):
                                 img.resizable()
-                                    .scaledToFill()
+                                    .scaledToFit()
                                     .frame(maxWidth: .infinity)
                                     .aspectRatio(0.8, contentMode: .fit)
+                                    .background(Color(.systemGray6))
                                     .clipShape(RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall))
                             default:
                                 colorSwatch

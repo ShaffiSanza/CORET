@@ -37,20 +37,24 @@ actor APIClient {
 
     // MARK: - Product Search
 
-    struct ProductSearchResponse: Codable {
+    struct ProductSearchResult: Codable, Identifiable {
+        let id = UUID()
         let imageUrl: String?
         let productTitle: String?
         let brand: String?
         let sourceUrl: String?
-        let success: Bool
 
         enum CodingKeys: String, CodingKey {
             case imageUrl = "image_url"
             case productTitle = "product_title"
             case brand
             case sourceUrl = "source_url"
-            case success
         }
+    }
+
+    struct ProductSearchResponse: Codable {
+        let results: [ProductSearchResult]
+        let success: Bool
     }
 
     func productSearch(query: String) async throws -> ProductSearchResponse {

@@ -146,8 +146,8 @@ struct AddGarmentSheet: View {
                 }
             }
             .sheet(isPresented: $showSearch) {
-                ProductSearchSheet { result in
-                    applySearchResult(result)
+                ProductSearchSheet { selected in
+                    applySearchResult(selected)
                 }
             }
             .sheet(isPresented: $showBarcode) {
@@ -168,7 +168,7 @@ struct AddGarmentSheet: View {
 
     // MARK: - Apply Results
 
-    private func applySearchResult(_ result: APIClient.ProductSearchResponse) {
+    private func applySearchResult(_ result: APIClient.ProductSearchResult) {
         if let title = result.productTitle {
             name = title
         }

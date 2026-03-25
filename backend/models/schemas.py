@@ -33,14 +33,18 @@ class ProductSearchRequest(BaseModel):
     )
 
 
+class ProductSearchResult(BaseModel):
+    """Ett sokeresultat."""
+    image_url: Optional[str] = None
+    product_title: Optional[str] = None
+    brand: Optional[str] = None
+    source_url: Optional[str] = None
+
+
 class ProductSearchResponse(BaseModel):
-    """Resultat fra produktsok.
-    success=True betyr at vi fant noe. False = ingen treff."""
-    image_url: Optional[str] = None       # URL til studiobilde (eller None)
-    product_title: Optional[str] = None   # Produktnavn fra sokeresultat
-    brand: Optional[str] = None           # Merke (Nike, Diesel, osv.)
-    source_url: Optional[str] = None      # Lenke til produktsiden
-    success: bool                         # Fant vi noe?
+    """Resultat fra produktsok. Returnerer liste med filtrerte klaer-resultater."""
+    results: list[ProductSearchResult] = []
+    success: bool
 
 
 # ============================================================

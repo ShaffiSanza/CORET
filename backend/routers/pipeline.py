@@ -18,11 +18,11 @@ from fastapi.responses import Response
 
 from services.color_extraction import extract_colors_from_image
 from services.metadata_extractor import extract_metadata
-from services.product_search import search_product
+from services.product_search import search_products
 from services.barcode_lookup import lookup_barcode as lookup_barcode_service
 from services.image_polish import polish_image
 from models.schemas import (
-    ProductSearchRequest, ProductSearchResponse,
+    ProductSearchRequest, ProductSearchResponse, ProductSearchResult,
     BarcodeLookupRequest, BarcodeLookupResponse,
     ColorExtractionResponse,
     ProductMetadataRequest, ProductMetadataResponse,
@@ -39,15 +39,14 @@ router = APIRouter()
 # ============================================================
 @router.post("/product-search", response_model=ProductSearchResponse)
 async def product_search(request: ProductSearchRequest):
-    """Sok etter et plagg og få tilbake et studiobilde.
+    """Sok etter klaer og få tilbake filtrerte resultater.
     Eksempel: {"query": "Nike Air Force 1 white"}"""
 
-    result = await search_product(request.query)
+    result = await search_products(request.query)
     return ProductSearchResponse(
-        image_url=result["image_url"],
-        product_title=result["product_title"],
-        brand=result["brand"],
-        source_url=result["source_url"],
+        results=[
+            ProductSearchResult(**r) for r in result["results"]
+        ],
         success=result["success"],
     )
     

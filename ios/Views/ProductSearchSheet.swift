@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct ProductSearchSheet: View {
-    let onResult: (APIClient.ProductSearchResponse) -> Void
+    let onResult: (APIClient.ProductSearchResult) -> Void
     @Environment(\.theme) private var theme
     @Environment(\.dismiss) private var dismiss
 
     @State private var query = ""
-    @State private var results: [APIClient.ProductSearchResponse] = []
+    @State private var results: [APIClient.ProductSearchResult] = []
     @State private var isSearching = false
     @State private var searchTask: Task<Void, Never>?
     @State private var errorMessage: String?
@@ -56,14 +56,16 @@ struct ProductSearchSheet: View {
                 } else if results.isEmpty && !query.isEmpty && !isSearching {
                     VStack(spacing: 8) {
                         Spacer()
-                        Text("Ingen treff")
+                        Text("Ingen kl\u{00E6}r funnet")
                             .font(.dmSans(14))
                             .foregroundStyle(theme.text3)
+                        Text("Pr\u{00F8}v et annet s\u{00F8}k")
+                            .font(.dmSans(12))
+                            .foregroundStyle(theme.text4)
                         Spacer()
                     }
                 } else {
-                    List(results.indices, id: \.self) { index in
-                        let result = results[index]
+                    List(results) { result in
                         Button {
                             onResult(result)
                             dismiss()
@@ -97,6 +99,7 @@ struct ProductSearchSheet: View {
                                     Text(result.productTitle ?? "Ukjent produkt")
                                         .font(.dmSans(14, weight: .medium))
                                         .foregroundStyle(theme.text)
+                                        .lineLimit(2)
                                     if let brand = result.brand {
                                         Text(brand)
                                             .font(.dmSans(12))
@@ -148,12 +151,8 @@ struct ProductSearchSheet: View {
         errorMessage = nil
         Task {
             do {
-                let result = try await APIClient.shared.productSearch(query: query)
-                if result.success {
-                    results = [result]
-                } else {
-                    results = []
-                }
+                let response = try await APIClient.shared.productSearch(query: query)
+                results = response.results
             } catch {
                 errorMessage = "S\u{00F8}ket feilet. Pr\u{00F8}v igjen senere."
                 results = []
