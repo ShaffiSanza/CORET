@@ -89,7 +89,11 @@ async def export_wardrobe():
 
 @router.post("/wardrobe/import")
 async def import_wardrobe(data: dict):
-    """Import wardrobe from JSON. Validates then creates garments."""
+    """Import wardrobe from JSON. Validates then creates garments. Max 100 garments."""
+    garment_list = data.get("garments", [])
+    if len(garment_list) > 100:
+        raise HTTPException(status_code=400, detail="Import limited to 100 garments per request")
+
     validation = validate_import(data)
     if not validation["valid"]:
         raise HTTPException(status_code=422, detail=validation["errors"])

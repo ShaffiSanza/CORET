@@ -114,7 +114,19 @@ async def upload_image(garment_id: str, image: UploadFile = File(...)):
     if not garment:
         raise HTTPException(status_code=404, detail="Garment not found")
 
-    image_bytes = await image.read()
+    # Read in chunks to enforce size limit BEFORE consuming full memory
+    MAX_SIZE = 10 * 1024 * 1024  # 10 MB
+    chunks = []
+    total = 0
+    while True:
+        chunk = await image.read(64 * 1024)  # 64KB chunks
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > MAX_SIZE:
+            raise HTTPException(status_code=413, detail="Image too large (max 10MB)")
+        chunks.append(chunk)
+    image_bytes = b"".join(chunks)
 
     # Validate magic bytes
     MAGIC_BYTES = {
@@ -125,9 +137,6 @@ async def upload_image(garment_id: str, image: UploadFile = File(...)):
     valid_magic = any(image_bytes.startswith(magic) for magic in MAGIC_BYTES)
     if not valid_magic:
         raise HTTPException(status_code=400, detail="File content does not match a valid image format")
-
-    if len(image_bytes) > 10 * 1024 * 1024:
-        raise HTTPException(status_code=413, detail="Image too large (max 10MB)")
 
     # Step 1: Extract colors from original
     color_result = extract_colors_from_image(image_bytes)

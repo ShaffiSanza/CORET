@@ -88,22 +88,29 @@ async def extract_colors(image: UploadFile = File(...)):
     if image.content_type not in ALLOWED_TYPES:
         raise HTTPException(status_code=400, detail=f"Invalid image type: {image.content_type}. Allowed: png, jpeg, webp")
 
-    # Les bildet som bytes fra opplastingen
-    image_bytes = await image.read()
+    # Read in chunks to enforce size limit before consuming memory
+    MAX_SIZE = 5 * 1024 * 1024
+    chunks = []
+    total = 0
+    while True:
+        chunk = await image.read(64 * 1024)
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > MAX_SIZE:
+            raise HTTPException(status_code=413, detail="Bildet er for stort. Maks 5 MB.")
+        chunks.append(chunk)
+    image_bytes = b"".join(chunks)
 
     # Validate magic bytes
     MAGIC_BYTES = {
         b"\x89PNG": "image/png",
         b"\xff\xd8\xff": "image/jpeg",
-        b"RIFF": "image/webp",  # WebP starts with RIFF
+        b"RIFF": "image/webp",
     }
     valid_magic = any(image_bytes.startswith(magic) for magic in MAGIC_BYTES)
     if not valid_magic:
         raise HTTPException(status_code=400, detail="File content does not match a valid image format")
-
-    # Valider filstørrelse (maks 5 MB)
-    if len(image_bytes) > 5 * 1024 * 1024:
-        raise HTTPException(status_code=413, detail="Bildet er for stort. Maks 5 MB.")
 
     # Send bytes til color_extraction-servicen
     result = extract_colors_from_image(image_bytes)
@@ -150,21 +157,28 @@ async def image_polish(image: UploadFile = File(...)):
     if image.content_type not in ALLOWED_TYPES:
         raise HTTPException(status_code=400, detail=f"Invalid image type: {image.content_type}. Allowed: png, jpeg, webp")
 
-    image_bytes = await image.read()
+    MAX_SIZE = 10 * 1024 * 1024
+    chunks = []
+    total = 0
+    while True:
+        chunk = await image.read(64 * 1024)
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > MAX_SIZE:
+            raise HTTPException(status_code=413, detail="Bildet er for stort. Maks 10 MB.")
+        chunks.append(chunk)
+    image_bytes = b"".join(chunks)
 
     # Validate magic bytes
     MAGIC_BYTES = {
         b"\x89PNG": "image/png",
         b"\xff\xd8\xff": "image/jpeg",
-        b"RIFF": "image/webp",  # WebP starts with RIFF
+        b"RIFF": "image/webp",
     }
     valid_magic = any(image_bytes.startswith(magic) for magic in MAGIC_BYTES)
     if not valid_magic:
         raise HTTPException(status_code=400, detail="File content does not match a valid image format")
-
-    # Valider filstørrelse (maks 10 MB)
-    if len(image_bytes) > 10 * 1024 * 1024:
-        raise HTTPException(status_code=413, detail="Bildet er for stort. Maks 10 MB.")
 
     result = await polish_image(image_bytes)
 

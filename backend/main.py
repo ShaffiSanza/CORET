@@ -54,10 +54,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if request.url.path == "/api/health":
             return await call_next(request)
 
-        # Get real client IP (behind reverse proxy)
-        client_ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (
-            request.client.host if request.client else "unknown"
-        )
+        # Use direct client IP — Railway terminates the connection so client.host is real
+        # X-Forwarded-For is spoofable and should not be trusted for rate limiting
+        client_ip = request.client.host if request.client else "unknown"
         now = time.time()
 
         # Evict old IPs if dict gets too large
@@ -147,7 +146,7 @@ app.add_middleware(APIKeyMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins.split(","),
-    allow_credentials=True,
+    allow_credentials=False,  # API key auth via header, not cookies
     allow_methods=["POST", "GET", "PUT", "DELETE"],
     allow_headers=["Content-Type", "X-API-Key"],
 )
