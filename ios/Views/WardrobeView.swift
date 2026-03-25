@@ -372,17 +372,17 @@ struct WardrobeView: View {
 
     private static let quickBasics: [QuickBasic] = [
         QuickBasic(name: "Nike Air Force 1", category: .shoes, baseGroup: .sneakers, colorTemp: .neutral, color: "F0EDE8",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/654639a2-b3ff-5e71-8f53-afb5e216faec/display.png"),
+                   imageUrl: "https://coret-production.up.railway.app/api/images/4c2ec37e-07c0-51e0-ad0e-9ccb9f2c2a2d/display.png"),
         QuickBasic(name: "Svart t-skjorte", category: .upper, baseGroup: .tee, colorTemp: .neutral, color: "1A1A1E",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/dc37eb71-484b-5c14-aa55-429947a46b76/display.png"),
+                   imageUrl: "https://coret-production.up.railway.app/api/images/1bc49df1-7548-53e8-ab37-8ce05aa11e58/display.png"),
         QuickBasic(name: "Levi's 501 jeans", category: .lower, baseGroup: .jeans, colorTemp: .cool, color: "1A2030",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/b07f772a-9248-57a4-9ade-88ccad4738cc/display.png"),
+                   imageUrl: "https://coret-production.up.railway.app/api/images/37ee0da1-44e9-530b-b456-c560fceefb61/display.png"),
         QuickBasic(name: "Hvit skjorte", category: .upper, baseGroup: .shirt, colorTemp: .neutral, color: "F5F0EA",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/0030a8a8-be52-53b9-819e-c04a82fbb9f1/display.png"),
+                   imageUrl: "https://coret-production.up.railway.app/api/images/2a712d52-78ae-55a8-8af6-3e588141e96f/display.png"),
         QuickBasic(name: "Gr\u{00E5} hoodie", category: .upper, baseGroup: .hoodie, colorTemp: .neutral, color: "8A8A8A",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/178aa734-5ff2-55a7-ab1f-8f40ec61d52d/display.png"),
+                   imageUrl: "https://coret-production.up.railway.app/api/images/dd4787fe-1846-5f9e-adda-f67e8c4e74cf/display.png"),
         QuickBasic(name: "Brunt belte", category: .accessory, baseGroup: .belt, colorTemp: .warm, color: "5A3820",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/62ed1042-7a05-5ff4-aed6-d7ad4a5eddf7/display.png"),
+                   imageUrl: "https://coret-production.up.railway.app/api/images/1c6b8b86-75f3-50f4-80eb-7f362980c569/display.png"),
     ]
 
     // MARK: - Add Button (FAB)
