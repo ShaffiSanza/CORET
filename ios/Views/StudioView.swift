@@ -188,7 +188,7 @@ struct StudioView: View {
         .background(theme.surface.opacity(0.2))
     }
 
-    // MARK: - Garment Stack
+    // MARK: - Garment Stack (fixed positions, swipe inside)
 
     @ViewBuilder
     private var garmentStack: some View {
@@ -197,100 +197,57 @@ struct StudioView: View {
             let h = geo.size.height
             let cx = w * 0.46
 
-            // Outer
-            slotView(viewModel.outerLayer, .upper, isOuter: true)
-                .frame(width: w * 0.55, height: h * 0.30)
-                .position(x: cx, y: h * 0.15)
-                .rotationEffect(.degrees(-3))
+            // Alle 4 lag like store (w*0.50, h*0.22), jevnt fordelt, lett overlap
+            let slotW = w * 0.50
+            let slotH = h * 0.22
+            let spacing = h * 0.235  // litt mindre enn slotH → overlap
+
+            // Ytterlag
+            swipeableSlot(garment: viewModel.outerLayer, layer: .outer, label: "Legg til ytterlag +")
+                .frame(width: slotW, height: slotH)
+                .position(x: cx, y: h * 0.13)
+                .rotationEffect(.degrees(-2))
                 .zIndex(4)
 
-            // Top
-            slotView(viewModel.topLayer, .upper, isOuter: false)
-                .frame(width: w * 0.46, height: h * 0.22)
-                .position(x: cx + 4, y: h * 0.36)
+            // Overdel
+            swipeableSlot(garment: viewModel.topLayer, layer: .top, label: "Legg til overdel +")
+                .frame(width: slotW, height: slotH)
+                .position(x: cx + 4, y: h * 0.13 + spacing)
                 .rotationEffect(.degrees(1.5))
                 .zIndex(3)
 
-            // Bottom
-            slotView(viewModel.bottomLayer, .lower, isOuter: false)
-                .frame(width: w * 0.48, height: h * 0.30)
-                .position(x: cx - 2, y: h * 0.60)
+            // Underdel
+            swipeableSlot(garment: viewModel.bottomLayer, layer: .bottom, label: "Legg til underdel +")
+                .frame(width: slotW, height: slotH)
+                .position(x: cx - 2, y: h * 0.13 + spacing * 2)
                 .rotationEffect(.degrees(-1))
                 .zIndex(2)
 
-            // Shoes
-            slotView(viewModel.shoes, .shoes, isOuter: false)
-                .frame(width: w * 0.40, height: h * 0.14)
-                .position(x: cx + 2, y: h * 0.83)
+            // Sko
+            swipeableSlot(garment: viewModel.shoes, layer: .shoes, label: "Legg til sko +")
+                .frame(width: slotW, height: slotH)
+                .position(x: cx + 2, y: h * 0.13 + spacing * 3)
                 .rotationEffect(.degrees(2))
                 .zIndex(3)
         }
     }
 
     @ViewBuilder
-    private func slotView(_ garment: Garment?, _ category: Category, isOuter: Bool) -> some View {
-        Menu {
-            let items = garmentList(for: category, isOuter: isOuter)
-            if items.isEmpty {
-                Text("Ingen plagg tilgjengelig")
-            }
-            ForEach(items) { item in
-                Button(item.name.isEmpty ? item.baseGroup.rawValue.capitalized : item.name) {
-                    viewModel.setSlot(item)
+    private func swipeableSlot(garment: Garment?, layer: StudioViewModel.Layer, label: String) -> some View {
+        SwipeableLayer(
+            garment: garment,
+            itemCount: viewModel.itemCount(for: layer),
+            theme: theme,
+            layerLabel: label,
+            onSwipe: { direction in
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                    viewModel.swipe(layer, direction: direction)
                 }
             }
-            if garment != nil {
-                Divider()
-                Button("Fjern", role: .destructive) { viewModel.clearSlot(category: category) }
-            }
-        } label: {
-            slotContent(garment)
-        }
+        )
     }
 
-    @ViewBuilder
-    private func slotContent(_ garment: Garment?) -> some View {
-        if let garment, !garment.image.isEmpty, let url = URL(string: garment.image) {
-            if url.isFileURL, let data = try? Data(contentsOf: url),
-               let uiImage = UIImage(data: data) {
-                Image(uiImage: uiImage)
-                    .resizable().scaledToFit()
-                    .shadow(color: .black.opacity(0.3), radius: 16, y: 8)
-            } else {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let img):
-                        img.resizable().scaledToFit()
-                            .shadow(color: .black.opacity(0.3), radius: 16, y: 8)
-                    default:
-                        colorBlock(garment)
-                    }
-                }
-            }
-        } else if let garment {
-            colorBlock(garment)
-        } else {
-            // Empty slot — subtle dashed outline
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(theme.text4.opacity(0.2), style: StrokeStyle(lineWidth: 1, dash: [6]))
-                .background(theme.surface.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay {
-                    Image(systemName: "plus")
-                        .font(.system(size: 16, weight: .light))
-                        .foregroundStyle(theme.text4.opacity(0.3))
-                }
-        }
-    }
-
-    private func colorBlock(_ garment: Garment) -> some View {
-        let hex = garment.dominantColor.hasPrefix("#")
-            ? String(garment.dominantColor.dropFirst())
-            : garment.dominantColor
-        return RoundedRectangle(cornerRadius: 12)
-            .fill(Color(hex: hex))
-            .shadow(color: .black.opacity(0.25), radius: 10, y: 6)
-    }
+    // slotContent and colorBlock moved to SwipeableLayer
 
     // MARK: - Slot Labels
 
@@ -488,15 +445,144 @@ struct StudioView: View {
         return Color(hex: String(h.dropFirst()))
     }
 
-    private func garmentList(for cat: Category, isOuter: Bool) -> [Garment] {
-        switch cat {
-        case .upper:
-            isOuter
-                ? viewModel.availableUppers.filter { $0.baseGroup == .coat || $0.baseGroup == .blazer }
-                : viewModel.availableUppers.filter { $0.baseGroup != .coat && $0.baseGroup != .blazer }
-        case .lower: viewModel.availableLowers
-        case .shoes: viewModel.availableShoes
-        case .accessory: viewModel.availableAccessories
+}
+
+// MARK: - Swipeable Layer
+
+/// Each layer is a fixed-position ZStack with horizontal swipe gesture.
+/// Layers NEVER move. Only the garment inside changes.
+private struct SwipeableLayer: View {
+    let garment: Garment?
+    let itemCount: Int
+    let theme: CORETheme
+    let layerLabel: String
+    let onSwipe: (Int) -> Void
+
+    @State private var dragOffset: CGFloat = 0
+    @State private var showHint = true
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                slotContent
+                    .offset(x: dragOffset)
+
+                // Swipe hint — shows briefly on first appear
+                if showHint && itemCount > 1 {
+                    swipeHint
+                        .transition(.opacity)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 20)
+                    .onChanged { value in
+                        // Only horizontal drag
+                        if abs(value.translation.width) > abs(value.translation.height) {
+                            dragOffset = value.translation.width * 0.4
+                        }
+                    }
+                    .onEnded { value in
+                        let threshold: CGFloat = 40
+                        if value.translation.width < -threshold && itemCount > 1 {
+                            // Swipe left → next
+                            dragOffset = -geo.size.width * 0.6
+                            onSwipe(1)
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                dragOffset = 0
+                            }
+                        } else if value.translation.width > threshold && itemCount > 1 {
+                            // Swipe right → previous
+                            dragOffset = geo.size.width * 0.6
+                            onSwipe(-1)
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                dragOffset = 0
+                            }
+                        } else {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                dragOffset = 0
+                            }
+                        }
+                    }
+            )
+            .onAppear {
+                // Hide swipe hint after 3 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation(.easeOut(duration: 0.4)) {
+                        showHint = false
+                    }
+                }
+            }
+            .onLongPressGesture(minimumDuration: 0.5) {
+                // Reappear hint on long press
+                withAnimation(.easeIn(duration: 0.2)) { showHint = true }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation(.easeOut(duration: 0.4)) { showHint = false }
+                }
+            }
         }
+    }
+
+    @ViewBuilder
+    private var slotContent: some View {
+        if let garment, !garment.image.isEmpty, let url = URL(string: garment.image) {
+            if url.isFileURL, let data = try? Data(contentsOf: url),
+               let uiImage = UIImage(data: data) {
+                Image(uiImage: uiImage)
+                    .resizable().scaledToFit()
+                    .shadow(color: .black.opacity(0.35), radius: 12, y: 6)
+            } else {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let img):
+                        img.resizable().scaledToFit()
+                            .shadow(color: .black.opacity(0.35), radius: 12, y: 6)
+                    default:
+                        ProgressView().tint(.white.opacity(0.3))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                }
+            }
+        } else if let garment {
+            // Soft color glow — no box, just a blurred color shape
+            let hex = garment.dominantColor.hasPrefix("#")
+                ? String(garment.dominantColor.dropFirst())
+                : garment.dominantColor
+            Ellipse()
+                .fill(Color(hex: hex).opacity(0.6))
+                .blur(radius: 8)
+                .shadow(color: Color(hex: hex).opacity(0.3), radius: 16, y: 6)
+        } else {
+            // Empty slot — placeholder with "add" prompt
+            VStack(spacing: 6) {
+                Image(systemName: "plus")
+                    .font(.system(size: 18, weight: .light))
+                    .foregroundStyle(theme.text4.opacity(0.5))
+                Text(layerLabel)
+                    .font(.dmSans(9, weight: .medium))
+                    .foregroundStyle(theme.text4.opacity(0.4))
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(theme.text4.opacity(0.15), style: StrokeStyle(lineWidth: 1, dash: [5]))
+            )
+        }
+    }
+
+    private var swipeHint: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "arrow.left")
+                .font(.system(size: 8, weight: .medium))
+            Image(systemName: "arrow.right")
+                .font(.system(size: 8, weight: .medium))
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Capsule().fill(.black.opacity(0.5)))
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+        .padding(.bottom, 4)
     }
 }

@@ -212,31 +212,64 @@ struct DiscoverView: View {
         .padding(.top, 4)
     }
 
-    // MARK: - Garment Orb (with depth stacking)
+    // MARK: - Garment Row (with depth stacking)
 
     @ViewBuilder
     private func garmentOrb(_ garment: Garment, index: Int) -> some View {
         let color = cardGarmentColor(garment)
-        let scale = 1.0 - Double(index) * 0.04
+        let scale = 1.0 - Double(index) * 0.03
 
-        Circle()
-            .fill(
-                RadialGradient(
-                    colors: [color.opacity(0.9), color.opacity(0.6), color.opacity(0.3)],
-                    center: .center,
-                    startRadius: 0,
-                    endRadius: 30
-                )
-            )
-            .frame(width: 56, height: 56)
-            .overlay {
-                Circle()
-                    .stroke(.white.opacity(0.08), lineWidth: 1)
+        Group {
+            if !garment.image.isEmpty, let url = URL(string: garment.image) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let img):
+                        img.resizable().scaledToFit()
+                            .frame(height: 70)
+                            .shadow(color: .black.opacity(0.4), radius: 12, y: 6)
+                    default:
+                        garmentOrbShimmer(color: color)
+                    }
+                }
+            } else {
+                // Color pill fallback
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(color)
+                    .frame(width: 60, height: 70)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(.white.opacity(0.08), lineWidth: 1)
+                    }
+                    .shadow(color: color.opacity(0.4), radius: 12, y: 6)
             }
-            .shadow(color: color.opacity(0.4), radius: 16, y: 8)
-            .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
-            .scaleEffect(scale)
-            .zIndex(Double(4 - index))
+        }
+        .scaleEffect(scale)
+        .zIndex(Double(4 - index))
+    }
+
+    @State private var shimmerPhase: CGFloat = 0
+
+    @ViewBuilder
+    private func garmentOrbShimmer(color: Color) -> some View {
+        RoundedRectangle(cornerRadius: 10)
+            .fill(color.opacity(0.2))
+            .frame(width: 60, height: 70)
+            .overlay {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(
+                        LinearGradient(
+                            colors: [.clear, color.opacity(0.3), .clear],
+                            startPoint: .init(x: shimmerPhase - 0.5, y: 0.5),
+                            endPoint: .init(x: shimmerPhase + 0.5, y: 0.5)
+                        )
+                    )
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .onAppear {
+                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                    shimmerPhase = 1.5
+                }
+            }
     }
 
     // MARK: - Scroll Dots
