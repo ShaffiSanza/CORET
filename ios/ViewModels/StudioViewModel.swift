@@ -116,14 +116,19 @@ final class StudioViewModel {
         let profile = coordinator.profile()
         let all = coordinator.garments()
 
-        // Exclude current outfit so we always get something different
+        // Exclude current outfit and require top + bottom + shoes
         let currentIDs = Set(currentOutfitGarments.map(\.id))
         let best = BestOutfitFinder.findBest(
             items: all,
             profile: profile,
-            count: 10
+            count: 20
         ).filter { outfit in
-            Set(outfit.garments.map(\.id)) != currentIDs
+            let categories = Set(outfit.garments.map(\.category))
+            let hasTop = outfit.garments.contains { $0.category == .upper && $0.baseGroup != .coat && $0.baseGroup != .blazer }
+            let hasBottom = categories.contains(.lower)
+            let hasShoes = categories.contains(.shoes)
+            let isDifferent = Set(outfit.garments.map(\.id)) != currentIDs
+            return hasTop && hasBottom && hasShoes && isDifferent
         }
 
         // Pick a random one from top results
