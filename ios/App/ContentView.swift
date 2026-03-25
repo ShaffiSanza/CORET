@@ -4,7 +4,7 @@ import COREEngine
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) private var colorScheme
+    @AppStorage("appTheme") private var themeRaw: String = AppTheme.dark.rawValue
     @State private var selectedTab: Tab = .wardrobe
     @State private var coordinator: EngineCoordinator?
     @State private var wardrobeVM: WardrobeViewModel?
@@ -33,7 +33,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var mainContent: some View {
-        let theme = colorScheme == .dark ? CORETheme.dark : CORETheme.light
+        let theme = (AppTheme(rawValue: themeRaw) ?? .dark).coreTheme
 
         ZStack(alignment: .bottom) {
             theme.bg.ignoresSafeArea()

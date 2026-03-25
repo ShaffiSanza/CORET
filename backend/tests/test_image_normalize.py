@@ -70,13 +70,14 @@ def test_normalize_small_image():
     assert img.size == (TARGET_SIZE, TARGET_SIZE)
 
 
-def test_normalize_preserves_transparency():
-    """Corners of the canvas should be transparent."""
+def test_normalize_has_studio_background():
+    """Corners should have studio background color (off-white)."""
     result = normalize_image(_make_test_image(400, 600))
     assert result["success"] is True
     img = Image.open(BytesIO(result["image_bytes"]))
-    # Top-left corner should be transparent
-    assert img.getpixel((0, 0))[3] == 0
+    pixel = img.getpixel((0, 0))
+    assert pixel[3] == 255  # Opaque studio bg
+    assert pixel[0] > 240   # Near-white
 
 
 def test_normalize_crops_excess_transparency():

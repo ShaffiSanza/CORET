@@ -181,6 +181,26 @@ struct CORETheme {
     )
 }
 
+// MARK: - App Theme (user selection, persisted)
+
+enum AppTheme: String, CaseIterable {
+    case light, dark
+
+    var coreTheme: CORETheme {
+        switch self {
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+
+    var colorScheme: ColorScheme {
+        switch self {
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+}
+
 // MARK: - Theme Environment Key
 
 private struct ThemeKey: EnvironmentKey {

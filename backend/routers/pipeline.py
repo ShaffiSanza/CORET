@@ -15,10 +15,11 @@ FastAPI APIRouter:
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import Response
+from pydantic import BaseModel, Field
 
 from services.color_extraction import extract_colors_from_image
 from services.metadata_extractor import extract_metadata
-from services.product_search import search_products
+from services.product_search import search_products, process_selected_image
 from services.barcode_lookup import lookup_barcode as lookup_barcode_service
 from services.image_polish import polish_image
 from models.schemas import (
@@ -49,8 +50,28 @@ async def product_search(request: ProductSearchRequest):
         ],
         success=result["success"],
     )
-    
-    
+
+
+# ============================================================
+# POST /api/prettify-image
+# Last ned bilde fra URL, fjern bakgrunn, prettify, lagre
+# ============================================================
+class PrettifyRequest(BaseModel):
+    image_url: str = Field(..., description="URL til produktbilde")
+
+class PrettifyResponse(BaseModel):
+    prettified_url: str | None = None
+    success: bool
+
+@router.post("/prettify-image", response_model=PrettifyResponse)
+async def prettify_image(request: PrettifyRequest):
+    """Last ned et produktbilde, fjern bakgrunn og prettify det."""
+    result = await process_selected_image(request.image_url)
+    return PrettifyResponse(
+        prettified_url=result,
+        success=result is not None,
+    )
+
 
 
 # ============================================================

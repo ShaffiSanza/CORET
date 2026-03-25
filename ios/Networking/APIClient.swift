@@ -68,6 +68,29 @@ actor APIClient {
         return try decoder.decode(ProductSearchResponse.self, from: data)
     }
 
+    // MARK: - Prettify Image
+
+    struct PrettifyResponse: Codable {
+        let prettifiedUrl: String?
+        let success: Bool
+
+        enum CodingKeys: String, CodingKey {
+            case prettifiedUrl = "prettified_url"
+            case success
+        }
+    }
+
+    func prettifyImage(imageUrl: String) async throws -> PrettifyResponse {
+        let url = baseURL.appendingPathComponent("api/prettify-image")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        applyAuth(&request)
+        request.httpBody = try encoder.encode(["image_url": imageUrl])
+        let (data, _) = try await session.data(for: request)
+        return try decoder.decode(PrettifyResponse.self, from: data)
+    }
+
     // MARK: - Barcode Lookup
 
     struct BarcodeLookupResponse: Codable {

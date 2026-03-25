@@ -238,10 +238,32 @@ struct ProfileView: View {
     @State private var showExportSheet = false
     @State private var showPrivacyAlert = false
     @State private var showAboutAlert = false
+    @AppStorage("appTheme") private var themeRaw: String = AppTheme.dark.rawValue
 
     @ViewBuilder
     private var settingsSection: some View {
         VStack(spacing: 0) {
+            // Theme toggle
+            HStack(spacing: 12) {
+                Image(systemName: "circle.lefthalf.filled")
+                    .font(.system(size: 16))
+                    .foregroundStyle(theme.text2)
+                    .frame(width: 24)
+                Text("Tema")
+                    .font(.dmSans(14))
+                    .foregroundStyle(theme.text)
+                Spacer()
+                Picker("", selection: $themeRaw) {
+                    Text("Lys").tag(AppTheme.light.rawValue)
+                    Text("M\u{00F8}rk").tag(AppTheme.dark.rawValue)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 130)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+
+            Divider().padding(.leading, 44)
             settingsRow(icon: "square.and.arrow.up", label: "Eksporter data") {
                 showExportSheet = true
             }

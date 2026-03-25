@@ -189,23 +189,28 @@ struct AddGarmentSheet: View {
     }
 
     private func processSearchImage(urlString: String) async {
-        guard let url = URL(string: urlString) else { return }
         isProcessingImage = true
-        statusMessage = "Fjerner bakgrunn..."
-        if let processedData = await ImageProcessor.processSearchImage(from: url) {
-            let filename = garmentId.uuidString + ".png"
-            let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-            let localURL = cacheDir.appendingPathComponent(filename)
-            do {
-                try processedData.write(to: localURL)
-                imageUrl = localURL.absoluteString
-                statusMessage = "Bakgrunn fjernet"
-            } catch {
-                statusMessage = "Kunne ikke lagre bilde"
-            }
-        } else {
-            if !isProcessingMetadata {
+        statusMessage = "Prettifiserer bilde..."
+        do {
+            let result = try await APIClient.shared.prettifyImage(imageUrl: urlString)
+            if let prettified = result.prettifiedUrl {
+                imageUrl = prettified
+                statusMessage = "Bilde klar"
+            } else {
                 statusMessage = nil
+            }
+        } catch {
+            // Fallback: try Apple Vision on-device
+            if let url = URL(string: urlString),
+               let processedData = await ImageProcessor.processSearchImage(from: url) {
+                let filename = garmentId.uuidString + ".png"
+                let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+                let localURL = cacheDir.appendingPathComponent(filename)
+                try? processedData.write(to: localURL)
+                imageUrl = localURL.absoluteString
+                statusMessage = "Bilde klar"
+            } else {
+                if !isProcessingMetadata { statusMessage = nil }
             }
         }
         isProcessingImage = false

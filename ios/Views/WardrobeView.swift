@@ -230,8 +230,13 @@ struct WardrobeView: View {
 
     @ViewBuilder
     private var garmentGrid: some View {
+        // Show basics suggestions when wardrobe has < 6 garments
+        if !remainingBasics.isEmpty {
+            basicsSection
+        }
+
         if viewModel.isEmpty {
-            emptyState
+            // Nothing else to show
         } else {
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 12),
@@ -256,25 +261,128 @@ struct WardrobeView: View {
         }
     }
 
-    @ViewBuilder
-    private var emptyState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "hanger")
-                .font(.system(size: 48))
-                .foregroundStyle(theme.text4)
-            Text("Garderoben er tom")
-                .font(.instrumentSerif(24))
-                .foregroundStyle(theme.text2)
-            Text("Legg til ditt f\u{00F8}rste plagg for \u{00E5} komme i gang")
-                .font(.dmSans(14))
-                .foregroundStyle(theme.text3)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 60)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Garderoben er tom. Legg til ditt f\u{00F8}rste plagg for \u{00E5} komme i gang.")
+    /// Basics not yet in wardrobe
+    private var remainingBasics: [QuickBasic] {
+        let existing = Set(viewModel.garments.map(\.name))
+        return Self.quickBasics.filter { !existing.contains($0.name) }
     }
+
+    @ViewBuilder
+    private var basicsSection: some View {
+        VStack(spacing: 16) {
+            if viewModel.isEmpty {
+                VStack(spacing: 6) {
+                    (Text("Basics du sannsynligvis ")
+                        .font(.instrumentSerif(22))
+                        .foregroundStyle(theme.text2)
+                    + Text("eier")
+                        .font(.instrumentSerifItalic(22))
+                        .foregroundStyle(theme.text2))
+
+                    Text("Trykk for \u{00E5} legge til")
+                        .font(.dmSans(13))
+                        .foregroundStyle(theme.text3)
+                }
+                .multilineTextAlignment(.center)
+            } else {
+                HStack {
+                    Text("Legg til basics")
+                        .font(.dmSans(13, weight: .medium))
+                        .foregroundStyle(theme.text3)
+                    Spacer()
+                }
+            }
+
+            LazyVGrid(columns: [
+                GridItem(.flexible(), spacing: 10),
+                GridItem(.flexible(), spacing: 10),
+                GridItem(.flexible(), spacing: 10)
+            ], spacing: 10) {
+                ForEach(remainingBasics, id: \.name) { basic in
+                    quickBasicCard(basic)
+                }
+            }
+        }
+        .padding(.bottom, 16)
+    }
+
+    @State private var addingBasic: String?
+
+    private func quickBasicCard(_ basic: QuickBasic) -> some View {
+        Button {
+            guard addingBasic == nil else { return }
+            addingBasic = basic.name
+            Task {
+                // Search for a real product image + prettify it
+                let searchQuery = basic.searchQuery
+                var imageUrl = ""
+                do {
+                    let response = try await APIClient.shared.productSearch(query: searchQuery)
+                    if let first = response.results.first, let rawUrl = first.imageUrl {
+                        // Prettify: bg removal + studio background
+                        let prettified = try await APIClient.shared.prettifyImage(imageUrl: rawUrl)
+                        imageUrl = prettified.prettifiedUrl ?? rawUrl
+                    }
+                } catch { }
+
+                let garment = Garment(
+                    image: imageUrl,
+                    name: basic.name,
+                    category: basic.category,
+                    baseGroup: basic.baseGroup,
+                    colorTemperature: basic.colorTemp,
+                    dominantColor: basic.color,
+                    source: .manual
+                )
+                await viewModel.add(garment)
+                addingBasic = nil
+            }
+        } label: {
+            VStack(spacing: 6) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(hex: basic.color))
+                        .frame(height: 56)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(theme.border, lineWidth: 1)
+                        )
+                    if addingBasic == basic.name {
+                        ProgressView()
+                            .tint(basic.color == "1A1A1E" ? .white : theme.text)
+                    } else {
+                        Image(systemName: "plus")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(basic.color == "1A1A1E" ? Color.white.opacity(0.5) : theme.text3)
+                    }
+                }
+                Text(basic.name)
+                    .font(.dmSans(10, weight: .medium))
+                    .foregroundStyle(theme.text3)
+                    .lineLimit(1)
+            }
+        }
+        .buttonStyle(.plain)
+        .disabled(addingBasic != nil)
+    }
+
+    private struct QuickBasic {
+        let name: String
+        let category: Category
+        let baseGroup: BaseGroup
+        let colorTemp: ColorTemp
+        let color: String
+        let searchQuery: String
+    }
+
+    private static let quickBasics: [QuickBasic] = [
+        QuickBasic(name: "Svart t-skjorte", category: .upper, baseGroup: .tee, colorTemp: .neutral, color: "1A1A1E", searchQuery: "black basic t-shirt"),
+        QuickBasic(name: "Hvit t-skjorte", category: .upper, baseGroup: .tee, colorTemp: .neutral, color: "F0EDE8", searchQuery: "white basic t-shirt"),
+        QuickBasic(name: "M\u{00F8}rk jeans", category: .lower, baseGroup: .jeans, colorTemp: .cool, color: "1A2030", searchQuery: "dark wash slim jeans"),
+        QuickBasic(name: "Hvit skjorte", category: .upper, baseGroup: .shirt, colorTemp: .neutral, color: "F5F0EA", searchQuery: "white oxford shirt"),
+        QuickBasic(name: "Svarte sko", category: .shoes, baseGroup: .sneakers, colorTemp: .neutral, color: "1A1A1E", searchQuery: "black sneakers"),
+        QuickBasic(name: "Brunt belte", category: .accessory, baseGroup: .belt, colorTemp: .warm, color: "5A3820", searchQuery: "brown leather belt"),
+    ]
 
     // MARK: - Add Button (FAB)
 
