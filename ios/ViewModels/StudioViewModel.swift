@@ -115,13 +115,19 @@ final class StudioViewModel {
     func generateSurpriseOutfit() {
         let profile = coordinator.profile()
         let all = coordinator.garments()
-        let best = BestOutfitFinder.findUntriedBest(
+
+        // Exclude current outfit so we always get something different
+        let currentIDs = Set(currentOutfitGarments.map(\.id))
+        let best = BestOutfitFinder.findBest(
             items: all,
-            wornOutfits: [],
             profile: profile,
-            count: 1
-        )
-        if let outfit = best.first {
+            count: 10
+        ).filter { outfit in
+            Set(outfit.garments.map(\.id)) != currentIDs
+        }
+
+        // Pick a random one from top results
+        if let outfit = best.randomElement() {
             // Assign to slots
             outerLayer = nil
             topLayer = nil
