@@ -269,6 +269,14 @@ struct OnboardingView: View {
 
     // MARK: - Continue Button
 
+    private var canContinue: Bool {
+        switch currentStep {
+        case 0: return true // style has default "begge"
+        case 1: return !selectedLifestyle.isEmpty
+        default: return true
+        }
+    }
+
     private var continueButton: some View {
         Button {
             if currentStep < totalSteps - 1 {
@@ -287,9 +295,10 @@ struct OnboardingView: View {
                 .foregroundStyle(backgroundColor)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
-                .background(Capsule().fill(foregroundColor))
+                .background(Capsule().fill(foregroundColor.opacity(canContinue ? 1 : 0.3)))
         }
         .buttonStyle(.plain)
+        .disabled(!canContinue)
     }
 
     // MARK: - Theme-aware colors

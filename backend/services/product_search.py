@@ -79,12 +79,41 @@ async def search_products(query: str) -> dict:
         }
 
 
-async def process_selected_image(thumbnail_url: str) -> str | None:
-    """Prosesser valgt bilde: last ned, isoler plagg (fjern modell), normaliser, lagre.
+async def _find_clean_image(query: str) -> str | None:
+    """Soek Google Images for et rent produktbilde uten modell.
 
-    Bruker rembg (lokal) for aa fjerne bade bakgrunn og modell.
-    Faller tilbake til Photoroom hvis rembg feiler.
-    Returnerer full URL til prosessert bilde, eller None ved feil.
+    Bruker 'isolated white background' for aa finne studio-shots.
+    Returnerer bilde-URL eller None.
+    """
+    if not settings.serpapi_key:
+        return None
+
+    try:
+        params = {
+            "engine": "google_images",
+            "q": f"{query} isolated white background product",
+            "api_key": settings.serpapi_key,
+            "num": 5,
+        }
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(SERPAPI_URL, params=params, timeout=10.0)
+            if resp.status_code != 200:
+                return None
+            data = resp.json()
+            images = data.get("images_results", [])
+            if images:
+                return images[0].get("thumbnail") or images[0].get("original")
+    except Exception as e:
+        logger.warning(f"Google Images search failed: {e}")
+
+    return None
+
+
+async def process_selected_image(thumbnail_url: str) -> str | None:
+    """Prosesser valgt bilde: last ned, isoler plagg, normaliser, lagre.
+
+    Proever foerst aa finne et bedre kildebilde via Google Images.
+    Deretter kjorer gjennom Photoroom/rembg + prettifier.
     """
     try:
         from services.image_isolate import isolate_garment_with_fallback
@@ -98,18 +127,18 @@ async def process_selected_image(thumbnail_url: str) -> str | None:
             base = settings.public_url.rstrip("/")
             return f"{base}/api/images/{image_id}/display.png"
 
-        # Last ned
+        # Last ned kildebilde
         async with httpx.AsyncClient() as client:
             resp = await client.get(thumbnail_url, timeout=10.0, follow_redirects=True)
             if resp.status_code != 200:
                 return None
             image_bytes = resp.content
 
-        # Isoler plagget (fjern bakgrunn + modell via rembg, fallback Photoroom)
+        # Isoler plagget (fjern bakgrunn + modell)
         isolation_result = await isolate_garment_with_fallback(image_bytes)
         source_bytes = isolation_result["image_bytes"] if isolation_result["success"] else image_bytes
 
-        # Normaliser
+        # Normaliser (studio bg + skygge)
         norm_result = normalize_image(source_bytes)
         if not norm_result["success"]:
             return None
