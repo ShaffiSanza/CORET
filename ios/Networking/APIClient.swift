@@ -6,12 +6,8 @@ import COREEngine
 actor APIClient {
     static let shared = APIClient()
 
-    // DEBUG: localhost for dev (no key), RELEASE: Railway production
-    #if DEBUG
-    var baseURL: URL = URL(string: "http://localhost:8000")!
-    #else
+    // Always use Railway production — localhost only if explicitly set
     var baseURL: URL = URL(string: "https://coret-production.up.railway.app")!
-    #endif
 
     // API key loaded from Info.plist (injected via Secrets.xcconfig)
     var apiKey: String? = Bundle.main.object(forInfoDictionaryKey: "CORET_API_KEY") as? String
