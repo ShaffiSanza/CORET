@@ -374,10 +374,11 @@ struct WardrobeView: View {
     // Railway storage er ephemeral — bilder forsvinner ved deploy
     // Derfor har vi fallback-URL som alltid fungerer
     private static let quickBasics: [QuickBasic] = [
+        // rembg-prosessert lokalt, lastet opp til Railway Volume (persistent)
         QuickBasic(name: "Nike Air Force 1", category: .shoes, baseGroup: .sneakers, colorTemp: .neutral, color: "F0EDE8",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/0617149f-6e52-55fb-a8b1-e71863464b18/display.png"),
+                   imageUrl: "https://coret-production.up.railway.app/api/images/e24a84b2-9b45-579e-b649-3da952b94efd/display.png"),
         QuickBasic(name: "Svart t-skjorte", category: .upper, baseGroup: .tee, colorTemp: .neutral, color: "1A1A1E",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/9fed9e79-2dc7-5396-87c7-cf5b851d0c42/display.png"),
+                   imageUrl: "https://coret-production.up.railway.app/api/images/dc37eb71-484b-5c14-aa55-429947a46b76/display.png"),
         QuickBasic(name: "Levi's 501 jeans", category: .lower, baseGroup: .jeans, colorTemp: .cool, color: "1A2030",
                    imageUrl: "https://coret-production.up.railway.app/api/images/37ee0da1-44e9-530b-b456-c560fceefb61/display.png"),
         QuickBasic(name: "Hvit skjorte", category: .upper, baseGroup: .shirt, colorTemp: .neutral, color: "F5F0EA",
