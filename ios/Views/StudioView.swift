@@ -206,14 +206,47 @@ struct StudioView: View {
         }
     }
 
-    // MARK: - Score Breakdown
+    // MARK: - Score Breakdown (Bars + Fashion Intelligence)
 
     @ViewBuilder
     private var scoreBreakdown: some View {
-        if viewModel.outfitScore != nil {
-            VStack(alignment: .leading, spacing: 10) {
-                scoreBar(label: "Flyt", verdict: viewModel.silhouetteVerdict)
-                scoreBar(label: "Farger", verdict: viewModel.colorVerdict)
+        if let score = viewModel.outfitScore {
+            VStack(alignment: .leading, spacing: 14) {
+                // Strength bars
+                strengthBar(label: "Flyt", verdict: viewModel.silhouetteVerdict, value: verdictValue(viewModel.silhouetteVerdict))
+                strengthBar(label: "Farger", verdict: viewModel.colorVerdict, value: verdictValue(viewModel.colorVerdict))
+                strengthBar(label: "Balanse", verdict: viewModel.archetypeMatch.rawValue.capitalized, value: viewModel.totalStrength)
+
+                // Fashion Intelligence feedback
+                if let explanation = score.explanation {
+                    Divider().opacity(0.3)
+
+                    // Positives
+                    if !explanation.positives.isEmpty {
+                        ForEach(explanation.positives.prefix(3), id: \.self) { positive in
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(theme.sage)
+                                Text(positive)
+                                    .font(.dmSans(12))
+                                    .foregroundStyle(theme.text2)
+                            }
+                        }
+                    }
+
+                    // Fix suggestion
+                    if let fix = explanation.fix {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "lightbulb.fill")
+                                .font(.system(size: 11))
+                                .foregroundStyle(theme.gold)
+                            Text(fix)
+                                .font(.dmSans(12))
+                                .foregroundStyle(theme.text3)
+                        }
+                    }
+                }
             }
             .padding(COREDesign.spacing)
             .glassCard()
@@ -221,24 +254,46 @@ struct StudioView: View {
     }
 
     @ViewBuilder
-    private func scoreBar(label: String, verdict: String) -> some View {
-        HStack {
-            Text(label)
-                .font(.dmSans(13, weight: .medium))
-                .foregroundStyle(theme.text2)
-                .frame(width: 60, alignment: .leading)
-            Text(verdict)
-                .font(.dmSans(13))
-                .foregroundStyle(verdictColor(verdict))
-            Spacer()
+    private func strengthBar(label: String, verdict: String, value: Double) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack {
+                Text(label)
+                    .font(.dmSans(11, weight: .medium))
+                    .foregroundStyle(theme.text3)
+                    .frame(width: 52, alignment: .leading)
+                Spacer()
+                Text(verdict)
+                    .font(.dmSans(11))
+                    .foregroundStyle(barColor(value))
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(theme.surface)
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(barColor(value))
+                        .frame(width: geo.size.width * min(max(value, 0), 1))
+                        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: value)
+                }
+            }
+            .frame(height: 4)
         }
     }
 
-    private func verdictColor(_ verdict: String) -> Color {
+    private func barColor(_ value: Double) -> Color {
+        if value >= 0.7 { return theme.sage }
+        if value >= 0.4 { return theme.gold }
+        return Color.coretRed
+    }
+
+    private func verdictValue(_ verdict: String) -> Double {
         switch verdict.lowercased() {
-        case "sterk", "strong", "god", "good": theme.sage
-        case "svak", "weak", "d\u{00E5}rlig", "poor": Color.coretRed
-        default: theme.text3
+        case "strong", "sterk", "harmonious": 0.9
+        case "balanced", "good", "god": 0.75
+        case "neutral": 0.5
+        case "weak", "svak", "uniform": 0.3
+        case "poor", "d\u{00E5}rlig", "clash": 0.15
+        default: 0.5
         }
     }
 
