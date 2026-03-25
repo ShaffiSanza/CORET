@@ -126,6 +126,40 @@ All code written on both Arch Linux (engine + backend) and Mac (SwiftUI views). 
 - DesignSystem.swift — tokens, typography, glass card, text3Fixed contrast
 - MockData.swift — 18 real Shopify products for simulator
 
+**CRITICAL BUG — Railway deploy returns 500 on all authenticated endpoints:**
+
+Status: UNRESOLVED
+URL: https://coret-production.up.railway.app
+Health endpoint works: `GET /api/health` → 200 OK
+All other endpoints: 500 Internal Server Error
+
+Root cause: `SecurityHeadersMiddleware` (BaseHTTPMiddleware) crashes when
+`call_next()` raises an exception (HTTPException from APIKeyMiddleware).
+Starlette BaseHTTPMiddleware has known issues with exception propagation.
+
+Already tried (pushed, did not fix):
+- fcntl graceful fallback (try/except import) — not the issue, Railway is Linux
+- SecurityHeadersMiddleware try/except around call_next — did not resolve
+
+Likely fix: Replace BaseHTTPMiddleware with pure ASGI middleware:
+```python
+# Instead of BaseHTTPMiddleware:
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    ...
+    return response
+```
+Or use Starlette's recommended pattern for middleware that doesn't need
+to read request body.
+
+Files to check: `backend/main.py` lines 121-135
+Test after fix: `curl -H "X-API-Key: <key>" https://coret-production.up.railway.app/api/garments`
+
+Security note: HTTPS is correctly enforced by Railway (HTTP → 301 redirect to HTTPS).
+HSTS header is present. All curl commands in this doc use https://.
+
 **Next steps (Xcode):**
 1. Open Xcode → create iOS project → add engine/ as local Swift package
 2. Drag all ios/ folders into project (App, Views, ViewModels, Persistence, Coordinators, Design, Debug)
