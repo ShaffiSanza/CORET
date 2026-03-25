@@ -192,7 +192,7 @@ struct AddGarmentSheet: View {
         isProcessingImage = true
         statusMessage = "Prettifiserer bilde..."
         do {
-            let result = try await APIClient.shared.prettifyImage(imageUrl: urlString)
+            let result = try await APIClient.shared.prettifyImage(imageUrl: urlString, productTitle: name.isEmpty ? nil : name)
             if let prettified = result.prettifiedUrl {
                 imageUrl = prettified
                 statusMessage = "Bilde klar"

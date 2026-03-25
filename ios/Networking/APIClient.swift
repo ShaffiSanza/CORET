@@ -80,13 +80,15 @@ actor APIClient {
         }
     }
 
-    func prettifyImage(imageUrl: String) async throws -> PrettifyResponse {
+    func prettifyImage(imageUrl: String, productTitle: String? = nil) async throws -> PrettifyResponse {
         let url = baseURL.appendingPathComponent("api/prettify-image")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         applyAuth(&request)
-        request.httpBody = try encoder.encode(["image_url": imageUrl])
+        var body: [String: String] = ["image_url": imageUrl]
+        if let title = productTitle { body["product_title"] = title }
+        request.httpBody = try encoder.encode(body)
         let (data, _) = try await session.data(for: request)
         return try decoder.decode(PrettifyResponse.self, from: data)
     }

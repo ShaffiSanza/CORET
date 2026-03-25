@@ -59,6 +59,7 @@ async def product_search(request: ProductSearchRequest):
 # ============================================================
 class PrettifyRequest(BaseModel):
     image_url: str = Field(..., description="URL til produktbilde")
+    product_title: str | None = Field(None, description="Produktnavn for Google Images soek")
 
 class PrettifyResponse(BaseModel):
     prettified_url: str | None = None
@@ -66,8 +67,19 @@ class PrettifyResponse(BaseModel):
 
 @router.post("/prettify-image", response_model=PrettifyResponse)
 async def prettify_image(request: PrettifyRequest):
-    """Last ned et produktbilde, fjern bakgrunn og prettify det."""
-    result = await process_selected_image(request.image_url)
+    """Last ned et produktbilde, fjern bakgrunn og prettify det.
+    Hvis product_title er satt, proever Google Images foerst for renere bilde."""
+    from services.product_search import _find_clean_image
+
+    source_url = request.image_url
+
+    # Proev aa finne et renere bilde via Google Images
+    if request.product_title:
+        clean_url = await _find_clean_image(request.product_title)
+        if clean_url:
+            source_url = clean_url
+
+    result = await process_selected_image(source_url)
     return PrettifyResponse(
         prettified_url=result,
         success=result is not None,
