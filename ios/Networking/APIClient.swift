@@ -9,8 +9,8 @@ actor APIClient {
     // Always use Railway production — localhost only if explicitly set
     var baseURL: URL = URL(string: "https://coret-production.up.railway.app")!
 
-    // API key loaded from Info.plist (injected via Secrets.xcconfig)
-    var apiKey: String? = Bundle.main.object(forInfoDictionaryKey: "CORET_API_KEY") as? String
+    // API key loaded from Secrets.swift (gitignored)
+    var apiKey: String? = Secrets.coretAPIKey
 
     private let session: URLSession
     private let decoder: JSONDecoder

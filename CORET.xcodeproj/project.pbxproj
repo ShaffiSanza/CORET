@@ -37,6 +37,7 @@
 		E9F3A87D831DF6EB26C97CF2 /* ImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F566D9F3D8509D07D34240AA /* ImportSheet.swift */; };
 		F0E47DF3650FD4182CB93D9F /* MilestoneEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C6FE29286AFCF5FB6F5DD /* MilestoneEntity.swift */; };
 		F7E2BB4A29897A48FE1F0C9B /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B5AF488CE92F5BBB1CDDAA /* ProfileView.swift */; };
+		FAA6AB0BADE2111DD7BEBEEE /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEE12EF665E62237F21E693 /* Secrets.swift */; };
 		FF441DD9C2763651AD1138FE /* StudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D5333276D4402FE2F53A69 /* StudioView.swift */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +71,7 @@
 		C99F6A3FA875CF0EEC0FD7D8 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
 		CA8289E769E8AEBB6C0A1DEB /* CameraCaptureSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureSheet.swift; sourceTree = "<group>"; };
 		D44A9283EBB8D9E314B40AD6 /* engine */ = {isa = PBXFileReference; lastKnownFileType = folder; name = engine; path = engine; sourceTree = SOURCE_ROOT; };
+		DAEE12EF665E62237F21E693 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		E0CEBB9F97EFE3898F2AA014 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		E51475E0D71E7328B782C53B /* EngineCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineCoordinator.swift; sourceTree = "<group>"; };
 		F566D9F3D8509D07D34240AA /* ImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSheet.swift; sourceTree = "<group>"; };
@@ -153,6 +155,7 @@
 		7D3DA841CAC40D6A1DF5835E /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				DAEE12EF665E62237F21E693 /* Secrets.swift */,
 				6C5A7A873FCD4AAEF1634F61 /* Secrets.xcconfig */,
 			);
 			name = Config;
@@ -308,6 +311,7 @@
 				F7E2BB4A29897A48FE1F0C9B /* ProfileView.swift in Sources */,
 				C7CD0CACD8C108334D663BAD /* ProfileViewModel.swift in Sources */,
 				383D9F37A98CEAA0256AB269 /* SavedOutfitEntity.swift in Sources */,
+				FAA6AB0BADE2111DD7BEBEEE /* Secrets.swift in Sources */,
 				B93E5477302C24D4A5F4B7AC /* ShareSheet.swift in Sources */,
 				FF441DD9C2763651AD1138FE /* StudioView.swift in Sources */,
 				64FB9518E2A289D91CDEAC0C /* StudioViewModel.swift in Sources */,

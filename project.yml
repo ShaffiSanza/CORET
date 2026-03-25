@@ -23,6 +23,10 @@ targets:
       - path: ios/Design
       - path: ios/Debug
       - path: ios/Networking
+      - path: ios/Config
+        excludes:
+          - "*.xcconfig"
+          - "*.example"
     dependencies:
       - package: COREEngine
     configFiles:
