@@ -87,12 +87,25 @@ def create_state(shop: str) -> str:
         return state
 
 
+ALLOWED_REDIRECT_DOMAINS = {
+    "coret-production.up.railway.app",
+    "localhost",
+    "127.0.0.1",
+}
+
 def build_authorize_url(shop: str, state: str) -> str:
     """Build Shopify OAuth authorize URL."""
     redirect_uri = settings.shopify_redirect_uri
     # HTTPS enforcement in production
     if settings.environment == "production" and not redirect_uri.startswith("https://"):
         raise ValueError("redirect_uri must be HTTPS in production")
+
+    # Validate redirect URI domain against allowlist (skip if empty/dev)
+    if redirect_uri:
+        from urllib.parse import urlparse
+        parsed = urlparse(redirect_uri)
+        if parsed.hostname and parsed.hostname not in ALLOWED_REDIRECT_DOMAINS:
+            raise ValueError(f"redirect_uri domain '{parsed.hostname}' not in allowlist")
 
     return (
         f"https://{shop}/admin/oauth/authorize"

@@ -34,20 +34,43 @@ PRODUCT_CACHE_DIR = DATA_DIR / "shopify_cache"
 
 
 # ═══ TOKEN MANAGEMENT ═══
-# ENV first, secrets file fallback. Never in brands.json.
+# ENV first, encrypted secrets file fallback. Never in brands.json.
+
+import base64
+import hashlib
+
+def _get_encryption_key() -> bytes:
+    """Derive a 32-byte key from CORET_API_KEY or fallback."""
+    from config import settings as _s
+    seed = _s.coret_api_key or "coret-dev-key-not-for-production"
+    return hashlib.sha256(seed.encode()).digest()
+
+def _xor_crypt(data: bytes, key: bytes) -> bytes:
+    """Simple XOR encryption — sufficient for at-rest token obfuscation."""
+    return bytes(b ^ key[i % len(key)] for i, b in enumerate(data))
 
 def _load_secrets() -> dict[str, str]:
-    if BRAND_SECRETS_FILE.exists():
-        return json.loads(BRAND_SECRETS_FILE.read_text())
-    return {}
+    if not BRAND_SECRETS_FILE.exists():
+        return {}
+    raw = BRAND_SECRETS_FILE.read_bytes()
+    try:
+        # Try encrypted format first
+        decrypted = _xor_crypt(base64.b64decode(raw), _get_encryption_key())
+        return json.loads(decrypted)
+    except Exception:
+        # Fallback: legacy plaintext JSON
+        return json.loads(raw)
 
 
 def _save_secrets(secrets: dict[str, str]):
-    BRAND_SECRETS_FILE.write_text(json.dumps(secrets, indent=2))
+    key = _get_encryption_key()
+    plaintext = json.dumps(secrets).encode()
+    encrypted = base64.b64encode(_xor_crypt(plaintext, key))
+    BRAND_SECRETS_FILE.write_bytes(encrypted)
 
 
 def _store_token(brand_id: str, token: str):
-    """Store token in secrets file (dev). In production, use env vars."""
+    """Store token encrypted in secrets file. In production, prefer env vars."""
     secrets = _load_secrets()
     secrets[brand_id] = token
     _save_secrets(secrets)

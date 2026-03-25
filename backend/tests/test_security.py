@@ -68,9 +68,8 @@ async def test_token_in_secrets_file(client):
     })
     brand_id = r.json()["id"]
 
-    # Secrets file should have the token
-    import json
-    secrets = json.loads(ghost_catalog.BRAND_SECRETS_FILE.read_text())
+    # Secrets file should have the token (encrypted at rest)
+    secrets = ghost_catalog._load_secrets()
     assert brand_id in secrets
     assert secrets[brand_id] == "shpat_secret456"
 
@@ -96,8 +95,7 @@ async def test_delete_brand_cleans_secrets(client):
     brand_id = r.json()["id"]
     await client.delete(f"/api/brands/{brand_id}")
 
-    import json
-    secrets = json.loads(ghost_catalog.BRAND_SECRETS_FILE.read_text())
+    secrets = ghost_catalog._load_secrets()
     assert brand_id not in secrets
 
 
