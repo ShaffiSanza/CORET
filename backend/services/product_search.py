@@ -36,9 +36,11 @@ async def search_products(query: str) -> dict:
     if not settings.serpapi_key:
         return {"results": [], "success": False}
 
+    # "product" biaser mot produktbilder uten modell
+    enhanced_query = f"{query} product" if "product" not in query.lower() else query
     params = {
         "engine": "google_shopping",
-        "q": query,
+        "q": enhanced_query,
         "api_key": settings.serpapi_key,
         "num": 20,
     }
