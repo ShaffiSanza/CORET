@@ -22,6 +22,7 @@ from collections import defaultdict
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
 
 from config import settings
 from routers import pipeline, garments, wardrobe, outfits, wear, discover, brands, profile, auth
@@ -75,9 +76,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # Sjekk om IP-en har brukt opp kvoten
         if len(self.requests[client_ip]) >= self.max_requests:
-            raise HTTPException(
+            return JSONResponse(
                 status_code=429,
-                detail="For mange requests. Vent litt og prøv igjen."
+                content={"detail": "For mange requests. Vent litt og prøv igjen."}
             )
 
         # Registrer denne requesten
@@ -110,9 +111,9 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
             from services.security_logger import log_invalid_api_key
             client_ip = request.client.host if request.client else "unknown"
             log_invalid_api_key(client_ip, request.url.path)
-            raise HTTPException(
+            return JSONResponse(
                 status_code=401,
-                detail="Ugyldig eller manglende API-nøkkel."
+                content={"detail": "Ugyldig eller manglende API-nøkkel."}
             )
 
         return await call_next(request)
