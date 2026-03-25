@@ -40,6 +40,7 @@ class Settings(BaseSettings):
 
     # --- App-innstillinger ---
     allowed_origins: str = "https://coret-production.up.railway.app"  # CORS: kun egne domener
+    public_url: str = "https://coret-production.up.railway.app"       # For å bygge fulle bilde-URLer
     environment: str = "development"  # "development" eller "production"
 
     # model_config forteller pydantic-settings HVOR den skal lete etter verdier

@@ -104,6 +104,10 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
         if request.url.path in self.PUBLIC_PATHS:
             return await call_next(request)
 
+        # Bilder er offentlige (AsyncImage kan ikke sende auth-headers)
+        if request.url.path.startswith("/api/images/"):
+            return await call_next(request)
+
         # Sjekk API-nøkkelen i headeren
         api_key = request.headers.get("X-API-Key")
         if not api_key or not hmac.compare_digest(api_key, settings.coret_api_key):

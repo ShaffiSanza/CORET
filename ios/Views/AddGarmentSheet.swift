@@ -26,9 +26,12 @@ struct AddGarmentSheet: View {
     // Stable garment ID for this session
     @State private var garmentId = UUID()
 
-    // Processing
-    @State private var isProcessing = false
+    // Processing (separate flags to avoid race condition between parallel tasks)
+    @State private var isProcessingImage = false
+    @State private var isProcessingMetadata = false
     @State private var statusMessage: String?
+
+    private var isProcessing: Bool { isProcessingImage || isProcessingMetadata }
 
     var body: some View {
         NavigationStack {
@@ -174,11 +177,38 @@ struct AddGarmentSheet: View {
         }
         if let img = result.imageUrl {
             imageUrl = img
+            // Fjern bakgrunn on-device via Apple Vision
+            Task {
+                await processSearchImage(urlString: img)
+            }
         }
         // Enrich with metadata
         Task {
             await enrichFromTitle()
         }
+    }
+
+    private func processSearchImage(urlString: String) async {
+        guard let url = URL(string: urlString) else { return }
+        isProcessingImage = true
+        statusMessage = "Fjerner bakgrunn..."
+        if let processedData = await ImageProcessor.processSearchImage(from: url) {
+            let filename = garmentId.uuidString + ".png"
+            let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+            let localURL = cacheDir.appendingPathComponent(filename)
+            do {
+                try processedData.write(to: localURL)
+                imageUrl = localURL.absoluteString
+                statusMessage = "Bakgrunn fjernet"
+            } catch {
+                statusMessage = "Kunne ikke lagre bilde"
+            }
+        } else {
+            if !isProcessingMetadata {
+                statusMessage = nil
+            }
+        }
+        isProcessingImage = false
     }
 
     private func applyBarcodeResult(_ result: APIClient.BarcodeLookupResponse) {
@@ -200,8 +230,10 @@ struct AddGarmentSheet: View {
 
     private func enrichFromTitle() async {
         guard !name.isEmpty else { return }
-        isProcessing = true
-        statusMessage = "Analyserer plagg..."
+        isProcessingMetadata = true
+        if !isProcessingImage {
+            statusMessage = "Analyserer plagg..."
+        }
         do {
             let meta = try await APIClient.shared.extractMetadata(
                 productTitle: name,
@@ -213,21 +245,22 @@ struct AddGarmentSheet: View {
             if let bg = meta.baseGroup, let parsed = BaseGroup(rawValue: bg) {
                 baseGroup = parsed
             }
-            if let sil = meta.silhouette, let parsed = Silhouette(rawValue: sil) {
-                silhouette = parsed
-            }
             if let ct = meta.colorTemperature, let parsed = ColorTemp(rawValue: ct) {
                 colorTemperature = parsed
             }
-            statusMessage = "Ferdig — sjekk felter"
+            if !isProcessingImage {
+                statusMessage = "Ferdig \u{2014} sjekk felter"
+            }
         } catch {
-            statusMessage = "Fyll ut manuelt"
+            if !isProcessingImage {
+                statusMessage = "Fyll ut manuelt"
+            }
         }
-        isProcessing = false
+        isProcessingMetadata = false
     }
 
     private func uploadImage(garmentId: UUID, imageData: Data) async {
-        isProcessing = true
+        isProcessingImage = true
         statusMessage = "Laster opp bilde..."
         do {
             let result = try await APIClient.shared.uploadImage(garmentId: garmentId, imageData: imageData)
@@ -241,7 +274,7 @@ struct AddGarmentSheet: View {
         } catch {
             statusMessage = "Bildeopplasting feilet"
         }
-        isProcessing = false
+        isProcessingImage = false
     }
 
     private func buildGarment() -> Garment {

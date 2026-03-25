@@ -335,17 +335,30 @@ struct GarmentCard: View {
             // Image or color swatch
             ZStack(alignment: .topTrailing) {
                 if !garment.image.isEmpty, let url = URL(string: garment.image) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let img):
-                            img.resizable()
-                                .scaledToFill()
-                                .frame(maxWidth: .infinity)
-                                .aspectRatio(0.8, contentMode: .fit)
-                                .clipShape(RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall))
-                        default:
-                            colorSwatch
+                    if url.isFileURL,
+                       let data = try? Data(contentsOf: url),
+                       let uiImage = UIImage(data: data) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .aspectRatio(0.8, contentMode: .fit)
+                            .clipShape(RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall))
+                    } else if !url.isFileURL {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let img):
+                                img.resizable()
+                                    .scaledToFill()
+                                    .frame(maxWidth: .infinity)
+                                    .aspectRatio(0.8, contentMode: .fit)
+                                    .clipShape(RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall))
+                            default:
+                                colorSwatch
+                            }
                         }
+                    } else {
+                        colorSwatch
                     }
                 } else {
                     colorSwatch

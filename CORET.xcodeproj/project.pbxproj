@@ -12,6 +12,7 @@
 		1CE5F6FFE5116B4833622A40 /* WearLogEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C1FE906AAE8134A02102596 /* WearLogEntity.swift */; };
 		20088D3EF795D89C371DD208 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6143F11FA0599579C89E96 /* MockData.swift */; };
 		383D9F37A98CEAA0256AB269 /* SavedOutfitEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0700B94D600943E67FEC3D9 /* SavedOutfitEntity.swift */; };
+		38E64C4EB085BD3E78A7E971 /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC18FC8063AF432318F0CC85 /* ImageProcessor.swift */; };
 		3C8D42928BF87348B6CFBB77 /* SwiftDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6A26F957108D8667A0F40D /* SwiftDataStack.swift */; };
 		4EB3116AA523B4A4BA01FCB0 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A43261CBBDB22641658EEEC /* APIClient.swift */; };
 		4FDF949558CEE73AA767D6AD /* COREEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 136501B6F5629A56AFCFDA9D /* COREEngine */; };
@@ -70,6 +71,7 @@
 		C852B991F90F94C3B6CECCDB /* TypeAliases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeAliases.swift; sourceTree = "<group>"; };
 		C99F6A3FA875CF0EEC0FD7D8 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
 		CA8289E769E8AEBB6C0A1DEB /* CameraCaptureSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureSheet.swift; sourceTree = "<group>"; };
+		CC18FC8063AF432318F0CC85 /* ImageProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProcessor.swift; sourceTree = "<group>"; };
 		D44A9283EBB8D9E314B40AD6 /* engine */ = {isa = PBXFileReference; lastKnownFileType = folder; name = engine; path = engine; sourceTree = SOURCE_ROOT; };
 		DAEE12EF665E62237F21E693 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		E0CEBB9F97EFE3898F2AA014 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				A6F0DABB60FE911BCF85BBC2 /* Networking */,
 				554EBECCD1D00CDAF20A84E7 /* Packages */,
 				4BD3602744294BFB12BAEDF5 /* Persistence */,
+				76CE027BE76898362E23632B /* Services */,
 				6899358B8B83A21A238363F0 /* ViewModels */,
 				87F2C7D7A0F9B9ACD550BBE8 /* Views */,
 				8EADFFDA6A811CD8ABD906BB /* Products */,
@@ -150,6 +153,15 @@
 			);
 			name = ViewModels;
 			path = ios/ViewModels;
+			sourceTree = "<group>";
+		};
+		76CE027BE76898362E23632B /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				CC18FC8063AF432318F0CC85 /* ImageProcessor.swift */,
+			);
+			name = Services;
+			path = ios/Services;
 			sourceTree = "<group>";
 		};
 		7D3DA841CAC40D6A1DF5835E /* Config */ = {
@@ -304,6 +316,7 @@
 				C438CD5A5834151542DE1212 /* EngineCoordinator.swift in Sources */,
 				097984889CA95580B8C78E10 /* GarmentDetailSheet.swift in Sources */,
 				9772923A5512C4E8BCDB488B /* GarmentEntity.swift in Sources */,
+				38E64C4EB085BD3E78A7E971 /* ImageProcessor.swift in Sources */,
 				E9F3A87D831DF6EB26C97CF2 /* ImportSheet.swift in Sources */,
 				F0E47DF3650FD4182CB93D9F /* MilestoneEntity.swift in Sources */,
 				20088D3EF795D89C371DD208 /* MockData.swift in Sources */,

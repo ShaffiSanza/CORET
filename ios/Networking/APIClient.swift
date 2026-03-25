@@ -237,16 +237,16 @@ actor APIClient {
     struct MetadataResponse: Codable {
         let category: String?
         let baseGroup: String?
-        let silhouette: String?
         let colorTemperature: String?
-        let season: String?
+        let confidence: Double?
+        let success: Bool?
 
         enum CodingKeys: String, CodingKey {
-            case category
-            case baseGroup = "base_group"
-            case silhouette
-            case colorTemperature = "color_temperature"
-            case season
+            case category = "suggested_category"
+            case baseGroup = "suggested_base_group"
+            case colorTemperature = "suggested_color_temperature"
+            case confidence
+            case success
         }
     }
 
