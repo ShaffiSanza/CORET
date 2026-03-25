@@ -119,22 +119,9 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
 
 
 # ============================================================
-# Security Headers Middleware
-# Legger til standard sikkerhetshoder på alle responses.
+# Security Headers — added via @app.middleware("http") below
+# (BaseHTTPMiddleware crashes on exception propagation in Starlette)
 # ============================================================
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        try:
-            response = await call_next(request)
-        except Exception:
-            # Let exceptions (401, 422, etc.) propagate without crashing
-            raise
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' https: data:; script-src 'self'; style-src 'self' 'unsafe-inline'"
-        return response
 
 
 # Opprett FastAPI-appen (docs disabled in production)
@@ -149,9 +136,6 @@ app = FastAPI(
 )
 
 # Legg til sikkerhetslag (rekkefølge betyr noe — ytterste først)
-# 0. Security headers — alltid på
-app.add_middleware(SecurityHeadersMiddleware)
-
 # 1. Rate limiting — stopp spam FØR vi sjekker auth
 app.add_middleware(RateLimitMiddleware, max_requests=settings.rate_limit_per_minute)
 
@@ -166,6 +150,17 @@ app.add_middleware(
     allow_methods=["POST", "GET", "PUT", "DELETE"],
     allow_headers=["Content-Type", "X-API-Key"],
 )
+
+# Security headers — pure ASGI middleware (no BaseHTTPMiddleware)
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' https: data:; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    return response
 
 # Monter routere med /api-prefix
 app.include_router(pipeline.router, prefix="/api")
