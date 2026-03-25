@@ -1,106 +1,123 @@
 # CORET – Continue
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Status
 ```
 Engine:    387/387 ✅ (17 suites + Fashion Intelligence)
 Backend:   248/248 ✅ (49 endpoints, security hardened)
-iOS Views: ALL WRITTEN — needs Xcode build verification
-Total:     853 tester, 0 feil (engine + backend)
+iOS Views: ALL WRITTEN — Xcode project exists (CORET.xcodeproj)
+Shopify:   LIVE — bdsxrs-cz.myshopify.com, 18 products (no images yet)
+Photoroom: API key set ✅ (Pro plan, background removal working)
+Railway:   CRITICAL BUG — 500 on all auth endpoints (see below)
+Total:     853 tester, 0 feil (engine + backend locally)
 ```
 
-## Completed This Session
-- [x] Cloned repo on new Mac
-- [x] Installed Python 3.12, backend 248/248 passing
-- [x] Installed Swift 6.2.4 via swiftly, engine 387/387 passing
-- [x] Added platform targets to Package.swift (macOS 13, iOS 17)
-- [x] Added TestImports.swift for Category disambiguation
-- [x] Wrote CORETApp.swift (entry point + SwiftData container)
-- [x] Wrote ContentView.swift (custom floating tab bar, 3 tabs + profile)
-- [x] Wrote WardrobeView.swift (hero, filters, 2-col grid, FAB, empty state)
-- [x] Wrote StudioView.swift (flat lay slots, live scoring, accessory drawer)
-- [x] Wrote DiscoverView.swift (swipe cards, 70/30+Full modes, actions)
-- [x] Wrote ProfileView.swift (identity, archetype, season, milestones, settings)
-- [x] Wrote AddGarmentSheet.swift (form + live projection preview)
-- [x] Wrote GarmentDetailSheet.swift (role analysis, removal simulation)
-- [x] Added DesignSystem.swift (color tokens, typography, glass card, theme)
-- [x] Extended EngineCoordinator with bestOutfit(), primaryGap(), logWear()
-- [x] Extended WardrobeViewModel with projectionForAdding(), profile accessor
-- [x] UI/UX Pro Max upgrade: all 4 views audited and improved
-  - Wardrobe: Bento hero, stagger animations, press feedback, gold key borders
-  - Studio: contentTransition on score, edge swipe drawer, removed "Flat Lay" header
-  - Discover: swipe rotation+opacity, missing piece above reason, haptics, swipe hint
-  - Profile: 4th tab (not floating), avatar 60pt, identity 26pt, stronger elevation
-- [x] Zero emoji in all views — replaced with colored rectangles (dominantColor)
-- [x] DesignSystem: added text3Fixed (#6B5E4A, 4.5:1 contrast)
-- [x] ContentView: 4 tabs with floatingNav (active circle + scale animation)
-- [x] MockData.swift: 18 real Shopify products pre-seeded for simulator
-- [x] GarmentDetailSheet: emoji → colored rectangles
-- [x] accessibilityLabel on all interactive elements across all views
+## What Works Now
+- Engine: 387/387 tests, all engines + Fashion Intelligence
+- Backend: 248/248 tests locally, all endpoints work on localhost
+- Shopify: 18 test products synced, Client Credentials Grant auth
+- Photoroom: API key configured, background removal verified working
+- Product search: SerpAPI → download thumbnail → Photoroom bg removal → normalize → save
+- iOS: All SwiftUI views written, 4-tab nav, MockData with 18 real products
+
+## CRITICAL BUG: Railway Deploy Returns 500
+
+**All authenticated endpoints return 500 Internal Server Error on Railway.**
+Health + docs work fine.
+
+Root cause: `BaseHTTPMiddleware` in Starlette 0.52.1 crashes when
+`raise HTTPException` is called inside `dispatch()`. Causes
+`ExceptionGroup: unhandled errors in a TaskGroup`.
+
+Three middlewares affected:
+- `SecurityHeadersMiddleware` — line 125 in main.py
+- `APIKeyMiddleware` — raises 401, line 113
+- `RateLimitMiddleware` — raises 429, line 78
+
+**Fix (not yet applied):**
+Replace `raise HTTPException(...)` with `return JSONResponse(status_code=..., content={...})`
+in all three middlewares. This avoids the Starlette TaskGroup bug entirely.
+
+```python
+# BEFORE (crashes on Railway):
+raise HTTPException(status_code=401, detail="...")
+
+# AFTER (works):
+from starlette.responses import JSONResponse
+return JSONResponse(status_code=401, content={"detail": "..."})
+```
+
+File: `backend/main.py`
+Test after fix: `curl -H "X-API-Key: <key>" https://coret-production.up.railway.app/api/garments`
+
+**Already tried (did not fix):**
+- fcntl graceful fallback — not the issue (Railway is Linux)
+- SecurityHeadersMiddleware try/except — doesn't help (Starlette internals)
+
+## What Was Done This Session (Arch Linux, 25 March)
+
+### Fixes pushed:
+- [x] fcntl graceful fallback in all 4 store files (garment, outfit, wear_log, clarity)
+- [x] SecurityHeadersMiddleware try/except (partial fix, not sufficient)
+- [x] Documented Railway bug in CLAUDE.md with root cause + solution
+
+### Moodboard alignment:
+- [x] Wardrobe moodboard: Bento hero, colored rects, gold key borders, stagger
+- [x] Studio moodboard: removed "Flat Lay", score pulse, primary/secondary CTA, drawer hint
+- [x] Discover moodboard: missing piece above reason, swipe feedback, haptic hint
+- [x] Profile moodboard: tab 4, avatar 60pt, identity 26pt, elevation, text3 contrast
+
+### Photoroom:
+- [x] Photoroom Pro activated
+- [x] API key set in backend/.env (PHOTOROOM_API_KEY)
+- [x] Background removal tested and verified working
+- [x] product_search.py already has full pipeline: search → download → bg removal → normalize → save
+
+### HTTPS verification:
+- [x] Railway enforces HTTPS (HTTP → 301 redirect)
+- [x] HSTS header present with preload
+- [x] All references in docs use https://
 
 ## What Is Ready (DO NOT rebuild)
 - Engine: 17 engines + Fashion Intelligence (29 rules, i18n)
-- Backend: 49 endpoints, strict auth, 31 security vulns fixed
+- Backend: 49 endpoints, strict auth, security hardened
 - Shopify: Client Credentials Grant, Product Enrichment Layer
-- ViewModels: WardrobeVM, StudioVM, DiscoverVM, ProfileVM (all updated)
-- Persistence: 6 SwiftData entities + EngineCoordinator
-- Views: All 8 SwiftUI views written (see ios/Views/ and ios/App/)
-- Design: DesignSystem.swift with full theme system
+- ViewModels: WardrobeVM, StudioVM, DiscoverVM, ProfileVM
+- Persistence: 7 SwiftData entities + EngineCoordinator
+- Views: All SwiftUI views + sheets + design system
+- Photoroom: Background removal pipeline working
+- Moodboards: All 4 aligned with SwiftUI views
 
-## Next Steps (Xcode Required)
+## Next Steps
 
-### STEP 1: Open in Xcode and Build
-1. Open Xcode → New Project → iOS App → "CORET" (or use existing .xcodeproj)
-2. Interface: SwiftUI, Language: Swift, minimum deployment: iOS 17
-3. File → Add Package Dependencies → Add Local → select `engine/` folder
-4. Drag ALL ios/ folders into project:
-   - App/ (2 files: CORETApp.swift, ContentView.swift)
-   - Views/ (6 files)
-   - ViewModels/ (4 files)
-   - Persistence/ (7 files)
-   - Coordinators/ (1 file)
-   - Design/ (1 file)
-5. Delete auto-generated ContentView.swift and App file from Xcode template
-6. Build → fix any import issues
+### PRIORITY 1: Fix Railway 500 (Mac session)
+Fix `backend/main.py` — replace `raise HTTPException` with `return JSONResponse`
+in all three BaseHTTPMiddleware classes. Push → Railway auto-deploys.
 
-### STEP 2: Fix Compilation Errors
-Known issues to resolve in Xcode:
-- Ensure COREEngine package is properly linked to iOS target
-- SwiftData @Model macros need Xcode compilation (not terminal)
-- May need `import SwiftData` adjustments
+### PRIORITY 2: Add images to Shopify test products
+Products have no images. Update seed script or manually add via Shopify Admin.
+Pipeline is ready: search → Photoroom bg removal → normalize → variants.
 
-### STEP 3: Run on Simulator
-- Select iPhone 15 Pro simulator
-- Build and Run (Cmd+R)
-- Verify 3-tab navigation works
-- Test add garment flow
+### PRIORITY 3: Xcode build + simulator
+- Verify all views compile in Xcode
+- Run on simulator with MockData
+- Test add garment flow with product search + Photoroom
 
-### STEP 4: Polish
-- Add custom fonts (Instrument Serif, DM Sans) to project
-- Replace emoji garment placeholders with real images (camera capture)
-- Connect to backend API (replace TODO stubs in ViewModels)
-
-## Color Tokens (in DesignSystem.swift)
-Already implemented — see ios/Design/DesignSystem.swift
-
-## Key Architecture Rules
-- ViewModels NEVER call engines directly — only through EngineCoordinator
-- All public types: Codable, Sendable
-- Engine is pure functions, no state
-- SwiftData is local-first, no cloud sync in V1
+### PRIORITY 4: Apple Vision background removal (production)
+For on-device camera flow. Use VNGenerateForegroundInstanceMaskRequest (iOS 17+).
+Eliminates need for Photoroom API in production.
 
 ## Decisions Locked
-- 3 tabs: Wardrobe, Studio, Discover. Profile via menu icon.
+- 4 tabs: Wardrobe, Studio, Discover, Profile
 - Missing piece: show on ghost cards, price hidden in feed (show on tap)
 - Style context: invisible to user, controls ghost filtering
+- Full Discover: brand-rom (one brand at a time), not cross-brand mix (V1)
+- Background removal: Photoroom for backend/search, Apple Vision for iOS camera (V2)
 - UGC: never a tab, V2 injection only with thresholds
-- Fashion Intelligence: 29 rules, i18n (no/en), ExplanationResult on OutfitScore
 
-## Skills
-See [`docs/SKILLS.md`](docs/SKILLS.md) — 10 skills installed (security, UI/UX, design).
-
-## Environment Notes (this Mac)
-- Swift 6.2.4 installed via swiftly (not Xcode toolchain)
-- Python 3.12 in backend/.venv
-- Git HTTPS via gh auth (SSH not configured)
-- Tailscale partially installed (needs App Store login for full setup)
+## Environment
+- Arch Linux: engine + backend development
+- Mac: iOS/SwiftUI + Xcode + Railway CLI
+- Photoroom Pro: API key in backend/.env
+- SerpAPI: key in backend/.env
+- Shopify: bdsxrs-cz.myshopify.com (Client Credentials in .env)
