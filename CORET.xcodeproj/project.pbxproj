@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01A2A9837D9724157F47923C /* UserProfileEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2655D3C0A79CBDBBD00A4CB3 /* UserProfileEntity.swift */; };
 		097984889CA95580B8C78E10 /* GarmentDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF1B3925AAF3416A71A70C /* GarmentDetailSheet.swift */; };
+		1CE5F6FFE5116B4833622A40 /* WearLogEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C1FE906AAE8134A02102596 /* WearLogEntity.swift */; };
 		20088D3EF795D89C371DD208 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6143F11FA0599579C89E96 /* MockData.swift */; };
 		383D9F37A98CEAA0256AB269 /* SavedOutfitEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0700B94D600943E67FEC3D9 /* SavedOutfitEntity.swift */; };
 		3C8D42928BF87348B6CFBB77 /* SwiftDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6A26F957108D8667A0F40D /* SwiftDataStack.swift */; };
@@ -24,6 +25,7 @@
 		98186C86059A8EA013BFA9AC /* ClaritySnapshotEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321C7D91C2B56642EF8E4DA1 /* ClaritySnapshotEntity.swift */; };
 		A5A75645F9E6165607BC118C /* ProductSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184EE584E5F1F25E396833CD /* ProductSearchSheet.swift */; };
 		A8AE1FEF3BCFEC8C074BBBFF /* TypeAliases.swift in Sources */ = {isa = PBXBuildFile; fileRef = C852B991F90F94C3B6CECCDB /* TypeAliases.swift */; };
+		B93E5477302C24D4A5F4B7AC /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DC72971C3B1B5698B0D2D4 /* ShareSheet.swift */; };
 		B9D04FD9B54ED8FEFDB576C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BDF4ACFF336B57970C0E48 /* ContentView.swift */; };
 		C05AE4C78A84DD4453C4EE46 /* WardrobeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8B82644A8987E059A159FD /* WardrobeView.swift */; };
 		C438CD5A5834151542DE1212 /* EngineCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51475E0D71E7328B782C53B /* EngineCoordinator.swift */; };
@@ -58,9 +60,11 @@
 		70FF1B3925AAF3416A71A70C /* GarmentDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarmentDetailSheet.swift; sourceTree = "<group>"; };
 		7A43261CBBDB22641658EEEC /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		7BF344BED7B5EB97C296A791 /* BarcodeScannerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerSheet.swift; sourceTree = "<group>"; };
+		7C1FE906AAE8134A02102596 /* WearLogEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WearLogEntity.swift; sourceTree = "<group>"; };
 		8B8B82644A8987E059A159FD /* WardrobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeView.swift; sourceTree = "<group>"; };
 		8C5E804ECD2958BB2AD0D489 /* AddGarmentSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGarmentSheet.swift; sourceTree = "<group>"; };
 		B0700B94D600943E67FEC3D9 /* SavedOutfitEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedOutfitEntity.swift; sourceTree = "<group>"; };
+		B4DC72971C3B1B5698B0D2D4 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		BAD8BA0936492B9F60C880D9 /* WardrobeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeViewModel.swift; sourceTree = "<group>"; };
 		C852B991F90F94C3B6CECCDB /* TypeAliases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeAliases.swift; sourceTree = "<group>"; };
 		C99F6A3FA875CF0EEC0FD7D8 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
@@ -120,6 +124,7 @@
 				B0700B94D600943E67FEC3D9 /* SavedOutfitEntity.swift */,
 				5E6A26F957108D8667A0F40D /* SwiftDataStack.swift */,
 				2655D3C0A79CBDBBD00A4CB3 /* UserProfileEntity.swift */,
+				7C1FE906AAE8134A02102596 /* WearLogEntity.swift */,
 			);
 			name = Persistence;
 			path = ios/Persistence;
@@ -165,6 +170,7 @@
 				F566D9F3D8509D07D34240AA /* ImportSheet.swift */,
 				184EE584E5F1F25E396833CD /* ProductSearchSheet.swift */,
 				F8B5AF488CE92F5BBB1CDDAA /* ProfileView.swift */,
+				B4DC72971C3B1B5698B0D2D4 /* ShareSheet.swift */,
 				56D5333276D4402FE2F53A69 /* StudioView.swift */,
 				8B8B82644A8987E059A159FD /* WardrobeView.swift */,
 			);
@@ -302,6 +308,7 @@
 				F7E2BB4A29897A48FE1F0C9B /* ProfileView.swift in Sources */,
 				C7CD0CACD8C108334D663BAD /* ProfileViewModel.swift in Sources */,
 				383D9F37A98CEAA0256AB269 /* SavedOutfitEntity.swift in Sources */,
+				B93E5477302C24D4A5F4B7AC /* ShareSheet.swift in Sources */,
 				FF441DD9C2763651AD1138FE /* StudioView.swift in Sources */,
 				64FB9518E2A289D91CDEAC0C /* StudioViewModel.swift in Sources */,
 				3C8D42928BF87348B6CFBB77 /* SwiftDataStack.swift in Sources */,
@@ -309,6 +316,7 @@
 				01A2A9837D9724157F47923C /* UserProfileEntity.swift in Sources */,
 				C05AE4C78A84DD4453C4EE46 /* WardrobeView.swift in Sources */,
 				D52A3ECF09D27910E4B9384D /* WardrobeViewModel.swift in Sources */,
+				1CE5F6FFE5116B4833622A40 /* WearLogEntity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

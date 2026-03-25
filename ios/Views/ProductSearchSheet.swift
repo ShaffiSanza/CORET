@@ -138,7 +138,7 @@ struct ProductSearchSheet: View {
                     results = []
                 }
             } catch {
-                errorMessage = "Backend ikke tilgjengelig. Start backend lokalt eller deploy til Railway."
+                errorMessage = "S\u{00F8}ket feilet. Pr\u{00F8}v igjen senere."
                 results = []
             }
             isSearching = false

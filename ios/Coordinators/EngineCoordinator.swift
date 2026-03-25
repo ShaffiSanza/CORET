@@ -208,8 +208,17 @@ final class EngineCoordinator: ObservableObject {
     }
 
     func logWear(garmentID: UUID) async {
-        // Persistence for wear logs — lightweight, no full recompute
-        // TODO: persist WearLog to SwiftData when WearLogEntity is added
+        let entity = WearLogEntity(garmentID: garmentID)
+        modelContext.insert(entity)
+        try? modelContext.save()
+    }
+
+    func fetchWearLogs() -> [WearLog] {
+        let descriptor = FetchDescriptor<WearLogEntity>(
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        let entities = (try? modelContext.fetch(descriptor)) ?? []
+        return entities.map { $0.toWearLog() }
     }
 
     func seasonalRecommendation() -> SeasonalRecommendationV2? {

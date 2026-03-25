@@ -3,7 +3,7 @@ import SwiftData
 
 // MARK: - SwiftDataStack
 // Centralizes ModelContainer configuration.
-// All 6 entities registered here. Schema versioning handled here.
+// All 7 entities registered here. Schema versioning handled here.
 //
 // Usage in COREApp.swift:
 //   .modelContainer(SwiftDataStack.container)
@@ -16,7 +16,8 @@ enum SwiftDataStack {
         ClaritySnapshotEntity.self,
         MilestoneEntity.self,
         SavedOutfitEntity.self,
-        EngineCacheEntity.self
+        EngineCacheEntity.self,
+        WearLogEntity.self
     ])
 
     static let modelConfiguration = ModelConfiguration(

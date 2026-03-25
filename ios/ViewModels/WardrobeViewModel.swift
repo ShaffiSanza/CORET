@@ -68,6 +68,7 @@ final class WardrobeViewModel {
     var garmentCount: Int { garments.count }
     var clarityScore: Double { claritySnapshot?.score ?? 0 }
     var clarityBand: ClarityBand { claritySnapshot?.band ?? .fragmentert }
+    var clarityWeeklyDelta: Double = 0
 
     // MARK: - CRUD
 
@@ -106,9 +107,9 @@ final class WardrobeViewModel {
         let projection = projectionForRemoving(garment)
         let delta = projection.clarityDelta
         if delta < -2.0 {
-            return "Removing this item will reduce Clarity by \(String(format: "%.0f", abs(delta)))."
+            return "Å fjerne dette plagget reduserer klarhet med \(String(format: "%.0f", abs(delta)))."
         }
-        return "This item has low structural impact on your wardrobe."
+        return "Dette plagget har lav strukturell påvirkning på garderoben."
     }
 
     // MARK: - Sync
@@ -125,5 +126,15 @@ final class WardrobeViewModel {
         bestOutfit = coordinator.bestOutfit()
         primaryGap = coordinator.primaryGap()
         gapResult = coordinator.latestGapResult
+
+        // Compute weekly clarity delta from history
+        let history = coordinator.clarityHistory()
+        if history.count >= 2 {
+            let weekAgo = Date().addingTimeInterval(-7 * 86400)
+            let oldSnapshot = history.last(where: { $0.createdAt <= weekAgo }) ?? history.first
+            clarityWeeklyDelta = (claritySnapshot?.score ?? 0) - (oldSnapshot?.score ?? 0)
+        } else {
+            clarityWeeklyDelta = 0
+        }
     }
 }

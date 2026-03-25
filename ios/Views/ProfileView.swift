@@ -20,7 +20,7 @@ struct ProfileView: View {
             .padding(.bottom, 100)
         }
         .background(theme.bg)
-        .task { viewModel.sync() }
+        .onAppear { viewModel.sync() }
     }
 
     // MARK: - Avatar
@@ -235,20 +235,46 @@ struct ProfileView: View {
 
     // MARK: - Settings
 
+    @State private var showExportSheet = false
+    @State private var showPrivacyAlert = false
+    @State private var showAboutAlert = false
+
     @ViewBuilder
     private var settingsSection: some View {
         VStack(spacing: 0) {
-            settingsRow(icon: "square.and.arrow.up", label: "Eksporter data") { }
+            settingsRow(icon: "square.and.arrow.up", label: "Eksporter data") {
+                showExportSheet = true
+            }
             Divider().padding(.leading, 44)
-            settingsRow(icon: "lock.shield", label: "Personvern") { }
+            settingsRow(icon: "lock.shield", label: "Personvern") {
+                showPrivacyAlert = true
+            }
             Divider().padding(.leading, 44)
-            settingsRow(icon: "info.circle", label: "Om CORET") { }
+            settingsRow(icon: "info.circle", label: "Om CORET") {
+                showAboutAlert = true
+            }
             Divider().padding(.leading, 44)
             settingsRow(icon: "arrow.counterclockwise", label: "Nullstill profil", isDestructive: true) {
                 viewModel.showResetConfirmation = true
             }
         }
         .glassCard()
+        .sheet(isPresented: $showExportSheet) {
+            if let data = try? JSONEncoder().encode(viewModel.exportGarments()),
+               let json = String(data: data, encoding: .utf8) {
+                ShareSheet(items: [json])
+            }
+        }
+        .alert("Personvern", isPresented: $showPrivacyAlert) {
+            Button("OK") { }
+        } message: {
+            Text("CORET lagrer all data lokalt p\u{00E5} din enhet. Ingen data sendes til tredjeparter uten ditt samtykke.")
+        }
+        .alert("Om CORET", isPresented: $showAboutAlert) {
+            Button("OK") { }
+        } message: {
+            Text("CORET — Your Wardrobe Operating System.\nVersjon 1.0\n\nByggd rundt din kjerne.")
+        }
         .alert("Nullstill profil?", isPresented: $viewModel.showResetConfirmation) {
             Button("Avbryt", role: .cancel) { }
             Button("Nullstill", role: .destructive) {
@@ -285,9 +311,9 @@ struct ProfileView: View {
 
     private func archetypeLabel(_ arch: Archetype) -> String {
         switch arch {
-        case .tailored: "Tailored"
+        case .tailored: "Skreddersydd"
         case .smartCasual: "Smart Casual"
-        case .street: "Street"
+        case .street: "Gatesl\u{00F8}yd"
         }
     }
 }

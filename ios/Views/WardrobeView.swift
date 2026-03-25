@@ -29,10 +29,12 @@ struct WardrobeView: View {
         .sheet(item: $selectedGarment) { garment in
             GarmentDetailSheet(garment: garment, viewModel: viewModel)
         }
-        .task {
+        .onAppear {
             viewModel.sync()
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                appeared = true
+            if !appeared {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    appeared = true
+                }
             }
         }
     }
@@ -55,13 +57,15 @@ struct WardrobeView: View {
                         .font(.instrumentSerif(48))
                         .foregroundStyle(theme.text)
 
-                    HStack(spacing: 4) {
-                        Image(systemName: "arrow.up")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(theme.sage)
-                        Text("+3 denne uken")
-                            .font(.dmSans(11))
-                            .foregroundStyle(theme.sage)
+                    if viewModel.clarityWeeklyDelta != 0 {
+                        HStack(spacing: 4) {
+                            Image(systemName: viewModel.clarityWeeklyDelta > 0 ? "arrow.up" : "arrow.down")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(viewModel.clarityWeeklyDelta > 0 ? theme.sage : Color.coretRed)
+                            Text("\(viewModel.clarityWeeklyDelta > 0 ? "+" : "")\(Int(viewModel.clarityWeeklyDelta)) denne uken")
+                                .font(.dmSans(11))
+                                .foregroundStyle(viewModel.clarityWeeklyDelta > 0 ? theme.sage : Color.coretRed)
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

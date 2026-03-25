@@ -22,6 +22,9 @@ struct AddGarmentSheet: View {
     @State private var showCamera = false
     @State private var showImport = false
 
+    // Stable garment ID for this session
+    @State private var garmentId = UUID()
+
     // Processing
     @State private var isProcessing = false
     @State private var statusMessage: String?
@@ -149,7 +152,7 @@ struct AddGarmentSheet: View {
                 }
             }
             .sheet(isPresented: $showCamera) {
-                CameraCaptureSheet(viewModel: viewModel) { garmentId, imageData in
+                CameraCaptureSheet(viewModel: viewModel) { _, imageData in
                     await uploadImage(garmentId: garmentId, imageData: imageData)
                 }
             }
@@ -239,7 +242,7 @@ struct AddGarmentSheet: View {
 
     private func buildGarment() -> Garment {
         Garment(
-            id: UUID(),
+            id: garmentId,
             name: name.isEmpty ? baseGroup.rawValue.capitalized : name,
             category: category,
             silhouette: silhouette,

@@ -103,6 +103,12 @@ final class ProfileViewModel {
         sync()
     }
 
+    // MARK: - Export
+
+    func exportGarments() -> [Garment] {
+        coordinator.garments()
+    }
+
     // MARK: - Sync
 
     func sync() {

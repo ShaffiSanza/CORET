@@ -5,6 +5,7 @@ struct StudioView: View {
     @Bindable var viewModel: StudioViewModel
     @Environment(\.theme) private var theme
     @State private var drawerDragOffset: CGFloat = 0
+    @State private var showWearConfirmation = false
 
     var body: some View {
         ZStack(alignment: .trailing) {
@@ -48,6 +49,11 @@ struct StudioView: View {
             }
         }
         .animation(.spring(response: COREDesign.springResponse, dampingFraction: COREDesign.springDamping), value: viewModel.isDrawerOpen)
+        .alert("Antrekk logget!", isPresented: $showWearConfirmation) {
+            Button("OK") { }
+        } message: {
+            Text("Dagens antrekk er registrert.")
+        }
     }
 
     // MARK: - Score Header
@@ -262,7 +268,10 @@ struct StudioView: View {
 
             // Wear today (primary)
             Button {
-                Task { await viewModel.wearToday() }
+                Task {
+                    await viewModel.wearToday()
+                    showWearConfirmation = true
+                }
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "checkmark")
