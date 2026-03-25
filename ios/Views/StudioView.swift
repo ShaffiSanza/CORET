@@ -60,33 +60,18 @@ struct StudioView: View {
 
     @ViewBuilder
     private var scoreHeader: some View {
-        VStack(spacing: 8) {
-            Text("\(viewModel.scoreDisplay)")
-                .font(.instrumentSerif(64))
-                .foregroundStyle(viewModel.totalStrength > 0.7 ? theme.gold : theme.text)
-                .contentTransition(.numericText())
-                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.scoreDisplay)
-
-            if let explanation = viewModel.explanation {
-                Text(explanation.headline)
-                    .font(.dmSans(13))
-                    .foregroundStyle(theme.text2)
-                    .multilineTextAlignment(.center)
+        if !viewModel.currentOutfitGarments.isEmpty {
+            HStack {
+                Text(viewModel.archetypeMatch.rawValue.capitalized)
+                    .font(.dmSans(13, weight: .medium))
+                    .foregroundStyle(theme.gold)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 7)
+                    .background(Capsule().fill(theme.gold.opacity(0.12)))
+                Spacer()
             }
-
-            // Archetype pill
-            Text(viewModel.archetypeMatch.rawValue.capitalized)
-                .font(.dmSans(11, weight: .medium))
-                .foregroundStyle(theme.gold)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 5)
-                .background(Capsule().fill(theme.gold.opacity(0.12)))
+            .padding(.horizontal, 4)
         }
-        .frame(maxWidth: .infinity)
-        .padding(COREDesign.spacing)
-        .glassCard()
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Antrekkscore \(viewModel.scoreDisplay) av 100")
     }
 
     // MARK: - Flat Lay Canvas
