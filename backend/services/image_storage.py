@@ -11,12 +11,15 @@ For V1, writes to local data/images/ directory.
 """
 
 import logging
+import os
 import re
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-IMAGES_DIR = Path(__file__).parent.parent / "data" / "images"
+# Railway Volume mountes paa /app/data — bruk det i prod, ellers lokal data/
+_DATA_ROOT = Path(os.environ.get("DATA_DIR", str(Path(__file__).parent.parent / "data")))
+IMAGES_DIR = _DATA_ROOT / "images"
 
 _UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
