@@ -313,20 +313,8 @@ struct WardrobeView: View {
             guard addingBasic == nil else { return }
             addingBasic = basic.name
             Task {
-                // Search for a real product image + prettify it
-                let searchQuery = basic.searchQuery
-                var imageUrl = ""
-                do {
-                    let response = try await APIClient.shared.productSearch(query: searchQuery)
-                    if let first = response.results.first, let rawUrl = first.imageUrl {
-                        // Prettify: bg removal + studio background
-                        let prettified = try await APIClient.shared.prettifyImage(imageUrl: rawUrl)
-                        imageUrl = prettified.prettifiedUrl ?? rawUrl
-                    }
-                } catch { }
-
                 let garment = Garment(
-                    image: imageUrl,
+                    image: basic.imageUrl,
                     name: basic.name,
                     category: basic.category,
                     baseGroup: basic.baseGroup,
@@ -340,20 +328,27 @@ struct WardrobeView: View {
         } label: {
             VStack(spacing: 6) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color(hex: basic.color))
-                        .frame(height: 56)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(theme.border, lineWidth: 1)
-                        )
+                    if let url = URL(string: basic.imageUrl) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let img):
+                                img.resizable()
+                                    .scaledToFit()
+                                    .frame(height: 70)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            default:
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color(hex: basic.color))
+                                    .frame(height: 70)
+                                    .overlay { ProgressView().scaleEffect(0.6) }
+                            }
+                        }
+                    }
                     if addingBasic == basic.name {
-                        ProgressView()
-                            .tint(basic.color == "1A1A1E" ? .white : theme.text)
-                    } else {
-                        Image(systemName: "plus")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(basic.color == "1A1A1E" ? Color.white.opacity(0.5) : theme.text3)
+                        Color.black.opacity(0.4)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .frame(height: 70)
+                        ProgressView().tint(.white)
                     }
                 }
                 Text(basic.name)
@@ -372,16 +367,22 @@ struct WardrobeView: View {
         let baseGroup: BaseGroup
         let colorTemp: ColorTemp
         let color: String
-        let searchQuery: String
+        let imageUrl: String
     }
 
     private static let quickBasics: [QuickBasic] = [
-        QuickBasic(name: "Svart t-skjorte", category: .upper, baseGroup: .tee, colorTemp: .neutral, color: "1A1A1E", searchQuery: "black basic t-shirt"),
-        QuickBasic(name: "Hvit t-skjorte", category: .upper, baseGroup: .tee, colorTemp: .neutral, color: "F0EDE8", searchQuery: "white basic t-shirt"),
-        QuickBasic(name: "M\u{00F8}rk jeans", category: .lower, baseGroup: .jeans, colorTemp: .cool, color: "1A2030", searchQuery: "dark wash slim jeans"),
-        QuickBasic(name: "Hvit skjorte", category: .upper, baseGroup: .shirt, colorTemp: .neutral, color: "F5F0EA", searchQuery: "white oxford shirt"),
-        QuickBasic(name: "Svarte sko", category: .shoes, baseGroup: .sneakers, colorTemp: .neutral, color: "1A1A1E", searchQuery: "black sneakers"),
-        QuickBasic(name: "Brunt belte", category: .accessory, baseGroup: .belt, colorTemp: .warm, color: "5A3820", searchQuery: "brown leather belt"),
+        QuickBasic(name: "Nike Air Force 1", category: .shoes, baseGroup: .sneakers, colorTemp: .neutral, color: "F0EDE8",
+                   imageUrl: "https://coret-production.up.railway.app/api/images/654639a2-b3ff-5e71-8f53-afb5e216faec/display.png"),
+        QuickBasic(name: "Svart t-skjorte", category: .upper, baseGroup: .tee, colorTemp: .neutral, color: "1A1A1E",
+                   imageUrl: "https://coret-production.up.railway.app/api/images/dc37eb71-484b-5c14-aa55-429947a46b76/display.png"),
+        QuickBasic(name: "Levi's 501 jeans", category: .lower, baseGroup: .jeans, colorTemp: .cool, color: "1A2030",
+                   imageUrl: "https://coret-production.up.railway.app/api/images/b07f772a-9248-57a4-9ade-88ccad4738cc/display.png"),
+        QuickBasic(name: "Hvit skjorte", category: .upper, baseGroup: .shirt, colorTemp: .neutral, color: "F5F0EA",
+                   imageUrl: "https://coret-production.up.railway.app/api/images/0030a8a8-be52-53b9-819e-c04a82fbb9f1/display.png"),
+        QuickBasic(name: "Gr\u{00E5} hoodie", category: .upper, baseGroup: .hoodie, colorTemp: .neutral, color: "8A8A8A",
+                   imageUrl: "https://coret-production.up.railway.app/api/images/178aa734-5ff2-55a7-ab1f-8f40ec61d52d/display.png"),
+        QuickBasic(name: "Brunt belte", category: .accessory, baseGroup: .belt, colorTemp: .warm, color: "5A3820",
+                   imageUrl: "https://coret-production.up.railway.app/api/images/62ed1042-7a05-5ff4-aed6-d7ad4a5eddf7/display.png"),
     ]
 
     // MARK: - Add Button (FAB)
