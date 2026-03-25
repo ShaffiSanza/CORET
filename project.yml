@@ -42,7 +42,7 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_CFBundleDisplayName: CORET
         PRODUCT_BUNDLE_IDENTIFIER: com.coret.app
-        DEVELOPMENT_TEAM: ""
-        CODE_SIGNING_ALLOWED: false
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGNING_ALLOWED: "YES"
         INFOPLIST_KEY_NSCameraUsageDescription: "CORET trenger kamera for å ta bilde av plagg"
         INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "CORET trenger tilgang for å velge bilder av plagg"

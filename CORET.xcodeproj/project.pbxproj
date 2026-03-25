@@ -33,6 +33,7 @@
 		C438CD5A5834151542DE1212 /* EngineCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51475E0D71E7328B782C53B /* EngineCoordinator.swift */; };
 		C7CD0CACD8C108334D663BAD /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3F18451F7BE9B0C97717D4 /* ProfileViewModel.swift */; };
 		C85DED2646E182B3454537E4 /* BarcodeScannerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF344BED7B5EB97C296A791 /* BarcodeScannerSheet.swift */; };
+		CAA74A265773551214353DFE /* ImagePrettifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8BB0F1B5E5B64AA337C15C /* ImagePrettifier.swift */; };
 		D52A3ECF09D27910E4B9384D /* WardrobeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD8BA0936492B9F60C880D9 /* WardrobeViewModel.swift */; };
 		E67606D2904DB80FF0751BDE /* CORETApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 635989B726B924609DC0E65D /* CORETApp.swift */; };
 		E957060F8CB56D4AC99E9319 /* CameraCaptureSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8289E769E8AEBB6C0A1DEB /* CameraCaptureSheet.swift */; };
@@ -52,6 +53,7 @@
 		264CE3E6D17AB2B9C96F70EA /* CORET.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CORET.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2655D3C0A79CBDBBD00A4CB3 /* UserProfileEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileEntity.swift; sourceTree = "<group>"; };
 		2810E1E0193F897CCD26C78F /* StudioViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioViewModel.swift; sourceTree = "<group>"; };
+		2E8BB0F1B5E5B64AA337C15C /* ImagePrettifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePrettifier.swift; sourceTree = "<group>"; };
 		321C7D91C2B56642EF8E4DA1 /* ClaritySnapshotEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaritySnapshotEntity.swift; sourceTree = "<group>"; };
 		3F4CA770BB34D7656AAD18DD /* EngineCacheEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineCacheEntity.swift; sourceTree = "<group>"; };
 		56D5333276D4402FE2F53A69 /* StudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioView.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 		76CE027BE76898362E23632B /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2E8BB0F1B5E5B64AA337C15C /* ImagePrettifier.swift */,
 				CC18FC8063AF432318F0CC85 /* ImageProcessor.swift */,
 			);
 			name = Services;
@@ -285,7 +288,7 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					3628CB4B82E2BA06F7B5910D = {
-						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -330,6 +333,7 @@
 				C438CD5A5834151542DE1212 /* EngineCoordinator.swift in Sources */,
 				097984889CA95580B8C78E10 /* GarmentDetailSheet.swift in Sources */,
 				9772923A5512C4E8BCDB488B /* GarmentEntity.swift in Sources */,
+				CAA74A265773551214353DFE /* ImagePrettifier.swift in Sources */,
 				38E64C4EB085BD3E78A7E971 /* ImageProcessor.swift in Sources */,
 				E9F3A87D831DF6EB26C97CF2 /* ImportSheet.swift in Sources */,
 				F0E47DF3650FD4182CB93D9F /* MilestoneEntity.swift in Sources */,
@@ -480,10 +484,10 @@
 			baseConfigurationReference = 6C5A7A873FCD4AAEF1634F61 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CORET_API_KEY = "$(CORET_API_KEY)";
-				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = CORET;
 				INFOPLIST_KEY_NSCameraUsageDescription = "CORET trenger kamera for å ta bilde av plagg";
@@ -506,10 +510,10 @@
 			baseConfigurationReference = 6C5A7A873FCD4AAEF1634F61 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_ALLOWED = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CORET_API_KEY = "$(CORET_API_KEY)";
-				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = CORET;
 				INFOPLIST_KEY_NSCameraUsageDescription = "CORET trenger kamera for å ta bilde av plagg";
