@@ -68,16 +68,12 @@ def isolate_garment(image_bytes: bytes) -> dict:
 
 async def isolate_garment_with_fallback(image_bytes: bytes) -> dict:
     """
-    Proev rembg foerst (lokal, gratis).
-    Hvis det feiler, fall tilbake til Photoroom.
+    Proev Photoroom foerst (lettvekt API-kall, fungerer paa Railway).
+    Hvis Photoroom feiler, proev rembg (lokal, tyngre).
     """
-    # Proev rembg (lokal)
-    result = isolate_garment(image_bytes)
-    if result["success"]:
-        return result
+    import os
 
-    # Fallback: Photoroom
-    logger.info("rembg failed, falling back to Photoroom")
+    # Primaer: Photoroom (fungerer paa Railway, lett API-kall)
     from services.image_polish import polish_image
     photoroom_result = await polish_image(image_bytes)
     if photoroom_result["success"]:
@@ -85,12 +81,21 @@ async def isolate_garment_with_fallback(image_bytes: bytes) -> dict:
             "image_bytes": photoroom_result["image_bytes"],
             "success": True,
             "error": None,
-            "method": "photoroom-fallback",
+            "method": "photoroom",
         }
+
+    # Fallback: rembg (lokal, krever mer minne/CPU)
+    # Kun hvis ENABLE_REMBG er satt eller vi er i development
+    env = os.environ.get("ENVIRONMENT", "development")
+    if env == "development" or os.environ.get("ENABLE_REMBG"):
+        logger.info("Photoroom failed, trying rembg locally")
+        result = isolate_garment(image_bytes)
+        if result["success"]:
+            return result
 
     return {
         "image_bytes": None,
         "success": False,
-        "error": "Both rembg and Photoroom failed",
+        "error": "Garment isolation failed",
         "method": "none",
     }
