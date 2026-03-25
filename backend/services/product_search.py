@@ -78,13 +78,14 @@ async def search_products(query: str) -> dict:
 
 
 async def process_selected_image(thumbnail_url: str) -> str | None:
-    """Prosesser valgt bilde: last ned, fjern bakgrunn, normaliser, lagre.
+    """Prosesser valgt bilde: last ned, isoler plagg (fjern modell), normaliser, lagre.
 
-    Kalles kun for det ene produktet brukeren velger.
+    Bruker rembg (lokal) for aa fjerne bade bakgrunn og modell.
+    Faller tilbake til Photoroom hvis rembg feiler.
     Returnerer full URL til prosessert bilde, eller None ved feil.
     """
     try:
-        from services.image_polish import polish_image
+        from services.image_isolate import isolate_garment_with_fallback
         from services.image_normalize import normalize_image
         from services.image_storage import save_garment_images, get_image_path
 
@@ -102,9 +103,9 @@ async def process_selected_image(thumbnail_url: str) -> str | None:
                 return None
             image_bytes = resp.content
 
-        # Fjern bakgrunn
-        polish_result = await polish_image(image_bytes)
-        source_bytes = polish_result["image_bytes"] if polish_result["success"] else image_bytes
+        # Isoler plagget (fjern bakgrunn + modell via rembg, fallback Photoroom)
+        isolation_result = await isolate_garment_with_fallback(image_bytes)
+        source_bytes = isolation_result["image_bytes"] if isolation_result["success"] else image_bytes
 
         # Normaliser
         norm_result = normalize_image(source_bytes)

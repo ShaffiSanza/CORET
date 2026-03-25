@@ -22,6 +22,7 @@ from services.metadata_extractor import extract_metadata
 from services.product_search import search_products, process_selected_image
 from services.barcode_lookup import lookup_barcode as lookup_barcode_service
 from services.image_polish import polish_image
+from services.image_isolate import isolate_garment_with_fallback
 from models.schemas import (
     ProductSearchRequest, ProductSearchResponse, ProductSearchResult,
     BarcodeLookupRequest, BarcodeLookupResponse,
@@ -200,10 +201,10 @@ async def image_polish(image: UploadFile = File(...)):
     if not valid_magic:
         raise HTTPException(status_code=400, detail="File content does not match a valid image format")
 
-    result = await polish_image(image_bytes)
+    result = await isolate_garment_with_fallback(image_bytes)
 
     if not result["success"]:
-        return ImagePolishResponse(success=False, error=result["error"])
+        return ImagePolishResponse(success=False, error=result.get("error", "Unknown error"))
 
     return Response(content=result["image_bytes"], media_type="image/png")
 

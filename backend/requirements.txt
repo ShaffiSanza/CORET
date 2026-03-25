@@ -16,6 +16,7 @@ pydantic-settings>=2.5.0      # Laster config fra .env
 # --- Bildebehandling ---
 colorthief>=0.2.1             # Henter dominerende farge fra bilder
 Pillow>=10.0.0                # Bildebibliotek (brukes av colorthief)
+rembg[cpu]>=2.0.50            # Bakgrunnsfjerning med U2-Net (lokal, ingen API)
 
 # --- Fileopplasting ---
 python-multipart>=0.0.12      # Nodvendig for å motta filopplastinger i FastAPI

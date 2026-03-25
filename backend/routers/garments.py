@@ -32,7 +32,7 @@ from services.garment_store import (
     delete_garment,
     set_garment_image,
 )
-from services.image_polish import polish_image
+from services.image_isolate import isolate_garment_with_fallback
 from services.color_extraction import extract_colors_from_image
 from services.image_normalize import normalize_image
 from services.image_storage import save_garment_images, get_image_path, delete_garment_images
@@ -141,9 +141,9 @@ async def upload_image(garment_id: str, image: UploadFile = File(...)):
     # Step 1: Extract colors from original
     color_result = extract_colors_from_image(image_bytes)
 
-    # Step 2: Background removal
-    polish_result = await polish_image(image_bytes)
-    source_bytes = polish_result["image_bytes"] if polish_result["success"] else image_bytes
+    # Step 2: Garment isolation (rembg lokal, fallback Photoroom)
+    isolation_result = await isolate_garment_with_fallback(image_bytes)
+    source_bytes = isolation_result["image_bytes"] if isolation_result["success"] else image_bytes
 
     # Step 3-4: Normalize + generate variants
     norm_result = normalize_image(source_bytes)
