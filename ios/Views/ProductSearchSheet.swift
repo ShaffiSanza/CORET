@@ -69,13 +69,30 @@ struct ProductSearchSheet: View {
                             dismiss()
                         } label: {
                             HStack(spacing: 12) {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(theme.surface)
-                                    .frame(width: 48, height: 56)
-                                    .overlay {
-                                        Image(systemName: "tshirt")
-                                            .foregroundStyle(theme.text4)
+                                if let imageUrl = result.imageUrl, let url = URL(string: imageUrl) {
+                                    AsyncImage(url: url) { phase in
+                                        switch phase {
+                                        case .success(let img):
+                                            img.resizable()
+                                                .scaledToFill()
+                                                .frame(width: 56, height: 64)
+                                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        default:
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(theme.surface)
+                                                .frame(width: 56, height: 64)
+                                                .overlay { ProgressView().scaleEffect(0.6) }
+                                        }
                                     }
+                                } else {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(theme.surface)
+                                        .frame(width: 56, height: 64)
+                                        .overlay {
+                                            Image(systemName: "tshirt")
+                                                .foregroundStyle(theme.text4)
+                                        }
+                                }
                                 VStack(alignment: .leading, spacing: 3) {
                                     Text(result.productTitle ?? "Ukjent produkt")
                                         .font(.dmSans(14, weight: .medium))

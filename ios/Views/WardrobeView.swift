@@ -330,16 +330,24 @@ struct GarmentCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Image placeholder
+            // Image or color swatch
             ZStack(alignment: .topTrailing) {
-                RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall)
-                    .fill(theme.surface)
-                    .aspectRatio(0.8, contentMode: .fit)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(cardColor)
-                            .frame(width: 48, height: 56)
+                if !garment.image.isEmpty, let url = URL(string: garment.image) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let img):
+                            img.resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: .infinity)
+                                .aspectRatio(0.8, contentMode: .fit)
+                                .clipShape(RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall))
+                        default:
+                            colorSwatch
+                        }
                     }
+                } else {
+                    colorSwatch
+                }
 
                 if isKey {
                     Image(systemName: "star.fill")
@@ -373,6 +381,18 @@ struct GarmentCard: View {
         }, perform: {})
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(garment.name.isEmpty ? garment.baseGroup.rawValue : garment.name), \(garment.category.rawValue)\(isKey ? ", n\u{00F8}kkelplagg" : "")")
+    }
+
+    @ViewBuilder
+    private var colorSwatch: some View {
+        RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall)
+            .fill(theme.surface)
+            .aspectRatio(0.8, contentMode: .fit)
+            .overlay {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(cardColor)
+                    .frame(width: 48, height: 56)
+            }
     }
 
     private var cardColor: Color {

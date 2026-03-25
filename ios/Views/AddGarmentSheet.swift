@@ -15,6 +15,7 @@ struct AddGarmentSheet: View {
     @State private var colorTemperature: ColorTemp = .neutral
     @State private var dominantColor: String = "#000000"
     @State private var brand: String = ""
+    @State private var imageUrl: String = ""
 
     // Input method state
     @State private var showSearch = false
@@ -171,6 +172,9 @@ struct AddGarmentSheet: View {
         if let b = result.brand {
             brand = b
         }
+        if let img = result.imageUrl {
+            imageUrl = img
+        }
         // Enrich with metadata
         Task {
             await enrichFromTitle()
@@ -243,6 +247,7 @@ struct AddGarmentSheet: View {
     private func buildGarment() -> Garment {
         Garment(
             id: garmentId,
+            image: imageUrl,
             name: name.isEmpty ? baseGroup.rawValue.capitalized : name,
             category: category,
             silhouette: silhouette,
