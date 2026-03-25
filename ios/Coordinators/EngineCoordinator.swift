@@ -41,21 +41,8 @@ final class EngineCoordinator: ObservableObject {
         isComputing = true
         defer { isComputing = false }
 
-        var garments = fetchGarments()
+        let garments = fetchGarments()
         let profile = fetchOrCreateProfile()
-
-        // Seed mock data on first launch (empty wardrobe)
-        #if DEBUG
-        if garments.isEmpty {
-            let mocks = MockData.seedGarments()
-            for garment in mocks {
-                let entity = GarmentEntity.from(garment)
-                modelContext.insert(entity)
-            }
-            try? modelContext.save()
-            garments = fetchGarments()
-        }
-        #endif
 
         // Dispatch heavy computation to background cooperative thread
         let result = await Task.detached(priority: .userInitiated) {

@@ -23,7 +23,9 @@ struct WardrobeView: View {
         .overlay(alignment: .bottomTrailing) {
             addButton
         }
-        .sheet(isPresented: $showAddSheet) {
+        .sheet(isPresented: $showAddSheet, onDismiss: {
+            viewModel.sync()
+        }) {
             AddGarmentSheet(viewModel: viewModel)
         }
         .sheet(item: $selectedGarment) { garment in
