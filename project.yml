@@ -25,10 +25,14 @@ targets:
       - path: ios/Networking
     dependencies:
       - package: COREEngine
+    configFiles:
+      Debug: ios/Config/Secrets.xcconfig
+      Release: ios/Config/Secrets.xcconfig
     settings:
       base:
         SWIFT_VERSION: "6.0"
         GENERATE_INFOPLIST_FILE: true
+        CORET_API_KEY: $(CORET_API_KEY)
         INFOPLIST_KEY_UILaunchScreen_Generation: true
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_CFBundleDisplayName: CORET

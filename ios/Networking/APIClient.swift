@@ -9,11 +9,12 @@ actor APIClient {
     // DEBUG: localhost for dev (no key), RELEASE: Railway production
     #if DEBUG
     var baseURL: URL = URL(string: "http://localhost:8000")!
-    var apiKey: String? = nil
     #else
     var baseURL: URL = URL(string: "https://coret-production.up.railway.app")!
-    var apiKey: String? = "cSXuH600eubsPm8syVUXfyiIvZAaLguvnAh0KqvcZ7g"
     #endif
+
+    // API key loaded from Info.plist (injected via Secrets.xcconfig)
+    var apiKey: String? = Bundle.main.object(forInfoDictionaryKey: "CORET_API_KEY") as? String
 
     private let session: URLSession
     private let decoder: JSONDecoder

@@ -11,3 +11,6 @@ moodboard/archive/
 build/
 *.xcuserdata/
 DerivedData/
+
+# Secrets — ALDRI commit
+ios/Config/Secrets.xcconfig
