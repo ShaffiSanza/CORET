@@ -124,7 +124,11 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
 # ============================================================
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        response = await call_next(request)
+        try:
+            response = await call_next(request)
+        except Exception:
+            # Let exceptions (401, 422, etc.) propagate without crashing
+            raise
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
