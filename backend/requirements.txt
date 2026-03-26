@@ -21,6 +21,9 @@ rembg[cpu]>=2.0.50            # Bakgrunnsfjerning med U2-Net (lokal, ingen API)
 # --- Fileopplasting ---
 python-multipart>=0.0.12      # Nodvendig for å motta filopplastinger i FastAPI
 
+# --- Monitoring ---
+sentry-sdk>=2.0.0             # Error tracking + performance monitoring (Sentry)
+
 # --- Testing ---
 pytest>=8.0.0                 # Test-rammeverk
 pytest-asyncio>=0.24.0        # Async-stotte for pytest

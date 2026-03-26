@@ -23,9 +23,20 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
+import sentry_sdk
+
 from config import settings
 from routers import pipeline, garments, wardrobe, outfits, wear, discover, brands, profile, auth
 from services.security_logger import log_invalid_api_key
+
+# Initialize Sentry BEFORE app creation
+if settings.sentry_dsn:
+    sentry_sdk.init(
+        dsn=settings.sentry_dsn,
+        send_default_pii=False,  # Don't send user data
+        traces_sample_rate=0.1,  # 10% of requests for performance monitoring
+        environment=settings.environment,
+    )
 
 logger = logging.getLogger(__name__)
 

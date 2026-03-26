@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     shopify_scopes: str = "read_products,read_product_listings"
     shopify_redirect_uri: str = ""        # OAuth callback URL
 
+    # --- Monitoring ---
+    sentry_dsn: str = ""              # Sentry DSN for error tracking
+
     # --- App-innstillinger ---
     allowed_origins: str = "https://coret-production.up.railway.app"  # CORS: kun egne domener
     public_url: str = "https://coret-production.up.railway.app"       # For å bygge fulle bilde-URLer
