@@ -9,6 +9,13 @@ Computes:
 - Per-garment combo count and role (anchor/support/weak)
 - Outfit strength (proportion + archetype + color harmony)
 - Structural gap detection
+
+ARCHITECTURE NOTE:
+    These functions are V1-only backend duplicates of engine logic in
+    engine/Sources/COREEngine/Engines/ (CohesionEngine, OptimizeEngineV2).
+    The Swift engine is the authoritative source. When the iOS app is fully
+    wired up, these endpoints will proxy to on-device engine results.
+    This file exists to serve the backend API and web clients until then.
 """
 
 from collections import defaultdict

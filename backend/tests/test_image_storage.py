@@ -67,21 +67,23 @@ def test_delete_nonexistent():
 
 
 def test_saved_image_sizes():
-    """Verify saved files have correct dimensions."""
+    """Verify saved files have correct dimensions (category-aware canvas)."""
     norm = normalize_image(_make_test_image())
     storage.save_garment_images(VALID_UUID, norm)
 
     full_path = storage.get_image_path(VALID_UUID, "full")
     img = Image.open(full_path)
-    assert img.size == (1024, 1024)
+    # Default category is "upper" → 1200×1400
+    assert img.size == (1200, 1400)
 
     display_path = storage.get_image_path(VALID_UUID, "display")
     img = Image.open(display_path)
-    assert img.size == (512, 512)
+    # Proportional variant: largest dim = 512
+    assert max(img.size) == 512
 
     preview_path = storage.get_image_path(VALID_UUID, "preview")
     img = Image.open(preview_path)
-    assert img.size == (256, 256)
+    assert max(img.size) == 256
 
 
 def test_invalid_garment_id_rejected():

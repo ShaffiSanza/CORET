@@ -43,6 +43,11 @@ class GarmentUpdate(BaseModel):
     )
     silhouette: Optional[Silhouette] = None
     seasons: Optional[list[Season]] = Field(None, max_length=5)
+    image_width: Optional[int] = None
+    image_height: Optional[int] = None
+    image_anchor_x: Optional[float] = None
+    image_anchor_y: Optional[float] = None
+    image_visual_weight: Optional[float] = None
 
 
 class GarmentResponse(BaseModel):
@@ -57,6 +62,11 @@ class GarmentResponse(BaseModel):
     seasons: Optional[list[str]] = None
     import_source: ImportSource
     image_url: Optional[str] = None
+    image_width: Optional[int] = None
+    image_height: Optional[int] = None
+    image_anchor_x: Optional[float] = None
+    image_anchor_y: Optional[float] = None
+    image_visual_weight: Optional[float] = None
 
 
 class WardrobeResponse(BaseModel):

@@ -370,23 +370,20 @@ struct WardrobeView: View {
         let imageUrl: String
     }
 
-    // Bruker Railway prettified URLs + SerpAPI thumbnail som fallback
-    // Railway storage er ephemeral — bilder forsvinner ved deploy
-    // Derfor har vi fallback-URL som alltid fungerer
+    // Rene flat-lay produktbilder fra stabile CDN-er (ingen modeller)
     private static let quickBasics: [QuickBasic] = [
-        // rembg-prosessert lokalt, lastet opp til Railway Volume (persistent)
         QuickBasic(name: "Nike Air Force 1", category: .shoes, baseGroup: .sneakers, colorTemp: .neutral, color: "F0EDE8",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/e24a84b2-9b45-579e-b649-3da952b94efd/display.png"),
+                   imageUrl: "https://images.footlocker.com/is/image/EBFL2/W2288111?wid=1280&hei=1280"),
         QuickBasic(name: "Svart t-skjorte", category: .upper, baseGroup: .tee, colorTemp: .neutral, color: "1A1A1E",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/dc37eb71-484b-5c14-aa55-429947a46b76/display.png"),
+                   imageUrl: "https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/1280x1280/products/182/10681/5001_STAPLE_TEE_BLACK__80682.1774216143.jpg?c=1"),
         QuickBasic(name: "Levi's 501 jeans", category: .lower, baseGroup: .jeans, colorTemp: .cool, color: "1A2030",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/37ee0da1-44e9-530b-b456-c560fceefb61/display.png"),
+                   imageUrl: "https://www.everlane.com/cdn/shop/files/be677630_c4f2.jpg?v=1756349189"),
         QuickBasic(name: "Hvit skjorte", category: .upper, baseGroup: .shirt, colorTemp: .neutral, color: "F5F0EA",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/b8468afb-0046-5f77-8c54-57d7377a243b/display.png"),
+                   imageUrl: "https://cdn11.bigcommerce.com/s-hsi95a83fz/images/stencil/1280x1280/products/236/17806/5401_OXFORD_SHIRT_WHITE__31121.1763082374.jpg"),
         QuickBasic(name: "Gr\u{00E5} hoodie", category: .upper, baseGroup: .hoodie, colorTemp: .neutral, color: "8A8A8A",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/43016443-720b-58b9-bda4-fba6a2c644db/display.png"),
+                   imageUrl: "https://cdn11.bigcommerce.com/s-lqiq2tqil5/images/stencil/1280x1280/products/356/1888/5101_SUPPLY_HOOD_GREY_MARLE__73189.1590379811.jpg?c=1"),
         QuickBasic(name: "Brunt belte", category: .accessory, baseGroup: .belt, colorTemp: .warm, color: "5A3820",
-                   imageUrl: "https://coret-production.up.railway.app/api/images/f07b9c07-a855-5a59-a7bf-dcbf535c5930/display.png"),
+                   imageUrl: "https://www.jcrew.com/s7-img-facade/E3145_EF5844?hei=1280"),
     ]
 
     // MARK: - Add Button (FAB)

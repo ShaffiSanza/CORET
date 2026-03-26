@@ -19,13 +19,13 @@ import logging
 import time
 from collections import defaultdict
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
 from config import settings
 from routers import pipeline, garments, wardrobe, outfits, wear, discover, brands, profile, auth
+from services.security_logger import log_invalid_api_key
 
 logger = logging.getLogger(__name__)
 
@@ -35,33 +35,33 @@ if not settings.coret_api_key:
 
 
 # ============================================================
-# Rate Limiter Middleware
+# Rate Limiter Middleware (pure ASGI)
 # Begrenser antall requests per IP per minutt.
 # Beskytter mot spam og misbruk av API-kvotene våre.
 # ============================================================
-class RateLimitMiddleware(BaseHTTPMiddleware):
+class RateLimitMiddleware:
     def __init__(self, app, max_requests: int = 30):
-        super().__init__(app)
+        self.app = app
         self.max_requests = max_requests
-        # Dict som lagrer {ip: [timestamp, timestamp, ...]}
         self.requests: dict[str, list[float]] = defaultdict(list)
+        self.window = 60
 
-    # Window size in seconds for rate limiting
-    window = 60
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
 
-    async def dispatch(self, request: Request, call_next):
-        # Health-endpoint er unntatt fra rate limiting
-        if request.url.path == "/api/health":
-            return await call_next(request)
+        path = scope.get("path", "")
+        if path == "/api/health":
+            await self.app(scope, receive, send)
+            return
 
-        # Use direct client IP — Railway terminates the connection so client.host is real
-        # X-Forwarded-For is spoofable and should not be trusted for rate limiting
-        client_ip = request.client.host if request.client else "unknown"
+        client = scope.get("client") or ("unknown", 0)
+        client_ip = client[0]
         now = time.time()
 
         # Evict old IPs if dict gets too large
         if len(self.requests) > 10000:
-            # Keep only IPs with recent activity
             cutoff = now - self.window
             self.requests = defaultdict(list, {
                 ip: times for ip, times in self.requests.items()
@@ -75,57 +75,67 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # Sjekk om IP-en har brukt opp kvoten
         if len(self.requests[client_ip]) >= self.max_requests:
-            return JSONResponse(
+            response = JSONResponse(
                 status_code=429,
                 content={"detail": "For mange requests. Vent litt og prøv igjen."}
             )
+            await response(scope, receive, send)
+            return
 
         # Registrer denne requesten
         self.requests[client_ip].append(now)
-        return await call_next(request)
+        await self.app(scope, receive, send)
 
 
 # ============================================================
-# API Key Auth Middleware
+# API Key Auth Middleware (pure ASGI)
 # Sjekker at requests har riktig API-nøkkel i headeren.
 # iOS-appen sender: X-API-Key: <nøkkel>
 # ============================================================
-class APIKeyMiddleware(BaseHTTPMiddleware):
-    # Endpoints som IKKE krever API-nøkkel
+class APIKeyMiddleware:
     PUBLIC_PATHS = {"/api/health", "/docs", "/openapi.json", "/redoc",
                     "/api/auth/shopify", "/api/auth/shopify/callback"}
 
-    async def dispatch(self, request: Request, call_next):
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
         # Hopp over auth hvis ingen API-nøkkel er konfigurert (development)
         if not settings.coret_api_key:
-            return await call_next(request)
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
 
         # Offentlige endpoints trenger ikke auth
-        if request.url.path in self.PUBLIC_PATHS:
-            return await call_next(request)
+        if path in self.PUBLIC_PATHS:
+            await self.app(scope, receive, send)
+            return
 
         # Bilder er offentlige (AsyncImage kan ikke sende auth-headers)
-        if request.url.path.startswith("/api/images/"):
-            return await call_next(request)
+        if path.startswith("/api/images/"):
+            await self.app(scope, receive, send)
+            return
 
         # Sjekk API-nøkkelen i headeren
-        api_key = request.headers.get("X-API-Key")
+        headers = dict(scope.get("headers", []))
+        api_key = headers.get(b"x-api-key", b"").decode()
+
         if not api_key or not hmac.compare_digest(api_key, settings.coret_api_key):
-            from services.security_logger import log_invalid_api_key
-            client_ip = request.client.host if request.client else "unknown"
-            log_invalid_api_key(client_ip, request.url.path)
-            return JSONResponse(
+            client = scope.get("client") or ("unknown", 0)
+            log_invalid_api_key(client[0], path)
+            response = JSONResponse(
                 status_code=401,
                 content={"detail": "Ugyldig eller manglende API-nøkkel."}
             )
+            await response(scope, receive, send)
+            return
 
-        return await call_next(request)
-
-
-# ============================================================
-# Security Headers — added via @app.middleware("http") below
-# (BaseHTTPMiddleware crashes on exception propagation in Starlette)
-# ============================================================
+        await self.app(scope, receive, send)
 
 
 # Opprett FastAPI-appen (docs disabled in production)
@@ -155,7 +165,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "X-API-Key"],
 )
 
-# Security headers — pure ASGI middleware (no BaseHTTPMiddleware)
+# Security headers — @app.middleware shorthand (also pure ASGI under the hood)
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response = await call_next(request)

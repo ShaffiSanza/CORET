@@ -50,27 +50,80 @@ final class StudioViewModel {
     /// Score as display int (0-100)
     var scoreDisplay: Int { Int(totalStrength * 100) }
 
+    /// Swipe indices per layer
+    var outerIndex: Int = 0
+    var topIndex: Int = 0
+    var bottomIndex: Int = 0
+    var shoesIndex: Int = 0
+
     /// Available garments for each slot (from wardrobe)
-    var availableUppers: [Garment] { coordinator.garments().filter { $0.category == .upper } }
+    var availableOuters: [Garment] {
+        coordinator.garments().filter { $0.category == .upper && ($0.baseGroup == .coat || $0.baseGroup == .blazer) }
+    }
+    var availableUppers: [Garment] {
+        coordinator.garments().filter { $0.category == .upper && $0.baseGroup != .coat && $0.baseGroup != .blazer }
+    }
     var availableLowers: [Garment] { coordinator.garments().filter { $0.category == .lower } }
     var availableShoes: [Garment] { coordinator.garments().filter { $0.category == .shoes } }
     var availableAccessories: [Garment] { coordinator.garments().filter { $0.category == .accessory } }
+
+    // MARK: - Swipe Navigation
+
+    enum Layer { case outer, top, bottom, shoes }
+
+    func swipe(_ layer: Layer, direction: Int) {
+        switch layer {
+        case .outer:
+            let items = availableOuters
+            guard !items.isEmpty else { return }
+            outerIndex = (outerIndex + direction + items.count) % items.count
+            outerLayer = items[outerIndex]
+        case .top:
+            let items = availableUppers
+            guard !items.isEmpty else { return }
+            topIndex = (topIndex + direction + items.count) % items.count
+            topLayer = items[topIndex]
+        case .bottom:
+            let items = availableLowers
+            guard !items.isEmpty else { return }
+            bottomIndex = (bottomIndex + direction + items.count) % items.count
+            bottomLayer = items[bottomIndex]
+        case .shoes:
+            let items = availableShoes
+            guard !items.isEmpty else { return }
+            shoesIndex = (shoesIndex + direction + items.count) % items.count
+            shoes = items[shoesIndex]
+        }
+        rescore()
+    }
+
+    func itemCount(for layer: Layer) -> Int {
+        switch layer {
+        case .outer: availableOuters.count
+        case .top: availableUppers.count
+        case .bottom: availableLowers.count
+        case .shoes: availableShoes.count
+        }
+    }
 
     // MARK: - Slot Management
 
     func setSlot(_ garment: Garment) {
         switch garment.category {
         case .upper:
-            // Coats go to outer, others to top
             if garment.baseGroup == .coat || garment.baseGroup == .blazer {
                 outerLayer = garment
+                if let idx = availableOuters.firstIndex(where: { $0.id == garment.id }) { outerIndex = idx }
             } else {
                 topLayer = garment
+                if let idx = availableUppers.firstIndex(where: { $0.id == garment.id }) { topIndex = idx }
             }
         case .lower:
             bottomLayer = garment
+            if let idx = availableLowers.firstIndex(where: { $0.id == garment.id }) { bottomIndex = idx }
         case .shoes:
             shoes = garment
+            if let idx = availableShoes.firstIndex(where: { $0.id == garment.id }) { shoesIndex = idx }
         case .accessory:
             toggleAccessory(garment)
         }
@@ -160,9 +213,46 @@ final class StudioViewModel {
     // MARK: - Save
 
     func wearToday() async {
-        // Log wear for all garments in current outfit
         for garment in currentOutfitGarments {
             await coordinator.logWear(garmentID: garment.id)
         }
+    }
+
+    // MARK: - Test Outfits (Phase 5 validation)
+
+    /// Three fixed test outfits for validating Studio rendering.
+    /// Cycles through: dark tee + denim + sneaker, knit + trousers + loafer,
+    /// jacket + pants + boot.
+    var testOutfitIndex: Int = 0
+
+    func loadTestOutfit(_ index: Int) {
+        let all = coordinator.garments()
+        outerLayer = nil
+        topLayer = nil
+        bottomLayer = nil
+        shoes = nil
+        selectedAccessories = []
+
+        func find(_ cat: Category, _ bg: BaseGroup) -> Garment? {
+            all.first { $0.category == cat && $0.baseGroup == bg }
+        }
+
+        switch index % 3 {
+        case 0: // dark tee + denim + sneaker
+            topLayer = find(.upper, .tee)
+            bottomLayer = find(.lower, .jeans)
+            shoes = find(.shoes, .sneakers)
+        case 1: // knit + trousers + loafer
+            topLayer = find(.upper, .knit)
+            bottomLayer = find(.lower, .trousers)
+            shoes = find(.shoes, .loafers)
+        case 2: // jacket + pants + boot
+            outerLayer = find(.upper, .coat)
+            topLayer = find(.upper, .shirt)
+            bottomLayer = find(.lower, .chinos)
+            shoes = find(.shoes, .boots)
+        default: break
+        }
+        rescore()
     }
 }

@@ -54,28 +54,6 @@ async def product_search(request: ProductSearchRequest):
 
 
 # ============================================================
-# POST /api/upload-processed-image
-# Last opp ferdig-prosessert bilde direkte (fra lokal rembg)
-# ============================================================
-@router.post("/upload-processed-image/{image_id}")
-async def upload_processed_image(image_id: str, image: UploadFile = File(...)):
-    """Last opp et ferdig-prosessert bilde til persistent storage."""
-    from services.image_normalize import normalize_image
-    from services.image_storage import save_garment_images
-    import re
-    if not re.match(r"^[0-9a-f-]{36}$", image_id):
-        raise HTTPException(status_code=400, detail="Invalid image ID")
-    image_bytes = await image.read()
-    norm = normalize_image(image_bytes)
-    if not norm["success"]:
-        raise HTTPException(status_code=400, detail="Normalization failed")
-    result = save_garment_images(image_id, norm)
-    from config import settings
-    base = settings.public_url.rstrip("/")
-    return {"url": f"{base}/api/images/{image_id}/display.png", "success": result["success"]}
-
-
-# ============================================================
 # POST /api/prettify-image
 # Last ned bilde fra URL, fjern bakgrunn, prettify, lagre
 # ============================================================

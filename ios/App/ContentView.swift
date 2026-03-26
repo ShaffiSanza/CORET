@@ -71,12 +71,11 @@ struct ContentView: View {
         .background {
             Capsule()
                 .fill(.ultraThinMaterial)
-                .environment(\.colorScheme, .dark)
                 .overlay(
                     Capsule()
-                        .stroke(Color.white.opacity(0.04), lineWidth: 1)
+                        .stroke(Color(hex: "DDD6CC").opacity(0.6), lineWidth: 0.5)
                 )
-                .shadow(color: .black.opacity(0.3), radius: 20, y: 8)
+                .shadow(color: Color(hex: "392C1E").opacity(0.08), radius: 16, y: 6)
         }
         .padding(.horizontal, 40)
         .padding(.bottom, 20)
@@ -95,20 +94,19 @@ struct ContentView: View {
                 ZStack {
                     if isActive {
                         Circle()
-                            .fill(theme.gold.opacity(0.06))
+                            .fill(Color(hex: "C7A56A").opacity(0.08))
                             .frame(width: 36, height: 36)
                     }
                     Image(systemName: isActive ? "\(icon).fill" : icon)
                         .font(.system(size: 17, weight: .light))
-                        .foregroundStyle(isActive ? theme.gold : theme.text3.opacity(0.75))
-                        .shadow(color: isActive ? theme.gold.opacity(0.15) : .clear, radius: 8)
+                        .foregroundStyle(isActive ? Color(hex: "C7A56A") : Color(hex: "746D65").opacity(0.6))
                 }
                 .frame(height: 36)
 
                 if isActive {
                     Text(label)
                         .font(.dmSans(10, weight: .medium))
-                        .foregroundStyle(theme.gold)
+                        .foregroundStyle(Color(hex: "C7A56A"))
                         .transition(.asymmetric(
                             insertion: .scale(scale: 0.85).combined(with: .opacity),
                             removal: .opacity

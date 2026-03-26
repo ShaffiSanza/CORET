@@ -145,8 +145,13 @@ async def upload_image(garment_id: str, image: UploadFile = File(...)):
     isolation_result = await isolate_garment_with_fallback(image_bytes)
     source_bytes = isolation_result["image_bytes"] if isolation_result["success"] else image_bytes
 
-    # Step 3-4: Normalize + generate variants
-    norm_result = normalize_image(source_bytes)
+    # Step 3-4: Normalize + generate variants (category-aware)
+    garment_category = garment.get("category", "upper")
+    # Map outerwear base_groups to outerwear canvas
+    base_group = garment.get("base_group", "")
+    if base_group in ("coat", "blazer"):
+        garment_category = "outerwear"
+    norm_result = normalize_image(source_bytes, category=garment_category)
 
     # Step 5: Save to disk
     urls = {"full": None, "display": None, "preview": None}
@@ -159,10 +164,16 @@ async def upload_image(garment_id: str, image: UploadFile = File(...)):
                 "preview": storage_result["preview"],
             }
 
-    # Step 6: Update garment with color + image reference
+    # Step 6: Update garment with color + image reference + metadata
+    meta = norm_result.get("metadata") or {}
     color_update = GarmentUpdate(
         dominant_color=color_result["dominant_color"],
         color_temperature=color_result["color_temperature"],
+        image_width=meta.get("canvas_width"),
+        image_height=meta.get("canvas_height"),
+        image_anchor_x=meta.get("anchor_x"),
+        image_anchor_y=meta.get("anchor_y"),
+        image_visual_weight=meta.get("visual_weight"),
     )
     update_garment(garment_id, color_update)
     set_garment_image(garment_id, urls["display"])
@@ -170,7 +181,7 @@ async def upload_image(garment_id: str, image: UploadFile = File(...)):
     return JSONResponse(content={
         "garment_id": garment_id,
         "pipeline": {
-            "bg_removed": polish_result["success"],
+            "bg_removed": isolation_result["success"],
             "normalized": norm_result["success"],
             "stored": urls["full"] is not None,
         },
@@ -180,6 +191,7 @@ async def upload_image(garment_id: str, image: UploadFile = File(...)):
             "palette": color_result["palette"],
         },
         "images": urls,
+        "metadata": meta,
     })
 
 

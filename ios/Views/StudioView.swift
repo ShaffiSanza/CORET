@@ -1,35 +1,131 @@
 import SwiftUI
 import COREEngine
 
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  STUDIO ART DIRECTION — FROZEN                              ║
+// ║                                                              ║
+// ║  Background:  #F3EEE7 → #EDE6DD vertical gradient           ║
+// ║  Glass:       white 42%, border #DDD6CC — UI surfaces only   ║
+// ║  Shadows:     #392C1E warm brown, downward only              ║
+// ║  Accent:      #C7A56A muted gold                             ║
+// ║  Text:        #2C2824 primary, #746D65 secondary             ║
+// ║  Hero:        ZStack overlap, no FX, no cards                ║
+// ║  Sizes:       top 220pt, pants 188pt, shoes 104pt            ║
+// ║  Overlap:     top→pants 28pt, pants→shoes gap 16pt           ║
+// ║                                                              ║
+// ║  Do not change without design review.                        ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+// MARK: - Gallery Design Tokens
+
+/// Studio gallery palette — locked to light gallery direction.
+/// No dark mode. No spotlight. No theatrical lighting.
+private enum Gallery {
+    // Background — warm stone, subtle vertical gradient only
+    static let bgTop    = Color(hex: "F3EEE7")
+    static let bgBottom = Color(hex: "EDE6DD")
+
+    // Glass — UI surfaces only (insight card, nav, controls)
+    static let glass       = Color.white.opacity(0.42)
+    static let glassBorder = Color.white.opacity(0.50)
+
+    // Text
+    static let textPrimary   = Color(hex: "2C2824")
+    static let textSecondary = Color(hex: "746D65")
+
+    // Accent — muted gold
+    static let accent     = Color(hex: "C7A56A")
+    static let accentSoft = Color(hex: "D8BE8D")
+
+    // Shadows — warm brown, downward only
+    static let shadow       = Color(hex: "392C1E").opacity(0.08)
+    static let shadowMedium = Color(hex: "392C1E").opacity(0.12)
+
+    // Borders — warm thin lines
+    static let border = Color(hex: "DDD6CC")
+}
+
 struct StudioView: View {
     @Bindable var viewModel: StudioViewModel
     @Environment(\.theme) private var theme
     @State private var showWearConfirmation = false
-    @State private var scoreGlow = false
+    @State private var heroOnlyMode = false
 
     private var hasOutfit: Bool { !viewModel.currentOutfitGarments.isEmpty }
 
     var body: some View {
+        // Hero-only validation mode: just background + outfit, nothing else.
+        if heroOnlyMode {
+            heroOnlyView
+        } else {
+            fullStudioView
+        }
+    }
+
+    /// Debug: renders ONLY background + hero. No insight, no nav, no CTA.
+    /// Triple-tap to toggle. If hero doesn't work alone, don't continue.
+    private var heroOnlyView: some View {
+        ZStack(alignment: .topTrailing) {
+            LinearGradient(
+                colors: [Gallery.bgTop, Gallery.bgBottom],
+                startPoint: .top, endPoint: .bottom
+            ).ignoresSafeArea()
+
+            outfitHero
+
+            // Debug controls
+            VStack(spacing: 8) {
+                Button { heroOnlyMode = false } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundStyle(Gallery.textSecondary.opacity(0.4))
+                }
+                Button {
+                    viewModel.testOutfitIndex += 1
+                    viewModel.loadTestOutfit(viewModel.testOutfitIndex)
+                } label: {
+                    Text("Next")
+                        .font(.dmSans(10, weight: .medium))
+                        .foregroundStyle(Gallery.textSecondary)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                }
+            }
+            .padding(20)
+        }
+        .onAppear { viewModel.loadTestOutfit(0) }
+    }
+
+    private var fullStudioView: some View {
         ZStack(alignment: .trailing) {
             ScrollView {
                 VStack(spacing: 0) {
                     if hasOutfit {
-                        topBar
-                        editorialCanvas
-                        scoreBand
-                        scoreBreakdown
+                        topControls
+                        outfitHero
+                        insightCard
                             .padding(.horizontal, COREDesign.horizontalPadding)
-                            .padding(.top, 12)
+                            .padding(.top, 16)
                     } else {
                         emptyState
                     }
                     actionButtons
                         .padding(.horizontal, COREDesign.horizontalPadding)
-                        .padding(.top, hasOutfit ? 12 : 0)
-                        .padding(.bottom, 100)
+                        .padding(.top, hasOutfit ? 20 : 0)
+                        .padding(.bottom, 90)
                 }
             }
-            .background(theme.bg)
+            // Gallery background — warm stone gradient
+            .background(
+                LinearGradient(
+                    colors: [Gallery.bgTop, Gallery.bgBottom],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+            )
             .scrollDisabled(viewModel.isDrawerOpen)
 
             if viewModel.isDrawerOpen {
@@ -38,12 +134,7 @@ struct StudioView: View {
             }
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.isDrawerOpen)
-        .onChange(of: viewModel.scoreDisplay) {
-            withAnimation(.easeInOut(duration: 0.3)) { scoreGlow = true }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation(.easeOut(duration: 0.4)) { scoreGlow = false }
-            }
-        }
+        .onTapGesture(count: 3) { heroOnlyMode = true }
         .alert("Antrekk logget!", isPresented: $showWearConfirmation) {
             Button("OK") { }
         } message: {
@@ -55,60 +146,55 @@ struct StudioView: View {
 
     private var emptyState: some View {
         VStack(spacing: 20) {
-            Spacer().frame(height: 60)
+            Spacer().frame(height: 80)
 
             ZStack {
                 Circle()
-                    .fill(theme.gold.opacity(0.06))
-                    .frame(width: 120, height: 120)
+                    .fill(Gallery.accent.opacity(0.08))
+                    .frame(width: 100, height: 100)
                 Image(systemName: "tshirt")
-                    .font(.system(size: 44, weight: .thin))
-                    .foregroundStyle(theme.gold.opacity(0.5))
+                    .font(.system(size: 40, weight: .thin))
+                    .foregroundStyle(Gallery.accent.opacity(0.5))
             }
 
             VStack(spacing: 8) {
                 (Text("Bygg dagens ")
                     .font(.instrumentSerif(26))
-                    .foregroundStyle(theme.text)
+                    .foregroundStyle(Gallery.textPrimary)
                 + Text("antrekk")
                     .font(.instrumentSerifItalic(26))
-                    .foregroundStyle(theme.gold))
+                    .foregroundStyle(Gallery.accent))
 
                 Text("Legg til plagg i garderoben, s\u{00E5} setter du dem sammen her")
                     .font(.dmSans(14))
-                    .foregroundStyle(theme.text3)
+                    .foregroundStyle(Gallery.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
 
-            // Quick actions
-            VStack(spacing: 10) {
-                Button {
-                    viewModel.generateSurpriseOutfit()
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 14))
-                        Text("Generer antrekk automatisk")
-                            .font(.dmSans(14, weight: .medium))
-                    }
-                    .foregroundStyle(theme.gold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(theme.gold.opacity(0.08))
-                    .clipShape(Capsule())
-                    .overlay(Capsule().stroke(theme.gold.opacity(0.2), lineWidth: 1))
+            Button {
+                viewModel.generateSurpriseOutfit()
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "sparkles").font(.system(size: 14))
+                    Text("Generer antrekk automatisk").font(.dmSans(14, weight: .medium))
                 }
-                .disabled(viewModel.availableUppers.isEmpty)
-                .opacity(viewModel.availableUppers.isEmpty ? 0.4 : 1)
+                .foregroundStyle(Gallery.accent)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Gallery.accent.opacity(0.08))
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(Gallery.accent.opacity(0.2), lineWidth: 1))
             }
             .padding(.horizontal, 40)
             .padding(.top, 8)
+            .disabled(viewModel.availableUppers.isEmpty)
+            .opacity(viewModel.availableUppers.isEmpty ? 0.4 : 1)
 
             if viewModel.availableUppers.isEmpty {
                 Text("Ingen plagg enn\u{00E5} \u{2014} g\u{00E5} til Garderobe")
                     .font(.dmSans(12))
-                    .foregroundStyle(theme.text4)
+                    .foregroundStyle(Gallery.textSecondary.opacity(0.6))
                     .padding(.top, 4)
             }
 
@@ -116,249 +202,280 @@ struct StudioView: View {
         }
     }
 
-    // MARK: - Top Bar
+    // MARK: - Top Controls (minimal)
 
-    private var topBar: some View {
+    private var topControls: some View {
         HStack {
-            HStack(alignment: .firstTextBaseline, spacing: 5) {
-                Text("\(viewModel.scoreDisplay)")
-                    .font(.instrumentSerif(30))
-                    .foregroundStyle(theme.text)
-                    .contentTransition(.numericText())
-                    .shadow(color: scoreGlow ? theme.gold.opacity(0.5) : .clear, radius: 12)
-                if viewModel.scoreDisplay > 0 {
-                    Text("\u{2191} +\(viewModel.scoreDisplay)")
-                        .font(.dmSans(10, weight: .medium))
-                        .foregroundStyle(theme.sage)
-                }
-            }
-
             Spacer()
-
-            HStack(spacing: 6) {
-                Button { viewModel.isDrawerOpen.toggle() } label: {
-                    Image(systemName: "plus.circle")
-                        .font(.system(size: 16))
-                        .foregroundStyle(theme.text3)
-                        .frame(width: 36, height: 36)
-                        .background(theme.surface.opacity(0.6))
-                        .clipShape(Circle())
+            Button { viewModel.generateSurpriseOutfit() } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: "sparkles").font(.system(size: 10))
+                    Text("Surprise").font(.dmSans(11, weight: .medium))
                 }
-
-                Button { viewModel.generateSurpriseOutfit() } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 11))
-                        Text("Surprise")
-                            .font(.dmSans(11, weight: .medium))
-                    }
-                    .foregroundStyle(theme.gold)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(theme.gold.opacity(0.1))
-                    .clipShape(Capsule())
-                    .overlay(Capsule().stroke(theme.gold.opacity(0.2), lineWidth: 1))
-                }
+                .foregroundStyle(Gallery.textSecondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(.ultraThinMaterial)
+                .clipShape(Capsule())
             }
         }
         .padding(.horizontal, COREDesign.horizontalPadding)
-        .padding(.vertical, 12)
+        .padding(.top, 4)
+        .padding(.bottom, 4)
     }
 
-    // MARK: - Editorial Canvas
+    // MARK: - Outfit Hero
 
-    private var editorialCanvas: some View {
-        ZStack {
-            // Atmosphere
-            RadialGradient(
-                colors: [theme.gold.opacity(0.06), Color.clear],
-                center: .init(x: 0.5, y: 0.35),
-                startRadius: 20, endRadius: 220
-            )
-
-            garmentStack
-
-            // Category labels (right edge)
-            slotLabels
-
-            // Accessories (bottom)
-            accessoryPills
-        }
-        .frame(height: 440)
-        .background(theme.surface.opacity(0.2))
+    /// Fixed hero zone — 340pt. Fits on all iPhones without scrolling past fold.
+    /// iPhone SE: 340/667 = 51%, iPhone 15 Pro: 340/852 = 40%. Always dominant.
+    private var outfitHero: some View {
+        outfitComposition
+            .frame(height: 340)
+            .frame(maxWidth: .infinity)
     }
 
-    // MARK: - Garment Stack (fixed positions, swipe inside)
+    // MARK: - Outfit Composition (single center axis)
 
-    @ViewBuilder
-    private var garmentStack: some View {
-        GeometryReader { geo in
-            let w = geo.size.width
-            let h = geo.size.height
-            let cx = w * 0.46
+    /// All garments on ONE vertical center line. No drift.
+    /// Fixed size ratios: top 1.00, pants 0.85, shoes 0.47.
+    /// Top overlaps pants by ~24pt. Pants→shoes gap 14pt.
+    /// Scaled to fit 340pt hero zone on all iPhones.
+    private var outfitComposition: some View {
+        // Fixed pt sizes — scaled to fit 340pt hero
+        let topW: CGFloat    = 180
+        let pantsW: CGFloat  = 154   // 0.85× top
+        let shoeW: CGFloat   = 85    // 0.47× top
 
-            // Alle 4 lag like store (w*0.50, h*0.22), jevnt fordelt, lett overlap
-            let slotW = w * 0.50
-            let slotH = h * 0.22
-            let spacing = h * 0.235  // litt mindre enn slotH → overlap
+        // Heights proportional to category canvas aspect ratios
+        let topH: CGFloat    = topW * 1.17   // ~211pt
+        let pantsH: CGFloat  = pantsW * 1.40 // ~216pt
+        let shoeH: CGFloat   = shoeW * 0.78  // ~66pt
 
-            // Ytterlag
-            swipeableSlot(garment: viewModel.outerLayer, layer: .outer, label: "Legg til ytterlag +")
-                .frame(width: slotW, height: slotH)
-                .position(x: cx, y: h * 0.13)
-                .rotationEffect(.degrees(-2))
-                .zIndex(4)
+        // Vertical layout: top overlaps pants, shoes have gap
+        let overlap: CGFloat = 24    // top→pants overlap
+        let gap: CGFloat     = 14    // pants→shoes gap
 
-            // Overdel
-            swipeableSlot(garment: viewModel.topLayer, layer: .top, label: "Legg til overdel +")
-                .frame(width: slotW, height: slotH)
-                .position(x: cx + 4, y: h * 0.13 + spacing)
-                .rotationEffect(.degrees(1.5))
-                .zIndex(3)
+        // Offsets from center (pants = anchor at y=0)
+        let topY    = -(pantsH / 2) - (topH / 2) + overlap
+        let pantsY: CGFloat = 0
+        let shoeY   = (pantsH / 2) + gap + (shoeH / 2)
 
-            // Underdel
-            swipeableSlot(garment: viewModel.bottomLayer, layer: .bottom, label: "Legg til underdel +")
-                .frame(width: slotW, height: slotH)
-                .position(x: cx - 2, y: h * 0.13 + spacing * 2)
-                .rotationEffect(.degrees(-1))
-                .zIndex(2)
-
-            // Sko
-            swipeableSlot(garment: viewModel.shoes, layer: .shoes, label: "Legg til sko +")
-                .frame(width: slotW, height: slotH)
-                .position(x: cx + 2, y: h * 0.13 + spacing * 3)
-                .rotationEffect(.degrees(2))
-                .zIndex(3)
-        }
-    }
-
-    @ViewBuilder
-    private func swipeableSlot(garment: Garment?, layer: StudioViewModel.Layer, label: String) -> some View {
-        SwipeableLayer(
-            garment: garment,
-            itemCount: viewModel.itemCount(for: layer),
-            theme: theme,
-            layerLabel: label,
-            onSwipe: { direction in
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                    viewModel.swipe(layer, direction: direction)
-                }
+        return ZStack {
+            // Underdel — center anchor
+            if let bottom = viewModel.bottomLayer {
+                garmentImage(bottom)
+                    .frame(width: pantsW, height: pantsH)
+                    .offset(y: pantsY)
+                    .zIndex(1)
+            } else {
+                emptySlot(label: "Underdel")
+                    .frame(width: pantsW * 0.8, height: pantsH * 0.5)
+                    .offset(y: pantsY)
+                    .zIndex(1)
             }
+
+            // Overdel — hero piece, overlaps pants
+            if let top = viewModel.topLayer {
+                garmentImage(top)
+                    .frame(width: topW, height: topH)
+                    .offset(y: topY)
+                    .zIndex(2)
+            } else {
+                emptySlot(label: "Overdel")
+                    .frame(width: topW * 0.8, height: topH * 0.5)
+                    .offset(y: topY)
+                    .zIndex(2)
+            }
+
+            // Sko — below pants with gap
+            if let shoe = viewModel.shoes {
+                garmentImage(shoe)
+                    .frame(width: shoeW, height: shoeH)
+                    .offset(y: shoeY)
+                    .zIndex(0)
+            } else {
+                emptySlot(label: "Sko")
+                    .frame(width: shoeW * 0.85, height: shoeH * 0.7)
+                    .offset(y: shoeY)
+                    .zIndex(0)
+            }
+
+            // Ytterlag — floated left, subtle
+            if let outer = viewModel.outerLayer {
+                garmentImage(outer)
+                    .frame(width: topW * 0.68, height: topH * 0.80)
+                    .rotationEffect(.degrees(-4))
+                    .offset(x: -(topW * 0.55), y: topY * 0.5)
+                    .opacity(0.65)
+                    .zIndex(3)
+            }
+        }
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 30)
+                .onEnded { value in
+                    if abs(value.translation.width) > abs(value.translation.height) {
+                        let dir = value.translation.width < 0 ? 1 : -1
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            viewModel.swipe(.top, direction: dir)
+                        }
+                    }
+                }
         )
     }
 
-    // slotContent and colorBlock moved to SwipeableLayer
+    // MARK: - Garment Image
 
-    // MARK: - Slot Labels
-
-    private var slotLabels: some View {
-        VStack(alignment: .trailing, spacing: 50) {
-            label("Ytterlag", filled: viewModel.outerLayer != nil)
-            label("Overdel", filled: viewModel.topLayer != nil)
-            label("Underdel", filled: viewModel.bottomLayer != nil)
-            label("Sko", filled: viewModel.shoes != nil)
+    /// Clean cutout rendering — no cards, no masks.
+    /// Per-category shadow: tops wider, shoes tighter, all downward-only.
+    @ViewBuilder
+    private func garmentImage(_ garment: Garment) -> some View {
+        let shadow = categoryShadow(garment.category)
+        if !garment.image.isEmpty, let url = URL(string: garment.image) {
+            if url.isFileURL, let data = try? Data(contentsOf: url),
+               let uiImage = UIImage(data: data) {
+                Image(uiImage: uiImage)
+                    .resizable().scaledToFit()
+                    .shadow(color: shadow.color, radius: shadow.radius, x: 0, y: shadow.y)
+            } else {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let img):
+                        img.resizable().scaledToFit()
+                            .shadow(color: shadow.color, radius: shadow.radius, x: 0, y: shadow.y)
+                    default:
+                        ProgressView().tint(Gallery.textSecondary.opacity(0.3))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                }
+            }
+        } else {
+            let hex = garment.dominantColor.hasPrefix("#")
+                ? String(garment.dominantColor.dropFirst())
+                : garment.dominantColor
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(hex: hex).opacity(0.3))
+                .shadow(color: shadow.color, radius: shadow.radius, x: 0, y: shadow.y)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-        .padding(.top, 24)
-        .padding(.trailing, 12)
     }
 
-    private func label(_ text: String, filled: Bool) -> some View {
-        HStack(spacing: 4) {
-            Circle()
-                .fill(filled ? theme.gold : theme.text4.opacity(0.4))
-                .frame(width: 5, height: 5)
-            Text(text)
+    /// Per-category shadow spec from Implementation Checklist.
+    private struct GarmentShadow {
+        let color: Color
+        let radius: CGFloat
+        let y: CGFloat
+    }
+
+    private func categoryShadow(_ category: Category) -> GarmentShadow {
+        let base = Color(hex: "392C1E")
+        switch category {
+        case .upper:
+            return GarmentShadow(color: base.opacity(0.10), radius: 24, y: 12)
+        case .lower:
+            return GarmentShadow(color: base.opacity(0.09), radius: 20, y: 10)
+        case .shoes:
+            return GarmentShadow(color: base.opacity(0.08), radius: 16, y: 8)
+        case .accessory:
+            return GarmentShadow(color: base.opacity(0.07), radius: 14, y: 6)
+        }
+    }
+
+    private func emptySlot(label: String) -> some View {
+        VStack(spacing: 4) {
+            Image(systemName: "plus")
+                .font(.system(size: 14, weight: .light))
+                .foregroundStyle(Gallery.textSecondary.opacity(0.35))
+            Text(label)
                 .font(.dmSans(9, weight: .medium))
-                .foregroundStyle(filled ? theme.gold : theme.text4)
+                .foregroundStyle(Gallery.textSecondary.opacity(0.25))
         }
-        .padding(.horizontal, 8).padding(.vertical, 4)
-        .background(.ultraThinMaterial)
-        .clipShape(Capsule())
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .strokeBorder(Gallery.textSecondary.opacity(0.12), style: StrokeStyle(lineWidth: 1, dash: [5]))
+        )
     }
 
-    // MARK: - Accessory Pills
+    // MARK: - Insight Card (museum label)
 
-    private var accessoryPills: some View {
-        HStack(spacing: 5) {
-            ForEach(viewModel.selectedAccessories.prefix(3)) { acc in
-                HStack(spacing: 3) {
-                    Circle().fill(theme.gold).frame(width: 4, height: 4)
-                    Text(acc.baseGroup.rawValue.capitalized)
-                        .font(.dmSans(8, weight: .medium))
+    /// Calm gallery label — supports hero, doesn't compete.
+    /// Large score, small label, one descriptor, max 2 metrics.
+    private var insightCard: some View {
+        VStack(spacing: 12) {
+            // Clarity score — large, quiet
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("\(viewModel.scoreDisplay)")
+                    .font(.instrumentSerif(48))
+                    .foregroundStyle(Gallery.textPrimary)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Clarity")
+                        .font(.dmSans(9, weight: .medium))
+                        .foregroundStyle(Gallery.textSecondary)
+                        .textCase(.uppercase)
+                        .tracking(1.5)
+                    Text(viewModel.archetypeMatch.rawValue.capitalized)
+                        .font(.dmSans(11, weight: .medium))
+                        .foregroundStyle(Gallery.accent)
                 }
-                .foregroundStyle(theme.gold)
-                .padding(.horizontal, 7).padding(.vertical, 3)
-                .background(theme.gold.opacity(0.1))
-                .clipShape(Capsule())
-                .overlay(Capsule().stroke(theme.gold.opacity(0.2), lineWidth: 1))
-            }
-            Button { viewModel.isDrawerOpen = true } label: {
-                Text("+ Tilbeh\u{00F8}r")
-                    .font(.dmSans(8, weight: .medium))
-                    .foregroundStyle(theme.text4)
-                    .padding(.horizontal, 7).padding(.vertical, 3)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-        .padding(.bottom, 8)
-    }
 
-    // MARK: - Score Band
-
-    @ViewBuilder
-    private var scoreBand: some View {
-        if let score = viewModel.outfitScore, let explanation = score.explanation {
-            HStack {
-                if let pos = explanation.positives.first {
-                    Text("\u{201C}\(pos)\u{201D}")
-                        .font(.instrumentSerifItalic(12))
-                        .foregroundStyle(theme.text)
-                        .lineLimit(1)
-                }
                 Spacer()
-                Text(viewModel.archetypeMatch.rawValue.capitalized)
-                    .font(.dmSans(9, weight: .medium))
-                    .foregroundStyle(theme.sage)
-                    .padding(.horizontal, 8).padding(.vertical, 3)
-                    .background(theme.sage.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
             }
-            .padding(.horizontal, COREDesign.horizontalPadding)
-            .padding(.vertical, 10)
-            .background(theme.surface.opacity(0.3))
+
+            // Short descriptor — gallery-label language
+            Text(galleryDescriptor)
+                .font(.instrumentSerifItalic(13))
+                .foregroundStyle(Gallery.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            // Max 2 supporting metrics
+            if viewModel.outfitScore != nil {
+                HStack(spacing: 20) {
+                    attributeMeter("Flyt", value: verdictValue(viewModel.silhouetteVerdict))
+                    attributeMeter("Farger", value: verdictValue(viewModel.colorVerdict))
+                }
+            }
         }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Gallery.glass)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Gallery.border.opacity(0.5), lineWidth: 0.5)
+                )
+                .shadow(color: Gallery.shadow, radius: 16, x: 0, y: 6)
+        )
     }
 
-    // MARK: - Score Breakdown
-
-    @ViewBuilder
-    private var scoreBreakdown: some View {
-        if viewModel.outfitScore != nil {
-            VStack(spacing: 6) {
-                bar("Flyt", verdictValue(viewModel.silhouetteVerdict))
-                bar("Farger", verdictValue(viewModel.colorVerdict))
-            }
-            .padding(14)
-            .glassCard()
-        }
+    /// Maps engine score to calm gallery-label descriptors.
+    private var galleryDescriptor: String {
+        let score = viewModel.scoreDisplay
+        if score >= 85 { return "Strong alignment" }
+        if score >= 70 { return "Clean balance" }
+        if score >= 55 { return "Balanced and wearable" }
+        if score >= 40 { return "Room to refine" }
+        return "Early composition"
     }
 
-    private func bar(_ lbl: String, _ val: Double) -> some View {
+    private func attributeMeter(_ label: String, value: Double) -> some View {
         HStack(spacing: 8) {
-            Text(lbl).font(.dmSans(10, weight: .medium)).foregroundStyle(theme.text3).frame(width: 42, alignment: .leading)
+            Text(label)
+                .font(.dmSans(11, weight: .medium))
+                .foregroundStyle(Gallery.textSecondary)
             GeometryReader { g in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 1.5).fill(theme.surface)
-                    RoundedRectangle(cornerRadius: 1.5)
-                        .fill(val >= 0.7 ? theme.sage : val >= 0.4 ? theme.gold : Color.coretRed)
-                        .frame(width: g.size.width * min(max(val, 0), 1))
-                        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: val)
+                    Capsule().fill(Gallery.textSecondary.opacity(0.1))
+                    Capsule()
+                        .fill(value >= 0.7 ? Color.coretSage : value >= 0.4 ? Gallery.accent : Color.coretRed)
+                        .frame(width: g.size.width * min(max(value, 0), 1))
+                        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: value)
                 }
             }.frame(height: 3)
-            Text("\(Int(val * 100))").font(.dmSans(10)).foregroundStyle(theme.text3).frame(width: 22, alignment: .trailing)
+            Text("\(Int(value * 100))")
+                .font(.dmSans(11))
+                .foregroundStyle(Gallery.textSecondary)
+                .frame(width: 26, alignment: .trailing)
         }
     }
 
@@ -376,29 +493,34 @@ struct StudioView: View {
     // MARK: - Action Buttons
 
     private var actionButtons: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
+            // Secondary
             Button { viewModel.generateSurpriseOutfit() } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "circle.circle").font(.system(size: 12))
-                    Text("Overrask").font(.dmSans(13, weight: .medium))
-                }
-                .foregroundStyle(theme.text2)
-                .frame(maxWidth: .infinity).padding(.vertical, 13)
-                .background(theme.surface)
-                .clipShape(RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall))
+                Text("Overrask")
+                    .font(.dmSans(14, weight: .medium))
+                    .foregroundStyle(Gallery.textSecondary)
+                    .frame(maxWidth: .infinity).padding(.vertical, 16)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(Gallery.border, lineWidth: 0.5)
+                    )
             }
 
+            // Primary
             Button {
                 Task { await viewModel.wearToday(); showWearConfirmation = true }
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: "checkmark").font(.system(size: 12))
-                    Text("Bruk i dag \u{2192}").font(.dmSans(13, weight: .medium))
+                    Text("Bruk i dag").font(.dmSans(14, weight: .medium))
+                    Image(systemName: "arrow.right").font(.system(size: 12, weight: .medium))
                 }
-                .foregroundStyle(theme.bg)
-                .frame(maxWidth: .infinity).padding(.vertical, 13)
-                .background(theme.gold)
-                .clipShape(RoundedRectangle(cornerRadius: COREDesign.cornerRadiusSmall))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity).padding(.vertical, 16)
+                .background(Gallery.accent)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .shadow(color: Gallery.accent.opacity(0.25), radius: 12, x: 0, y: 6)
             }
             .disabled(!hasOutfit).opacity(hasOutfit ? 1 : 0.5)
         }
@@ -409,10 +531,10 @@ struct StudioView: View {
     private var accessoryDrawer: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Tilbeh\u{00F8}r").font(.instrumentSerif(18)).foregroundStyle(theme.text)
+                Text("Tilbeh\u{00F8}r").font(.instrumentSerif(18)).foregroundStyle(Gallery.textPrimary)
                 Spacer()
                 Button { viewModel.isDrawerOpen = false } label: {
-                    Image(systemName: "xmark").foregroundStyle(theme.text3).frame(width: 44, height: 44)
+                    Image(systemName: "xmark").foregroundStyle(Gallery.textSecondary).frame(width: 44, height: 44)
                 }
             }
             ScrollView {
@@ -423,12 +545,12 @@ struct StudioView: View {
                             HStack {
                                 RoundedRectangle(cornerRadius: 4).fill(accColor(acc)).frame(width: 20, height: 24)
                                 Text(acc.name.isEmpty ? acc.baseGroup.rawValue.capitalized : acc.name)
-                                    .font(.dmSans(13)).foregroundStyle(theme.text)
+                                    .font(.dmSans(13)).foregroundStyle(Gallery.textPrimary)
                                 Spacer()
-                                if sel { Image(systemName: "checkmark.circle.fill").foregroundStyle(theme.gold) }
+                                if sel { Image(systemName: "checkmark.circle.fill").foregroundStyle(Gallery.accent) }
                             }
                             .padding(10)
-                            .background(RoundedRectangle(cornerRadius: 8).fill(sel ? theme.gold.opacity(0.1) : theme.surface))
+                            .background(RoundedRectangle(cornerRadius: 8).fill(sel ? Gallery.accent.opacity(0.1) : Gallery.glass))
                         }
                     }
                 }
@@ -441,148 +563,7 @@ struct StudioView: View {
 
     private func accColor(_ g: Garment) -> Color {
         let h = g.dominantColor
-        guard !h.isEmpty, h != "#000000" else { return theme.surface }
+        guard !h.isEmpty, h != "#000000" else { return Gallery.bgBottom }
         return Color(hex: String(h.dropFirst()))
-    }
-
-}
-
-// MARK: - Swipeable Layer
-
-/// Each layer is a fixed-position ZStack with horizontal swipe gesture.
-/// Layers NEVER move. Only the garment inside changes.
-private struct SwipeableLayer: View {
-    let garment: Garment?
-    let itemCount: Int
-    let theme: CORETheme
-    let layerLabel: String
-    let onSwipe: (Int) -> Void
-
-    @State private var dragOffset: CGFloat = 0
-    @State private var showHint = true
-
-    var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                slotContent
-                    .offset(x: dragOffset)
-
-                // Swipe hint — shows briefly on first appear
-                if showHint && itemCount > 1 {
-                    swipeHint
-                        .transition(.opacity)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 20)
-                    .onChanged { value in
-                        // Only horizontal drag
-                        if abs(value.translation.width) > abs(value.translation.height) {
-                            dragOffset = value.translation.width * 0.4
-                        }
-                    }
-                    .onEnded { value in
-                        let threshold: CGFloat = 40
-                        if value.translation.width < -threshold && itemCount > 1 {
-                            // Swipe left → next
-                            dragOffset = -geo.size.width * 0.6
-                            onSwipe(1)
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                dragOffset = 0
-                            }
-                        } else if value.translation.width > threshold && itemCount > 1 {
-                            // Swipe right → previous
-                            dragOffset = geo.size.width * 0.6
-                            onSwipe(-1)
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                dragOffset = 0
-                            }
-                        } else {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                dragOffset = 0
-                            }
-                        }
-                    }
-            )
-            .onAppear {
-                // Hide swipe hint after 3 seconds
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    withAnimation(.easeOut(duration: 0.4)) {
-                        showHint = false
-                    }
-                }
-            }
-            .onLongPressGesture(minimumDuration: 0.5) {
-                // Reappear hint on long press
-                withAnimation(.easeIn(duration: 0.2)) { showHint = true }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    withAnimation(.easeOut(duration: 0.4)) { showHint = false }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var slotContent: some View {
-        if let garment, !garment.image.isEmpty, let url = URL(string: garment.image) {
-            if url.isFileURL, let data = try? Data(contentsOf: url),
-               let uiImage = UIImage(data: data) {
-                Image(uiImage: uiImage)
-                    .resizable().scaledToFit()
-                    .shadow(color: .black.opacity(0.35), radius: 12, y: 6)
-            } else {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let img):
-                        img.resizable().scaledToFit()
-                            .shadow(color: .black.opacity(0.35), radius: 12, y: 6)
-                    default:
-                        ProgressView().tint(.white.opacity(0.3))
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                }
-            }
-        } else if let garment {
-            // Soft color glow — no box, just a blurred color shape
-            let hex = garment.dominantColor.hasPrefix("#")
-                ? String(garment.dominantColor.dropFirst())
-                : garment.dominantColor
-            Ellipse()
-                .fill(Color(hex: hex).opacity(0.6))
-                .blur(radius: 8)
-                .shadow(color: Color(hex: hex).opacity(0.3), radius: 16, y: 6)
-        } else {
-            // Empty slot — placeholder with "add" prompt
-            VStack(spacing: 6) {
-                Image(systemName: "plus")
-                    .font(.system(size: 18, weight: .light))
-                    .foregroundStyle(theme.text4.opacity(0.5))
-                Text(layerLabel)
-                    .font(.dmSans(9, weight: .medium))
-                    .foregroundStyle(theme.text4.opacity(0.4))
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(theme.text4.opacity(0.15), style: StrokeStyle(lineWidth: 1, dash: [5]))
-            )
-        }
-    }
-
-    private var swipeHint: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "arrow.left")
-                .font(.system(size: 8, weight: .medium))
-            Image(systemName: "arrow.right")
-                .font(.system(size: 8, weight: .medium))
-        }
-        .foregroundStyle(.white)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(Capsule().fill(.black.opacity(0.5)))
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-        .padding(.bottom, 4)
     }
 }
