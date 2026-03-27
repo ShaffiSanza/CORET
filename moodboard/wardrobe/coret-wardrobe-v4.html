@@ -115,6 +115,10 @@
     width: 36px; height: 44px; border-radius: 8px;
     border: 1.5px solid var(--gold);
     box-shadow: 0 2px 8px rgba(184,134,11,0.12);
+    overflow: hidden;
+  }
+  .dagens-thumb img {
+    width: 100%; height: 100%; object-fit: cover;
   }
 
   /* Block 3: Gap */
@@ -191,16 +195,19 @@
   .g-card:nth-child(10) { animation-delay: 0.20s; }
   @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Color swatch (replaces emoji) */
+  /* Garment image */
   .g-swatch {
-    width: 100%; height: 120px;
-    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 140px;
+    overflow: hidden;
     position: relative;
+    background: var(--surface);
   }
-  .g-color-rect {
-    width: 60px; height: 80px; border-radius: 10px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  .g-swatch img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
   }
+  .g-card:hover .g-swatch img { transform: scale(1.04); }
 
   /* Key garment — gold border on entire card */
   .g-card.key {
@@ -297,9 +304,9 @@
       <div class="bento-block bento-dagens">
         <div class="bento-label">Dagens</div>
         <div class="dagens-thumbs">
-          <div class="dagens-thumb" style="background: #5C3D1E;"></div>
-          <div class="dagens-thumb" style="background: #2C3E5A;"></div>
-          <div class="dagens-thumb" style="background: #C4AA82;"></div>
+          <div class="dagens-thumb"><img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=80&h=100&fit=crop" alt="Coat"></div>
+          <div class="dagens-thumb"><img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=80&h=100&fit=crop" alt="Shirt"></div>
+          <div class="dagens-thumb"><img src="https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=80&h=100&fit=crop" alt="Chinos"></div>
         </div>
       </div>
 
@@ -329,103 +336,103 @@
 
       <!-- Key garment: Ullfrakk -->
       <div class="g-card key">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #5C3D1E;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=500&fit=crop" alt="Ullfrakk"></div>
         <div class="g-info"><div class="g-name">Ullfrakk</div><div class="g-meta"><span class="hl">N&#248;kkel</span> &middot; Relaxed</div></div>
       </div>
 
       <!-- Skinnjakke -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #1A1A1E;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=500&fit=crop" alt="Skinnjakke"></div>
         <div class="g-info"><div class="g-name">Skinnjakke</div><div class="g-meta">Fitted</div></div>
       </div>
 
       <!-- Key garment: Navy Skjorte -->
       <div class="g-card key">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #1E2A3A;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=500&fit=crop" alt="Navy Skjorte"></div>
         <div class="g-info"><div class="g-name">Navy Skjorte</div><div class="g-meta"><span class="hl">N&#248;kkel</span> &middot; Fitted</div></div>
       </div>
 
       <!-- Oliven Bomber -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #4A5A30;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1544923246-77307dd270cb?w=400&h=500&fit=crop" alt="Oliven Bomber"></div>
         <div class="g-info"><div class="g-name">Oliven Bomber</div><div class="g-meta">Relaxed</div></div>
       </div>
 
       <!-- Svart Hoodie -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #2A2A30;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop" alt="Svart Hoodie"></div>
         <div class="g-info"><div class="g-name">Svart Hoodie</div><div class="g-meta">Relaxed</div></div>
       </div>
 
       <!-- Hvit T-shirt -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #D8D4D0;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop" alt="Hvit T-shirt"></div>
         <div class="g-info"><div class="g-name">Hvit T-shirt</div><div class="g-meta">N&#248;ytral</div></div>
       </div>
 
       <!-- Sort T-shirt -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #1A1A1E;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1503341504253-dff4f94032fc?w=400&h=500&fit=crop" alt="Sort T-shirt"></div>
         <div class="g-info"><div class="g-name">Sort T-shirt</div><div class="g-meta">N&#248;ytral</div></div>
       </div>
 
       <!-- Beige Polo -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #C4B89A;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=400&h=500&fit=crop" alt="Beige Polo"></div>
         <div class="g-info"><div class="g-name">Beige Polo</div><div class="g-meta">Varm</div></div>
       </div>
 
       <!-- Burgundy Skjorte -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #6B1A1A;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=500&fit=crop" alt="Burgundy Skjorte"></div>
         <div class="g-info"><div class="g-name">Burgundy Skjorte</div><div class="g-meta">Aksent</div></div>
       </div>
 
       <!-- Key garment: Beige Chinos -->
       <div class="g-card key">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #C4AA82;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=500&fit=crop" alt="Beige Chinos"></div>
         <div class="g-info"><div class="g-name">Beige Chinos</div><div class="g-meta"><span class="hl">N&#248;kkel</span> &middot; Tapered</div></div>
       </div>
 
       <!-- Navy Chinos -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #1E2A3A;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400&h=500&fit=crop" alt="Navy Chinos"></div>
         <div class="g-info"><div class="g-name">Navy Chinos</div><div class="g-meta">Tapered</div></div>
       </div>
 
       <!-- Svarte Jeans -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #1A1A1E;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=500&fit=crop" alt="Svarte Jeans"></div>
         <div class="g-info"><div class="g-name">Svarte Jeans</div><div class="g-meta">Slim</div></div>
       </div>
 
       <!-- Cargo Pants -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #4A6A2A;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1517438476312-10d79c077509?w=400&h=500&fit=crop" alt="Cargo Pants"></div>
         <div class="g-info"><div class="g-name">Cargo Pants</div><div class="g-meta">Wide</div></div>
       </div>
 
       <!-- Lyse Jeans -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #6A8AB0;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=500&fit=crop" alt="Lyse Jeans"></div>
         <div class="g-info"><div class="g-name">Lyse Jeans</div><div class="g-meta">Relaxed</div></div>
       </div>
 
       <!-- Brune Boots -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #6B4A2A;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=400&h=500&fit=crop" alt="Brune Boots"></div>
         <div class="g-info"><div class="g-name">Brune Boots</div><div class="g-meta">Structured</div></div>
       </div>
 
       <!-- Hvite Sneakers -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #D8D4D0;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=500&fit=crop" alt="Hvite Sneakers"></div>
         <div class="g-info"><div class="g-name">Hvite Sneakers</div><div class="g-meta">Minimal</div></div>
       </div>
 
       <!-- Svarte Derby -->
       <div class="g-card">
-        <div class="g-swatch"><div class="g-color-rect" style="background: #1A1A1E;"></div></div>
+        <div class="g-swatch"><img src="https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=400&h=500&fit=crop" alt="Svarte Derby"></div>
         <div class="g-info"><div class="g-name">Svarte Derby</div><div class="g-meta">Structured</div></div>
       </div>
 
